@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\..\bootloader\bootloader.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\Seed_STM32L471RE.ewp</path>
+  </project>
+  <batchBuild/>
+</workspace>
+
+

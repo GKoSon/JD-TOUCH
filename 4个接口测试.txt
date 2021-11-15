@@ -1,0 +1,243 @@
+POST /v1/device/register HTTP/1.1
+Host: 192.168.66.34:8211
+Content-Length:619
+
+{
+ "deviceName":"1233",
+ "deviceNo":"aabbccdd",
+ "bluetoothPassword":"123456",
+ "doorOpenPassword":"111111",
+ "doorOpenDelay":10,
+ "doorAlarmDelay":9,
+ "streetID":"054141a598764653b84c2008a4e527bc",
+ "committeeID" : "70cab8b141cb443ca1d601465bd3debb",
+ "villageID":"479be5c0460911e9b958eb4f4047c473",
+ "buildingID":"6dfa4904460911e9b958eb4f4047c473",
+ "type":"access",
+ "productModel":"a9",
+ "longitude" : 1245.1,
+ "latitude":1235.2,
+ "network":{
+  "deviceIP":"127.1.1.9",
+  "deviceMask":"255.255.255.0",
+  "deviceGateway":"127.1.1.1",
+  "dnsServer":"114.114.114.114"
+ },
+ "seriesType":10
+}
+
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Date: Mon, 12 Aug 2019 02:46:44 GMT
+Content-Length: 96
+
+{"code":91,"msg":"鏁版嵁搴撴煡璇㈠け璐?,"result":{"locationID":"","sipAccount":"","sipPwd":""}}
+
+
+
+
+
+
+
+
+
+/v1/device/canRegister
+{
+	"deviceMac": "112233445566",
+	"villageID": "123456"
+}
+WEB:
+http://192.168.66.34:8211/v1/device/canRegister
+{
+	"deviceMac": "112233445566",
+	"villageID": "479be5c0460911e9b958eb4f4047c473"
+}
+
+可以回答：
+{
+    "code": 1,
+    "msg": "下发参数异常"
+}
+
+自己：
+POST /v1/device/canRegister HTTP/1.1
+Host: 192.168.66.34:8211
+Content-Length:37
+
+{
+	"deviceMac": "112233445566",
+	"villageID": "479be5c0460911e9b958eb4f4047c473"
+}
+
+
+HTTP/1.1 400 Bad Request
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Origin: *
+Date: Mon, 12 Aug 2019 02:47:46 GMT
+Content-Length: 37
+Content-Type: text/plain; charset=utf-8
+
+{"code":1,"msg":"涓嬪彂鍙傛暟寮傚父"}HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+Connection: close
+
+400 Bad Request
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/v1/device/delete
+{
+	"deviceMac": "设备的mac地址",
+	"villageID": "小区ID"
+}
+WEB:
+http://192.168.66.34:8211/v1/device/delete
+{
+	"deviceMac": "112233445566",
+	"villageID": "479be5c0460911e9b958eb4f4047c473"
+}
+{
+    "code": 1,
+    "msg": "下发参数异常"
+}
+
+自己：
+POST /v1/device/delete HTTP/1.1
+Host: 192.168.66.34:8211
+Content-Length:37
+
+{
+	"deviceMac": "112233445566",
+	"villageID": "479be5c0460911e9b958eb4f4047c473"
+}
+
+
+
+HTTP/1.1 400 Bad Request
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Origin: *
+Date: Fri, 09 Aug 2019 08:27:45 GMT
+Content-Length: 37
+Content-Type: text/plain; charset=utf-8
+
+{"code":1,"msg":"涓嬪彂鍙傛暟寮傚父"}HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+Connection: close
+
+400 Bad Request
+
+
+
+
+
+
+
+
+
+
+/v1/device/update
+{
+	"deviceName": "设备名称",
+	"villageID": "小区ID",
+	"deviceMac": "设备mac地址",
+	"bluetoothPassword": "蓝牙密码",
+	"doorOpenPassword": "开门密码",
+	"doorOpenDelay": "开门延迟",
+	"doorAlarmDelay": "报警延迟",
+	"network": {
+		"deviceIP": "设备ip",
+		"deviceMask": "设备掩码",
+		"deviceGateway": "设备网关",
+		"dnsServer": "设备dns服务器"
+	},
+	"setNetworkWay": "配网方式，0-手动配置 1-自动配置",
+	"seriesType": "系列类型"
+}
+
+WEB:
+http://192.168.66.34:8211/v1/device/update
+Host: 192.168.66.34:8211
+Content-Length:619
+
+{
+ "deviceName":"1233",
+ "deviceNo":"aabbccdd",
+ "bluetoothPassword":"123456",
+ "doorOpenPassword":"111111",
+ "doorOpenDelay":10,
+ "doorAlarmDelay":9,
+ "streetID":"054141a598764653b84c2008a4e527bc",
+ "committeeID" : "70cab8b141cb443ca1d601465bd3debb",
+ "villageID":"479be5c0460911e9b958eb4f4047c473",
+ "buildingID":"6dfa4904460911e9b958eb4f4047c473",
+
+ "productModel":"a9",
+
+ "network":{
+  "deviceIP":"127.1.1.9",
+  "deviceMask":"255.255.255.0",
+  "deviceGateway":"127.1.1.1",
+  "dnsServer":"114.114.114.114"
+ },
+ "seriesType":10
+}
+
+
+
+赋值上面
+POST /v1/device/update HTTP/1.1
+Host: 192.168.66.34:8211
+Content-Length:619
+
+{
+ "deviceName":"1233",
+ "deviceNo":"aabbccdd",
+ "bluetoothPassword":"123456",
+ "doorOpenPassword":"111111",
+ "doorOpenDelay":10,
+ "doorAlarmDelay":9,
+ "streetID":"054141a598764653b84c2008a4e527bc",
+ "committeeID" : "70cab8b141cb443ca1d601465bd3debb",
+ "villageID":"479be5c0460911e9b958eb4f4047c473",
+ "buildingID":"6dfa4904460911e9b958eb4f4047c473",
+ "type":"access",
+ "productModel":"a9",
+ "longitude" : 1245.1,
+ "latitude":1235.2,
+ "network":{
+  "deviceIP":"127.1.1.9",
+  "deviceMask":"255.255.255.0",
+  "deviceGateway":"127.1.1.1",
+  "dnsServer":"114.114.114.114"
+ },
+ "seriesType":10
+}
+
+HTTP/1.1 200 OK
+Access-Control-Allow-Headers: Content-Type
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Date: Mon, 12 Aug 2019 03:19:04 GMT
+Content-Length: 31
+
+{"code":0,"msg":"璇锋眰鎴愬姛"}HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+Connection: close
+
+400 Bad Request

@@ -1,0 +1,149 @@
+[Stack]
+FillEnabled=0
+OverflowWarningsEnabled=1
+WarningThreshold=90
+SpWarningsEnabled=1
+WarnLogOnly=1
+UseTrigger=1
+TriggerName=main
+LimitSize=0
+ByteLimit=50
+[StLinkDriver]
+CStepIntDis=_ 0
+LeaveTargetRunning=_ 0
+stlinkserialNo=44481687
+stlinkfoundProbes=
+[DebugChecksum]
+<<<<<<< HEAD
+Checksum=1636581325
+=======
+Checksum=-791528576
+>>>>>>> nfc_m1_card
+[Exceptions]
+StopOnUncaught=_ 0
+StopOnThrow=_ 0
+[CodeCoverage]
+Enabled=_ 0
+[CallStack]
+ShowArgs=0
+[Disassembly]
+MixedMode=1
+[SWOTraceHWSettings]
+OverrideDefaultClocks=0
+CpuClock=80000000
+ClockAutoDetect=0
+ClockWanted=2000000
+JtagSpeed=2000000
+Prescaler=40
+TimeStampPrescIndex=0
+TimeStampPrescData=0
+PcSampCYCTAP=1
+PcSampPOSTCNT=15
+PcSampIndex=0
+DataLogMode=0
+ITMportsEnable=0
+ITMportsTermIO=0
+ITMportsLogFile=0
+ITMlogFile=$PROJ_DIR$\ITM.log
+[struct_types]
+Fmt0=SystemConfigType-crc16	4	0
+Fmt1=SystemConfigType-mark	4	0
+Fmt2=struct pin_exit-pin	4	0
+Fmt3=struct pin_index-pin	4	0
+Fmt4=tagBufferType-cardType	4	0
+[array_types]
+Fmt0=char[2048]	4	0
+Fmt1=uint8_t[128]	4	0
+Fmt2=uint8_t[16]	4	0
+Fmt3=uint8_t[256]	3	0
+Fmt4=uint8_t[529]	4	0
+[watch_formats]
+Fmt0={W}1:ID	4	0
+Fmt1={W}1:cardNumber	4	0
+Fmt2={W}1:tem	4	0
+Fmt3={W}1:timeout	4	0
+Fmt4={W}42:passwordDataAddr	4	0
+[Trace2]
+Enabled=0
+ShowSource=0
+[SWOTraceWindow]
+PcSampling=0
+InterruptLogs=0
+ForcedTimeStamps=0
+EventCPI=0
+EventEXC=0
+EventFOLD=0
+EventLSU=0
+EventSLEEP=0
+[DataLog]
+LogEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+SumEnabled=0
+ShowTimeSum=1
+[EventLog]
+Title_0=Ch3
+Symbol_0=0 4 1
+Title_1=Ch2
+Symbol_1=0 4 1
+Title_2=Ch1
+Symbol_2=0 4 1
+Title_3=Ch0
+Symbol_3=0 4 1
+LogEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+SumEnabled=0
+ShowTimeSum=1
+SumSortOrder=0
+[InterruptLog]
+LogEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+SumEnabled=0
+ShowTimeSum=1
+SumSortOrder=0
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[DriverProfiling]
+Enabled=0
+Mode=3
+Graph=0
+Symbiont=0
+Exclusions=
+[CallStackLog]
+Enabled=0
+[CallStackStripe]
+ShowTiming=1
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Src\user_diskio.c}.116.2" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "0x080250F0" 0 0 1 "" 0 "" 0
+Count=2
+[Aliases]
+A0=_ "E:\23.Seed\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Inc\stm32l4xx_ll_adc.h" ""
+A1=_ "E:\23.Seed\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_dma.c" ""
+A2=_ "E:\23.Seed\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_spi.c" ""
+A3=_ "E:\23.Seed\seed_stm32l471re\Middlewares\Third_Party\FreeRTOS\Source\tasks.c" ""
+A4=_ "E:\23.Seed\seed_stm32l471re\Src\main.c" ""
+A5=_ "E:\23.Seed\seed_stm32l471re\Src\spi.c" ""
+A6=_ "F:\Seed_Lock\EWARM\startup_stm32l471xx.s" ""
+A7=_ "G:\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Inc\stm32l4xx_ll_adc.h" ""
+A8=_ "G:\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal.c" ""
+A9=_ "G:\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_dma.c" ""
+A10=_ "G:\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_gpio.c" ""
+A11=_ "G:\seed_stm32l471re\Drivers\STM32L4xx_HAL_Driver\Src\stm32l4xx_hal_spi.c" ""
+A12=_ "G:\seed_stm32l471re\Middlewares\Third_Party\FreeRTOS\Source\portable\IAR\ARM_CM4F\port.c" ""
+A13=_ "G:\seed_stm32l471re\Middlewares\Third_Party\FreeRTOS\Source\tasks.c" ""
+A14=_ "G:\seed_stm32l471re\Src\main.c" ""
+A15=_ "G:\seed_stm32l471re\Src\spi.c" ""
+A16=_ "G:\seed_stm32l471re\applications\debugs\debug_cpu.c" ""
+A17=_ "G:\seed_stm32l471re\utilities\cpu_utils.c" ""
+Count=18
+SuppressDialog=0

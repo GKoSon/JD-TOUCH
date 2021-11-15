@@ -1,0 +1,32 @@
+OTA
+  bootloader_iap();
+  
+  jump_application();
+  分析：
+  #define             APPLICATION_ADDRESS    (uint32_t)0x0800A000
+  void jump_application( void )
+{
+    if (((*(__IO uint32_t*)APPLICATION_ADDRESS) & 0x1FFE0000 ) == 0x10000000) //stack use ram1
+    {
+      log(DEBUG,"跳转至应用程序\n\n\n");
+      /* Jump to user application */
+      __set_PRIMASK(1); //must be close en all
+      JumpAddress = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
+      JumpToApplication = (pFunction) JumpAddress;
+      /* Initialize user application's Stack Pointer */
+      __set_MSP(*(__IO uint32_t*) APPLICATION_ADDRESS);
+      JumpToApplication();
+    } 
+    else  
+    {  
+        log(DEBUG,"没有应用程序\n");  
+    } 
+}
+
+它是调到哪里？？？？？看我的1.bin 就是开始是10005DB8 不错啊！！！WHY??????????????????
+
+
+1--read_sys_cfg 需要有一个CRC可以的cfg文件出来
+2-- cfg.otaVar.otaUpgMark == UPG_MARK 
+3--CRC32 crc32 == cfg.otaVar.crc32  它APP算好！！
+3--开始MV

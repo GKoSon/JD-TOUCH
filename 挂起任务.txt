@@ -1,0 +1,33 @@
+#define INCLUDE_vTaskSuspend                1  文件FreeRTOSConfig.h
+
+/*
+static void ble_send_buffer(uint8_t *ptdata, uint16_t dLength)
+{
+uint8_t i =0;
+
+vTaskSuspendAll(); 
+for(i = 0 ; i < dLength; i++)
+{
+//HalBlePort.SendByte(ptdata[i]);
+}
+xTaskResumeAll();
+}*/
+
+
+void vTaskResume( TaskHandle_txTaskToResume );
+
+恢复挂起的任务。
+
+通过调用一次或多次vTaskSuspend()挂起的任务，可以调用一次vTaskResume ()函数来再次恢复运行。在文件FreeRTOSConfig.h中，宏INCLUDE_vTaskSuspend 必须置1，此函数才有效。
+ 好的开始测试
+ 1任务 可以 自己把自己挂起吗？
+ 
+ 结论：
+ 
+ 2安装的时候挂起一下MQTT试试
+ xTaskHandle		        mqttTask;
+ 
+extern xTaskHandle		        mqttTask;
+
+vTaskSuspend(mqttTask);
+vTaskSuspendFromISR(mqttTask);

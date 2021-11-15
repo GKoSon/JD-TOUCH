@@ -1,0 +1,917 @@
+###############################################################################
+#
+# IAR ELF Linker V8.32.1.169/W32 for ARM                  15/Nov/2021  10:13:32
+# Copyright 2007-2018 IAR Systems AB.
+#
+#    Output file  =  D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Exe\bootloader.out
+#    Map file     =  
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\List\bootloader.map
+#    Command line =  
+#        -f C:\Users\KOSON~1.GON\AppData\Local\Temp\EWA8D9.tmp
+#        (D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\adc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bl_spi_flash.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_main.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_stm32l4xx_it.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_system_stm32l4xx.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bsp_rtc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\chipFlash.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\crc16.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\crc32.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\fatfs.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\flash_fat_dev.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\flash_sector.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\freertos.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\gpio.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\hal_spi.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\iwdg.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\rtc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\serial.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\spi.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\startup_stm32l471xx.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_adc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_adc_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_cortex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_dma.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_dma_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_flash.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_flash_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_gpio.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_iwdg.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_msp.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_pwr.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_pwr_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rcc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rcc_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rtc.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rtc_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_spi.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_spi_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_tim.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_tim_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_uart.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_uart_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_usart.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_usart_ex.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\tim.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\unit.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\usart.o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\user_diskio.o --redirect
+#        _Printf=_PrintfFull --redirect _Scanf=_ScanfFull --no_out_extension -o
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Exe\bootloader.out --map
+#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\List\bootloader.map --config
+#        D:\git\AAAA\TOUCH-BLUE\bootloader/stm32l471xx_flash.icf --semihosting
+#        --entry __iar_program_start --vfe --text_out locale)
+#
+###############################################################################
+
+*******************************************************************************
+*** RUNTIME MODEL ATTRIBUTES
+***
+
+CppFlavor       = *
+__SystemLibrary = DLib
+__dlib_version  = 6
+
+
+*******************************************************************************
+*** HEAP SELECTION
+***
+
+The basic heap was selected because no calls to memory allocation
+functions were found in the application outside of system library
+functions, and there are calls to deallocation functions in the
+application.
+
+
+*******************************************************************************
+*** PLACEMENT SUMMARY
+***
+
+"A0":  place at 0x800'0000 { ro section .intvec };
+"P1":  place in [from 0x800'0000 to 0x80f'ffff] { ro };
+define block CSTACK with size = 4K, alignment = 8 { };
+define block HEAP with size = 1K, alignment = 8 { };
+"P2":  place in [from 0x2000'0000 to 0x2001'7fff] {
+          rw, block CSTACK, block HEAP };
+initialize by copy { rw };
+
+  Section            Kind         Address    Size  Object
+  -------            ----         -------    ----  ------
+"A0":                                       0x188
+  .intvec            ro code   0x800'0000   0x188  startup_stm32l471xx.o [1]
+                             - 0x800'0188   0x188
+
+"P1":                                      0x8997
+  .text              ro code   0x800'0188   0xf46  xprintffull.o [2]
+  .text              ro code   0x800'10ce    0x7a  lz77_init_single.o [4]
+  .text              ro code   0x800'1148    0x78  xlocale_c.o [2]
+  .text              ro code   0x800'11c0    0x16  strchr.o [4]
+  .text              ro code   0x800'11d6    0x3a  zero_init3.o [4]
+  .text              ro code   0x800'1210    0x40  xfail_s.o [2]
+  .text              ro code   0x800'1250    0x36  strlen.o [4]
+  .text              ro code   0x800'1286    0x1e  xencoding_8859_1.o [2]
+  .text              ro code   0x800'12a4    0x58  memchr.o [4]
+  .text              ro code   0x800'12fc     0xa  xmbcurmax.o [2]
+  .text              ro code   0x800'1308    0xa6  ABImemcpy.o [4]
+  .text              ro code   0x800'13b0   0x230  I64DivMod.o [4]
+  .text              ro code   0x800'15e0   0x1a2  DblMul.o [3]
+  .text              ro code   0x800'1784    0x70  frexp.o [3]
+  .text              ro code   0x800'17f4    0x2e  DblCmpLe.o [3]
+  .text              ro code   0x800'1824    0x2e  DblCmpGe.o [3]
+  .text              ro code   0x800'1854   0x13a  ldexp.o [3]
+  .text              ro code   0x800'1990    0x3a  DblToS32.o [3]
+  .text              ro code   0x800'19cc    0x22  S32ToDbl.o [3]
+  .text              ro code   0x800'19f0    0xe2  DblSub.o [3]
+  .text              ro code   0x800'1ad4   0x246  DblDiv.o [3]
+  .text              ro code   0x800'1d1c    0x28  DblToU32.o [3]
+  .text              ro code   0x800'1d44    0x1a  U32ToDbl.o [3]
+  .text              ro code   0x800'1d5e     0x6  abort.o [2]
+  .text              ro code   0x800'1d64     0x2  I64DivZer.o [4]
+  .text              ro code   0x800'1d68   0x16a  DblAdd.o [3]
+  .text              ro code   0x800'1ed4    0x14  exit.o [5]
+  .text              ro code   0x800'1ee8   0xcae  bootloader_main.o [1]
+  .text              ro code   0x800'2b96    0x6e  stm32l4xx_hal_iwdg.o [1]
+  .text              ro code   0x800'2c04    0x66  ABImemset.o [4]
+  .text              ro code   0x800'2c6c    0x28  printf.o [2]
+  .text              ro code   0x800'2c94    0x40  unit.o [1]
+  .text              ro code   0x800'2cd4   0x2a0  chipFlash.o [1]
+  .text              ro code   0x800'2f74    0x30  crc16.o [1]
+  .text              ro code   0x800'2fa4   0x280  stm32l4xx_hal_flash.o [1]
+  .text              ro code   0x800'3224   0x1e0  stm32l4xx_hal_flash_ex.o [1]
+  .text              ro code   0x800'3404    0x16  stm32l4xx_hal.o [1]
+  .text              ro code   0x800'341c   0x130  gpio.o [1]
+  .text              ro code   0x800'354c   0x1d8  rtc.o [1]
+  .text              ro code   0x800'3724   0x13c  spi.o [1]
+  .text              ro code   0x800'3860   0x570  usart.o [1]
+  .text              ro code   0x800'3dd0    0x38  iwdg.o [1]
+  .text              ro code   0x800'3e08   0x394  bl_spi_flash.o [1]
+  .text              ro code   0x800'419c    0x1e  stm32l4xx_hal.o [1]
+  .text              ro code   0x800'41bc   0x880  stm32l4xx_hal_rcc.o [1]
+  .text              ro code   0x800'4a3c   0x698  stm32l4xx_hal_rcc_ex.o [1]
+  .text              ro code   0x800'50d4    0x94  stm32l4xx_hal_pwr_ex.o [1]
+  .text              ro code   0x800'5168   0x160  stm32l4xx_hal_cortex.o [1]
+  .text              ro code   0x800'52c8     0xc  stm32l4xx_hal.o [1]
+  .text              ro code   0x800'52d4    0x28  stm32l4xx_hal.o [1]
+  .text              ro code   0x800'52fc    0x90  stm32l4xx_hal_msp.o [1]
+  .text              ro code   0x800'538c   0x3a0  stm32l4xx_hal_gpio.o [1]
+  .text              ro code   0x800'572c   0x6e6  stm32l4xx_hal_rtc.o [1]
+  .text              ro code   0x800'5e14    0x1c  stm32l4xx_hal_rtc_ex.o [1]
+  .text              ro code   0x800'5e30   0x9e0  stm32l4xx_hal_spi.o [1]
+  .text              ro code   0x800'6810   0x94a  stm32l4xx_hal_uart.o [1]
+  .text              ro code   0x800'715c    0xb8  flash_sector.o [1]
+  .text              ro code   0x800'7214   0x426  bsp_rtc.o [1]
+  .text              ro code   0x800'763a     0x2  stm32l4xx_hal_rtc_ex.o [1]
+  .text              ro code   0x800'763c    0x52  stm32l4xx_hal_dma.o [1]
+  .text              ro code   0x800'768e     0x2  stm32l4xx_hal_spi.o [1]
+  .text              ro code   0x800'7690     0x2  stm32l4xx_hal_uart_ex.o [1]
+  .text              ro code   0x800'7692     0x2  stm32l4xx_hal_uart.o [1]
+  .rodata            const     0x800'7694   0x400  crc32.o [1]
+  .rodata            const     0x800'7a94   0x200  crc16.o [1]
+  .rodata            const     0x800'7c94   0x190  bsp_rtc.o [1]
+  .text              ro code   0x800'7e24   0x176  stm32l4xx_hal_tim.o [1]
+  .text              ro code   0x800'7f9a     0x2  stm32l4xx_hal_tim.o [1]
+  .text              ro code   0x800'7f9c     0x2  stm32l4xx_hal_tim.o [1]
+  .text              ro code   0x800'7f9e     0x2  stm32l4xx_hal_tim.o [1]
+  .text              ro code   0x800'7fa0    0x14  tim.o [1]
+  .text              ro code   0x800'7fb4     0x2  stm32l4xx_hal_tim_ex.o [1]
+  .text              ro code   0x800'7fb6     0x2  stm32l4xx_hal_tim.o [1]
+  .text              ro code   0x800'7fb8     0x2  stm32l4xx_hal_tim_ex.o [1]
+  .text              ro code   0x800'7fbc    0xe8  hal_spi.o [1]
+  .text              ro code   0x800'80a4    0x12  strcmp.o [4]
+  .text              ro code   0x800'80b8    0x84  bootloader_stm32l4xx_it.o [1]
+  .text              ro code   0x800'813c    0x10  stm32l4xx_hal.o [1]
+  .text              ro code   0x800'814c    0x68  serial.o [1]
+  .text              ro code   0x800'81b4    0x60  bootloader_system_stm32l4xx.o [1]
+  .rodata            const     0x800'8214    0x54  bootloader_main.o [1]
+  .rodata            const     0x800'8268    0x40  bootloader_main.o [1]
+  .rodata            const     0x800'82a8    0x3c  bootloader_main.o [1]
+  .rodata            const     0x800'82e4    0x3c  bootloader_main.o [1]
+  .rodata            const     0x800'8320    0x3c  bsp_rtc.o [1]
+  .rodata            const     0x800'835c    0x38  bootloader_main.o [1]
+  .rodata            const     0x800'8394    0x34  bootloader_main.o [1]
+  .rodata            const     0x800'83c8    0x30  bootloader_main.o [1]
+  .rodata            const     0x800'83f8    0x30  bootloader_system_stm32l4xx.o [1]
+  .rodata            const     0x800'8428    0x2c  bootloader_main.o [1]
+  .rodata            const     0x800'8454    0x2c  bootloader_main.o [1]
+  .rodata            const     0x800'8480    0x28  bootloader_main.o [1]
+  .rodata            const     0x800'84a8    0x28  bootloader_main.o [1]
+  .text              ro code   0x800'84d0    0x28  data_init.o [4]
+  .rodata            const     0x800'84f8    0x24  bootloader_main.o [1]
+  .rodata            const     0x800'851c    0x24  chipFlash.o [1]
+  .text              ro code   0x800'8540    0x22  fpinit_M.o [3]
+  .iar.init_table    const     0x800'8564    0x20  - Linker created -
+  .rodata            const     0x800'8584    0x20  bootloader_main.o [1]
+  .rodata            const     0x800'85a4    0x20  iwdg.o [1]
+  .rodata            const     0x800'85c4    0x20  rtc.o [1]
+  .rodata            const     0x800'85e4    0x20  spi.o [1]
+  .rodata            const     0x800'8604    0x20  unit.o [1]
+  .rodata            const     0x800'8624    0x20  usart.o [1]
+  .text              ro code   0x800'8644    0x1e  cmain.o [4]
+  .text              ro code   0x800'8662     0x4  low_level_init.o [2]
+  .text              ro code   0x800'8666     0x4  exit.o [2]
+  .text              ro code   0x800'866c     0xa  cexit.o [4]
+  .rodata            const     0x800'8678    0x1c  bootloader_main.o [1]
+  .rodata            const     0x800'8694    0x1c  bootloader_main.o [1]
+  .rodata            const     0x800'86b0    0x1c  bootloader_main.o [1]
+  .rodata            const     0x800'86cc    0x18  bsp_rtc.o [1]
+  .text              ro code   0x800'86e4    0x16  xprout.o [2]
+  .text              ro code   0x800'86fc     0xc  putchar.o [2]
+  .rodata            const     0x800'8708    0x14  bootloader_main.o [1]
+  .rodata            const     0x800'871c    0x14  bootloader_main.o [1]
+  .rodata            const     0x800'8730    0x14  chipFlash.o [1]
+  .rodata            const     0x800'8744    0x14  flash_sector.o [1]
+  .rodata            const     0x800'8758    0x10  bl_spi_flash.o [1]
+  .rodata            const     0x800'8768    0x10  bootloader_main.o [1]
+  .rodata            const     0x800'8778    0x10  bootloader_main.o [1]
+  .rodata            const     0x800'8788    0x10  bootloader_system_stm32l4xx.o [1]
+  .text              ro code   0x800'8798    0x10  startup_stm32l471xx.o [1]
+  .rodata            const     0x800'87a8     0xc  bl_spi_flash.o [1]
+  .rodata            const     0x800'87b4     0xc  bootloader_main.o [1]
+  .rodata            const     0x800'87c0     0xc  bootloader_main.o [1]
+  .rodata            const     0x800'87cc     0xc  bootloader_main.o [1]
+  .rodata            const     0x800'87d8     0xc  bootloader_main.o [1]
+  .rodata            const     0x800'87e4     0xc  bootloader_main.o [1]
+  .rodata            const     0x800'87f0     0xc  bsp_rtc.o [1]
+  .rodata            const     0x800'87fc     0xc  bsp_rtc.o [1]
+  .rodata            const     0x800'8808     0xc  bsp_rtc.o [1]
+  .text              ro code   0x800'8814     0xc  cstartup_M.o [4]
+  .rodata            const     0x800'8820     0x8  bl_spi_flash.o [1]
+  .rodata            const     0x800'8828     0x8  bl_spi_flash.o [1]
+  .rodata            const     0x800'8830     0x8  bl_spi_flash.o [1]
+  .rodata            const     0x800'8838     0x8  bl_spi_flash.o [1]
+  .rodata            const     0x800'8840     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8848     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8850     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8858     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8860     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8868     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8870     0x8  bootloader_main.o [1]
+  .rodata            const     0x800'8878     0x8  bootloader_system_stm32l4xx.o [1]
+  .rodata            const     0x800'8880     0x8  bsp_rtc.o [1]
+  .rodata            const     0x800'8888     0x8  bsp_rtc.o [1]
+  .rodata            const     0x800'8890     0x8  bsp_rtc.o [1]
+  .rodata            const     0x800'8898     0x8  bsp_rtc.o [1]
+  .rodata            const     0x800'88a0     0x8  chipFlash.o [1]
+  .rodata            const     0x800'88a8     0x8  chipFlash.o [1]
+  .rodata            const     0x800'88b0     0x8  chipFlash.o [1]
+  .rodata            const     0x800'88b8     0x8  chipFlash.o [1]
+  .rodata            const     0x800'88c0     0x8  flash_sector.o [1]
+  .rodata            const     0x800'88c8     0x8  flash_sector.o [1]
+  .rodata            const     0x800'88d0     0x8  flash_sector.o [1]
+  .rodata            const     0x800'88d8     0x8  hal_spi.o [1]
+  .rodata            const     0x800'88e0     0x8  hal_spi.o [1]
+  .rodata            const     0x800'88e8     0x8  hal_spi.o [1]
+  .rodata            const     0x800'88f0     0x8  serial.o [1]
+  .rodata            const     0x800'88f8     0x8  serial.o [1]
+  .rodata            const     0x800'8900     0x8  serial.o [1]
+  .rodata            const     0x800'8908     0x8  serial.o [1]
+  .rodata            const     0x800'8910     0x8  serial.o [1]
+  .rodata            const     0x800'8918     0x6  xlocale_c.o [2]
+  .rodata            const     0x800'8920     0x4  bsp_rtc.o [1]
+  .text              ro code   0x800'8924     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8928     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'892c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8930     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8934     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8938     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'893c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8940     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8944     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8948     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'894c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8950     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8954     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8958     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'895c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8960     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8964     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8968     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'896c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8970     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8974     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8978     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'897c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8980     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8984     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8988     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'898c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8990     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8994     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8998     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'899c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89a0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89a4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89a8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89ac     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89b0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89b4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89b8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89bc     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89c0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89c4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89c8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89cc     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89d0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89d4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89d8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89dc     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89e0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89e4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89e8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89ec     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89f0     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89f4     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89f8     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'89fc     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a00     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a04     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a08     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a0c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a10     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a14     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a18     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a1c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a20     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a24     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a28     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a2c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a30     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a34     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a38     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a3c     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a40     0x4  startup_stm32l471xx.o [1]
+  .text              ro code   0x800'8a44     0x4  startup_stm32l471xx.o [1]
+  .rodata            const     0x800'8a48     0x0  zero_init3.o [4]
+  .rodata            const     0x800'8a48     0x0  lz77_init_single.o [4]
+  Initializer bytes  const     0x800'8a48    0xd7  <for P2-1>
+                             - 0x800'8b1f  0x8997
+
+"P2", part 1 of 3:                          0x170
+  P2-1                        0x2000'0000   0x170  <Init block>
+    .data            inited   0x2000'0000    0x1c  bl_spi_flash.o [1]
+    .data            inited   0x2000'001c     0x4  bootloader_system_stm32l4xx.o [1]
+    .data            inited   0x2000'0020    0x18  bsp_rtc.o [1]
+    .data            inited   0x2000'0038    0x18  hal_spi.o [1]
+    .data            inited   0x2000'0050    0x14  hal_spi.o [1]
+    .data            inited   0x2000'0064    0x28  serial.o [1]
+    .data            inited   0x2000'008c    0x10  serial.o [1]
+    .data            inited   0x2000'009c     0x4  unit.o [1]
+    .data            inited   0x2000'00a0    0x38  xlocale_c.o [2]
+    .data            inited   0x2000'00d8    0x48  xlocale_c.o [2]
+    .data            inited   0x2000'0120    0x48  xfiles.o [2]
+    __modules_init   inited   0x2000'0168     0x8  bl_spi_flash.o [1]
+                            - 0x2000'0170   0x170
+
+"P2", part 2 of 3:                         0x1760
+  .bss               zero     0x2000'0170  0x1000  bl_spi_flash.o [1]
+  .bss               zero     0x2000'1170   0x2ac  bootloader_main.o [1]
+  .bss               zero     0x2000'141c    0x7c  usart.o [1]
+  .bss               zero     0x2000'1498    0x7c  usart.o [1]
+  .bss               zero     0x2000'1514    0x7c  usart.o [1]
+  .bss               zero     0x2000'1590    0x7c  usart.o [1]
+  .bss               zero     0x2000'160c    0x7c  usart.o [1]
+  .bss               zero     0x2000'1688    0x64  spi.o [1]
+  .bss               zero     0x2000'16ec    0x64  spi.o [1]
+  .bss               zero     0x2000'1750    0x64  spi.o [1]
+  .bss               zero     0x2000'17b4    0x50  xfiles.o [2]
+  .bss               zero     0x2000'1804    0x40  tim.o [1]
+  .bss               zero     0x2000'1844    0x24  rtc.o [1]
+  .bss               zero     0x2000'1868    0x20  stm32l4xx_hal_flash.o [1]
+  .bss               zero     0x2000'1888    0x10  iwdg.o [1]
+  .bss               zero     0x2000'1898     0x4  bl_spi_flash.o [1]
+  .bss               zero     0x2000'189c     0x4  bootloader_main.o [1]
+  .bss               zero     0x2000'18a0     0x4  bootloader_main.o [1]
+  .bss               zero     0x2000'18a4     0x4  bootloader_main.o [1]
+  .bss               zero     0x2000'18a8     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18ac     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18b0     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18b4     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18b8     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18bc     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18c0     0x4  flash_sector.o [1]
+  .bss               zero     0x2000'18c4     0x4  stm32l4xx_hal.o [1]
+  .bss               zero     0x2000'18c8     0x4  xfail_s.o [2]
+  .bss               zero     0x2000'18cc     0x1  freertos.o [1]
+                            - 0x2000'18cd  0x175d
+
+"P2", part 3 of 3:                         0x1000
+  CSTACK                      0x2000'18d0  0x1000  <Block>
+    CSTACK           uninit   0x2000'18d0  0x1000  <Block tail>
+                            - 0x2000'28d0  0x1000
+
+Unused ranges:
+
+         From           To      Size
+         ----           --      ----
+   0x800'8b1f   0x80f'ffff  0xf'74e1
+  0x2000'28d0  0x2001'7fff  0x1'5730
+
+
+*******************************************************************************
+*** INIT TABLE
+***
+
+          Address      Size
+          -------      ----
+Zero (__iar_zero_init3)
+    1 destination range, total size 0x175d:
+          0x2000'0170  0x175d
+
+Copy/lz77 (__iar_lz77_init_single3)
+    1 source range, total size 0xd7 (58% of destination):
+           0x800'8a48    0xd7
+    1 destination range, total size 0x170:
+          0x2000'0000   0x170
+
+
+
+*******************************************************************************
+*** MODULE SUMMARY
+***
+
+    Module                         ro code  ro data  rw data
+    ------                         -------  -------  -------
+command line/config:
+    --------------------------------------------------------
+    Total:
+
+D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj: [1]
+    bl_spi_flash.o                     916       81    4 136
+    bootloader_main.o                3 246      932      696
+    bootloader_stm32l4xx_it.o          132
+    bootloader_system_stm32l4xx.o       96       74        4
+    bsp_rtc.o                        1 062      570       24
+    chipFlash.o                        672       88
+    crc16.o                             48      512
+    crc32.o                                   1 024
+    flash_sector.o                     184       44       28
+    freertos.o                                             1
+    gpio.o                             304
+    hal_spi.o                          232       50       44
+    iwdg.o                              56       32       16
+    rtc.o                              472       32       36
+    serial.o                           104       73       56
+    spi.o                              316       32      300
+    startup_stm32l471xx.o              700
+    stm32l4xx_hal.o                    120                 4
+    stm32l4xx_hal_cortex.o             352
+    stm32l4xx_hal_dma.o                 82
+    stm32l4xx_hal_flash.o              640                32
+    stm32l4xx_hal_flash_ex.o           480
+    stm32l4xx_hal_gpio.o               928
+    stm32l4xx_hal_iwdg.o               110
+    stm32l4xx_hal_msp.o                144
+    stm32l4xx_hal_pwr_ex.o             148
+    stm32l4xx_hal_rcc.o              2 176
+    stm32l4xx_hal_rcc_ex.o           1 688
+    stm32l4xx_hal_rtc.o              1 766
+    stm32l4xx_hal_rtc_ex.o              30
+    stm32l4xx_hal_spi.o              2 530
+    stm32l4xx_hal_tim.o                382
+    stm32l4xx_hal_tim_ex.o               4
+    stm32l4xx_hal_uart.o             2 380
+    stm32l4xx_hal_uart_ex.o              2
+    tim.o                               20                64
+    unit.o                              64       34        4
+    usart.o                          1 392       32      620
+    --------------------------------------------------------
+    Total:                          23 978    3 610    6 065
+
+dl7M_tlf.a: [2]
+    abort.o                              6
+    exit.o                               4
+    low_level_init.o                     4
+    printf.o                            40
+    putchar.o                           12
+    xencoding_8859_1.o                  30
+    xfail_s.o                           64                 4
+    xfiles.o                                     42      152
+    xlocale_c.o                        120       81      128
+    xmbcurmax.o                         10
+    xprintffull.o                    3 910
+    xprout.o                            22
+    --------------------------------------------------------
+    Total:                           4 222      123      284
+
+m7M_tls.a: [3]
+    DblAdd.o                           362
+    DblCmpGe.o                          46
+    DblCmpLe.o                          46
+    DblDiv.o                           582
+    DblMul.o                           418
+    DblSub.o                           226
+    DblToS32.o                          58
+    DblToU32.o                          40
+    S32ToDbl.o                          34
+    U32ToDbl.o                          26
+    fpinit_M.o                          34
+    frexp.o                            112
+    ldexp.o                            314
+    --------------------------------------------------------
+    Total:                           2 298
+
+rt7M_tl.a: [4]
+    ABImemcpy.o                        166
+    ABImemset.o                        102
+    I64DivMod.o                        560
+    I64DivZer.o                          2
+    cexit.o                             10
+    cmain.o                             30
+    cstartup_M.o                        12
+    data_init.o                         40
+    lz77_init_single.o                 122
+    memchr.o                            88
+    strchr.o                            22
+    strcmp.o                            18
+    strlen.o                            54
+    zero_init3.o                        58
+    --------------------------------------------------------
+    Total:                           1 284
+
+shb_l.a: [5]
+    exit.o                              20
+    --------------------------------------------------------
+    Total:                              20
+
+    Gaps                                42        6
+    Linker created                               32    4 096
+------------------------------------------------------------
+    Grand Total:                    31 844    3 771   10 445
+
+
+*******************************************************************************
+*** ENTRY LIST
+***
+
+Entry                       Address    Size  Type      Object
+-----                       -------    ----  ----      ------
+.iar.init_table$$Base    0x800'8564           --   Gb  - Linker created -
+.iar.init_table$$Limit   0x800'8584           --   Gb  - Linker created -
+?main                    0x800'8645          Code  Gb  cmain.o [4]
+AHBPrescTable            0x800'8788    0x10  Data  Gb  bootloader_system_stm32l4xx.o [1]
+APBPrescTable            0x800'8878     0x8  Data  Gb  bootloader_system_stm32l4xx.o [1]
+BusFault_Handler         0x800'80bf     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+CSTACK$$Base            0x2000'18d0           --   Gb  - Linker created -
+CSTACK$$Limit           0x2000'28d0           --   Gb  - Linker created -
+CacheMore                0x800'114d    0x24  Code  Lc  xlocale_c.o [2]
+DebugMon_Handler         0x800'80c3     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+FLASH_Erase              0x800'22f9    0x96  Code  Lc  bootloader_main.o [1]
+FLASH_FlushCaches        0x800'3397    0x5a  Code  Gb  stm32l4xx_hal_flash_ex.o [1]
+FLASH_Init               0x800'221b    0x16  Code  Lc  bootloader_main.o [1]
+FLASH_MassErase          0x800'3321    0x2e  Code  Lc  stm32l4xx_hal_flash_ex.o [1]
+FLASH_PageErase          0x800'334f    0x48  Code  Gb  stm32l4xx_hal_flash_ex.o [1]
+FLASH_Program_DoubleWord
+                         0x800'31c7    0x16  Code  Lc  stm32l4xx_hal_flash.o [1]
+FLASH_Program_Fast       0x800'31dd    0x28  Code  Lc  stm32l4xx_hal_flash.o [1]
+FLASH_SetErrorCode       0x800'3103    0xc4  Code  Lc  stm32l4xx_hal_flash.o [1]
+FLASH_WaitForLastOperation
+                         0x800'3083    0x80  Code  Gb  stm32l4xx_hal_flash.o [1]
+FLASH_Write              0x800'238f    0x60  Code  Lc  bootloader_main.o [1]
+FLASH_Write              0x800'2d89    0x70  Code  Gb  chipFlash.o [1]
+GetBank                  0x800'2231    0x6c  Code  Lc  bootloader_main.o [1]
+GetBank                  0x800'2cd5    0x62  Code  Lc  chipFlash.o [1]
+GetPage                  0x800'22a1    0x58  Code  Lc  bootloader_main.o [1]
+GetPage                  0x800'2d37    0x52  Code  Lc  chipFlash.o [1]
+HAL_DMA_Abort_IT         0x800'763d    0x52  Code  Gb  stm32l4xx_hal_dma.o [1]
+HAL_Delay                0x800'419d    0x1e  Code  Wk  stm32l4xx_hal.o [1]
+HAL_FLASHEx_Erase        0x800'3225    0xfc  Code  Gb  stm32l4xx_hal_flash_ex.o [1]
+HAL_FLASH_Lock           0x800'3075     0xe  Code  Gb  stm32l4xx_hal_flash.o [1]
+HAL_FLASH_Program        0x800'2fa5    0xb6  Code  Gb  stm32l4xx_hal_flash.o [1]
+HAL_FLASH_Unlock         0x800'305b    0x1a  Code  Gb  stm32l4xx_hal_flash.o [1]
+HAL_GPIO_DeInit          0x800'557d   0x16c  Code  Gb  stm32l4xx_hal_gpio.o [1]
+HAL_GPIO_Init            0x800'538d   0x1f0  Code  Gb  stm32l4xx_hal_gpio.o [1]
+HAL_GPIO_WritePin        0x800'56e9    0x12  Code  Gb  stm32l4xx_hal_gpio.o [1]
+HAL_GetTick              0x800'52c9     0xc  Code  Wk  stm32l4xx_hal.o [1]
+HAL_IWDG_Init            0x800'2b97    0x62  Code  Gb  stm32l4xx_hal_iwdg.o [1]
+HAL_IWDG_Refresh         0x800'2bf9     0xc  Code  Gb  stm32l4xx_hal_iwdg.o [1]
+HAL_IncTick              0x800'813d    0x10  Code  Wk  stm32l4xx_hal.o [1]
+HAL_Init                 0x800'3405    0x16  Code  Gb  stm32l4xx_hal.o [1]
+HAL_InitTick             0x800'52d5    0x28  Code  Wk  stm32l4xx_hal.o [1]
+HAL_MspInit              0x800'52fd    0x90  Code  Gb  stm32l4xx_hal_msp.o [1]
+HAL_NVIC_DisableIRQ      0x800'5277     0xa  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_NVIC_EnableIRQ       0x800'526d     0xa  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_NVIC_SetPriority     0x800'524b    0x22  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_NVIC_SetPriorityGrouping
+                         0x800'5243     0x8  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_PWREx_ControlVoltageScaling
+                         0x800'50e1    0x76  Code  Gb  stm32l4xx_hal_pwr_ex.o [1]
+HAL_PWREx_GetVoltageRange
+                         0x800'50d5     0xc  Code  Gb  stm32l4xx_hal_pwr_ex.o [1]
+HAL_RCCEx_PeriphCLKConfig
+                         0x800'4a3d   0x3d8  Code  Gb  stm32l4xx_hal_rcc_ex.o [1]
+HAL_RCC_ClockConfig      0x800'46cf   0x1ac  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RCC_GetHCLKFreq      0x800'494b     0x6  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RCC_GetPCLK1Freq     0x800'4951    0x16  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RCC_GetPCLK2Freq     0x800'4967    0x16  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RCC_GetSysClockFreq
+                         0x800'487b    0xd0  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RCC_OscConfig        0x800'41bd   0x512  Code  Gb  stm32l4xx_hal_rcc.o [1]
+HAL_RTCEx_AlarmBEventCallback
+                         0x800'763b     0x2  Code  Wk  stm32l4xx_hal_rtc_ex.o [1]
+HAL_RTCEx_BKUPRead       0x800'5e23     0xe  Code  Gb  stm32l4xx_hal_rtc_ex.o [1]
+HAL_RTCEx_BKUPWrite      0x800'5e15     0xe  Code  Gb  stm32l4xx_hal_rtc_ex.o [1]
+HAL_RTC_AlarmAEventCallback
+                         0x800'7591    0x3c  Code  Gb  bsp_rtc.o [1]
+HAL_RTC_AlarmIRQHandler
+                         0x800'5cd5    0x82  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_GetDate          0x800'5a8f    0x4e  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_GetTime          0x800'5929    0x62  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_Init             0x800'572d    0xdc  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_MspInit          0x800'364f    0x14  Code  Gb  rtc.o [1]
+HAL_RTC_SetAlarm_IT      0x800'5add   0x1f8  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_SetDate          0x800'598b   0x104  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_SetTime          0x800'5809   0x120  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_RTC_WaitForSynchro   0x800'5d71    0x36  Code  Gb  stm32l4xx_hal_rtc.o [1]
+HAL_SPI_IRQHandler       0x800'64b1   0x10e  Code  Gb  stm32l4xx_hal_spi.o [1]
+HAL_SPI_Init             0x800'5e31    0xc4  Code  Gb  stm32l4xx_hal_spi.o [1]
+HAL_SPI_MspInit          0x800'3779    0xc8  Code  Gb  spi.o [1]
+HAL_SPI_Receive          0x800'60ad   0x18c  Code  Gb  stm32l4xx_hal_spi.o [1]
+HAL_SPI_Transmit         0x800'5ef5   0x1b8  Code  Gb  stm32l4xx_hal_spi.o [1]
+HAL_SPI_TransmitReceive
+                         0x800'6239   0x278  Code  Gb  stm32l4xx_hal_spi.o [1]
+HAL_SYSTICK_CLKSourceConfig
+                         0x800'5289    0x1c  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_SYSTICK_Config       0x800'5281     0x8  Code  Gb  stm32l4xx_hal_cortex.o [1]
+HAL_TIMEx_BreakCallback
+                         0x800'7fb5     0x2  Code  Wk  stm32l4xx_hal_tim_ex.o [1]
+HAL_TIMEx_CommutationCallback
+                         0x800'7fb9     0x2  Code  Wk  stm32l4xx_hal_tim_ex.o [1]
+HAL_TIM_IRQHandler       0x800'7e25   0x176  Code  Gb  stm32l4xx_hal_tim.o [1]
+HAL_TIM_PeriodElapsedCallback
+                         0x800'7fa1    0x10  Code  Gb  tim.o [1]
+HAL_UARTEx_WakeupCallback
+                         0x800'7691     0x2  Code  Wk  stm32l4xx_hal_uart_ex.o [1]
+HAL_UART_DeInit          0x800'688f    0x50  Code  Gb  stm32l4xx_hal_uart.o [1]
+HAL_UART_ErrorCallback   0x800'3dc9     0x8  Code  Gb  usart.o [1]
+HAL_UART_IRQHandler      0x800'69ab   0x17e  Code  Gb  stm32l4xx_hal_uart.o [1]
+HAL_UART_Init            0x800'6811    0x7e  Code  Gb  stm32l4xx_hal_uart.o [1]
+HAL_UART_MspDeInit       0x800'3b51    0xbe  Code  Gb  usart.o [1]
+HAL_UART_MspInit         0x800'39d7   0x17a  Code  Gb  usart.o [1]
+HAL_UART_Resert          0x800'3ce1    0xa6  Code  Gb  usart.o [1]
+HAL_UART_SetIrq          0x800'3c3b    0xa6  Code  Gb  usart.o [1]
+HAL_UART_Transmit        0x800'68df    0xcc  Code  Gb  stm32l4xx_hal_uart.o [1]
+HardFault_Handler        0x800'80bb     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+JumpAddress             0x2000'18a0     0x4  Data  Gb  bootloader_main.o [1]
+JumpToApplication       0x2000'189c     0x4  Data  Gb  bootloader_main.o [1]
+LoadInt                  0x800'034b    0x7a  Code  Lc  xprintffull.o [2]
+MSIRangeTable            0x800'83f8    0x30  Data  Gb  bootloader_system_stm32l4xx.o [1]
+MX_GPIO_Init             0x800'341d   0x130  Code  Gb  gpio.o [1]
+MX_IWDG_Init             0x800'3dd1    0x38  Code  Gb  iwdg.o [1]
+MX_RTC_Init              0x800'354d   0x102  Code  Gb  rtc.o [1]
+MX_SPI1_Init             0x800'3725    0x54  Code  Gb  spi.o [1]
+MX_UART4_Init            0x800'3861    0x46  Code  Gb  usart.o [1]
+MX_UART5_Init            0x800'38a7    0x46  Code  Gb  usart.o [1]
+MX_USART1_UART_Init      0x800'38ed    0x52  Code  Gb  usart.o [1]
+MX_USART2_UART_Init      0x800'393f    0x52  Code  Gb  usart.o [1]
+MX_USART3_UART_Init      0x800'3991    0x46  Code  Gb  usart.o [1]
+MemManage_Handler        0x800'80bd     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+NMI_Handler              0x800'80b9     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+NVIC_DisableIRQ          0x800'51a1    0x14  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_EnableIRQ           0x800'518d    0x14  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_EncodePriority      0x800'51d9    0x3c  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_GetPriorityGrouping
+                         0x800'5183     0xa  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_SetPriority         0x800'51b5    0x24  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_SetPriorityGrouping
+                         0x800'5169    0x1a  Code  Lc  stm32l4xx_hal_cortex.o [1]
+NVIC_SystemReset         0x800'1ee9    0x1e  Code  Lc  bootloader_main.o [1]
+RCCEx_PLLSAI1_Config     0x800'4e29   0x158  Code  Lc  stm32l4xx_hal_rcc_ex.o [1]
+RCCEx_PLLSAI2_Config     0x800'4f81   0x138  Code  Lc  stm32l4xx_hal_rcc_ex.o [1]
+RCC_SetFlashLatencyFromMSIRange
+                         0x800'497d    0x7e  Code  Lc  stm32l4xx_hal_rcc.o [1]
+RTC_Alarm_IRQHandler     0x800'80eb     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+RTC_Bcd2ToByte           0x800'5df9    0x1a  Code  Gb  stm32l4xx_hal_rtc.o [1]
+RTC_ByteToBcd2           0x800'5de1    0x18  Code  Gb  stm32l4xx_hal_rtc.o [1]
+RTC_EnterInitMode        0x800'5da7    0x3a  Code  Gb  stm32l4xx_hal_rtc.o [1]
+Region$$Table$$Base      0x800'8564           --   Gb  - Linker created -
+Region$$Table$$Limit     0x800'8584           --   Gb  - Linker created -
+SPI3_IRQHandler          0x800'80f5     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+SPI_DMAAbortOnError      0x800'65c1    0x14  Code  Lc  stm32l4xx_hal_spi.o [1]
+SPI_EndRxTransaction     0x800'6721    0x86  Code  Lc  stm32l4xx_hal_spi.o [1]
+SPI_EndRxTxTransaction   0x800'67a7    0x6a  Code  Lc  stm32l4xx_hal_spi.o [1]
+SPI_WaitFifoStateUntilTimeout
+                         0x800'6675    0xac  Code  Lc  stm32l4xx_hal_spi.o [1]
+SPI_WaitFlagStateUntilTimeout
+                         0x800'65d5    0xa0  Code  Lc  stm32l4xx_hal_spi.o [1]
+SysTick_Config           0x800'5215    0x2e  Code  Lc  stm32l4xx_hal_cortex.o [1]
+SysTick_Handler          0x800'80c5     0x8  Code  Gb  bootloader_stm32l4xx_it.o [1]
+SystemClock_Config       0x800'2981   0x10c  Code  Gb  bootloader_main.o [1]
+SystemCoreClock         0x2000'001c     0x4  Data  Gb  bootloader_system_stm32l4xx.o [1]
+SystemInit               0x800'81b5    0x42  Code  Gb  bootloader_system_stm32l4xx.o [1]
+TIM7_IRQHandler          0x800'8113     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+UART4_IRQHandler         0x800'80ff     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+UART5_IRQHandler         0x800'8109     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+UART_AdvFeatureConfig    0x800'6f49    0xda  Code  Gb  stm32l4xx_hal_uart.o [1]
+UART_CheckIdleState      0x800'7023    0x6e  Code  Gb  stm32l4xx_hal_uart.o [1]
+UART_DMAAbortOnError     0x800'7125    0x16  Code  Lc  stm32l4xx_hal_uart.o [1]
+UART_EndRxTransfer       0x800'70ff    0x24  Code  Lc  stm32l4xx_hal_uart.o [1]
+UART_EndTransmit_IT      0x800'713d    0x1e  Code  Lc  stm32l4xx_hal_uart.o [1]
+UART_RxISR_Data          0x800'3c0f    0x2c  Code  Lc  usart.o [1]
+UART_SetConfig           0x800'6b29   0x3ee  Code  Gb  stm32l4xx_hal_uart.o [1]
+UART_WaitOnFlagUntilTimeout
+                         0x800'7091    0x6e  Code  Gb  stm32l4xx_hal_uart.o [1]
+USART1_IRQHandler        0x800'80cd     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+USART2_IRQHandler        0x800'80d7     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+USART3_IRQHandler        0x800'80e1     0xa  Code  Gb  bootloader_stm32l4xx_it.o [1]
+UsageFault_Handler       0x800'80c1     0x2  Code  Gb  bootloader_stm32l4xx_it.o [1]
+_Encoding_8859_1_Mbrlen
+                         0x800'1299     0x2  Code  Gb  xencoding_8859_1.o [2]
+_Encoding_8859_1_Wctomb
+                         0x800'1287    0x12  Code  Gb  xencoding_8859_1.o [2]
+_Error_Handler           0x800'2b95     0x2  Code  Gb  bootloader_main.o [1]
+_GenldFull               0x800'0da9   0x274  Code  Lc  xprintffull.o [2]
+_LdtobFull               0x800'09a5   0x3d6  Code  Lc  xprintffull.o [2]
+_LitobFull               0x800'0855   0x10a  Code  Lc  xprintffull.o [2]
+_Locale_lconv           0x2000'00a0    0x38  Data  Lc  xlocale_c.o [2]
+_PrintfFull              0x800'0189   0x1aa  Code  Gb  xprintffull.o [2]
+_Prout                   0x800'86e5    0x16  Code  Gb  xprout.o [2]
+_PutcharsFull            0x800'101d    0x2e  Code  Lc  xprintffull.o [2]
+_PutfldFull              0x800'03c5   0x2d4  Code  Lc  xprintffull.o [2]
+_PutstrFull              0x800'078f    0xc6  Code  Lc  xprintffull.o [2]
+_PuttxtFull              0x800'0699    0xf6  Code  Lc  xprintffull.o [2]
+__aeabi_cdcmple          0x800'17f5          Code  Gb  DblCmpLe.o [3]
+__aeabi_cdrcmple         0x800'1825          Code  Gb  DblCmpGe.o [3]
+__aeabi_d2iz             0x800'1991          Code  Gb  DblToS32.o [3]
+__aeabi_d2uiz            0x800'1d1d          Code  Gb  DblToU32.o [3]
+__aeabi_ddiv             0x800'1ad5          Code  Gb  DblDiv.o [3]
+__aeabi_dmul             0x800'15e1          Code  Gb  DblMul.o [3]
+__aeabi_dsub             0x800'19f1          Code  Gb  DblSub.o [3]
+__aeabi_i2d              0x800'19cd          Code  Gb  S32ToDbl.o [3]
+__aeabi_ldiv0            0x800'1d65          Code  Gb  I64DivZer.o [4]
+__aeabi_memcpy           0x800'1309          Code  Gb  ABImemcpy.o [4]
+__aeabi_memcpy4          0x800'1329          Code  Gb  ABImemcpy.o [4]
+__aeabi_memcpy8          0x800'1329          Code  Gb  ABImemcpy.o [4]
+__aeabi_memset           0x800'2c05          Code  Gb  ABImemset.o [4]
+__aeabi_ui2d             0x800'1d45          Code  Gb  U32ToDbl.o [3]
+__aeabi_uldivmod         0x800'13b1          Code  Gb  I64DivMod.o [4]
+__cmain                  0x800'8645          Code  Gb  cmain.o [4]
+__exit                   0x800'1ed5    0x14  Code  Gb  exit.o [5]
+__iar_Fail_s             0x800'1211    0x1c  Code  Gb  xfail_s.o [2]
+__iar_Mbcurmax           0x800'12fd     0xa  Code  Gb  xmbcurmax.o [2]
+__iar_Memchr             0x800'12a5          Code  Gb  memchr.o [4]
+__iar_Memset             0x800'2c05          Code  Gb  ABImemset.o [4]
+__iar_Memset_word        0x800'2c0d          Code  Gb  ABImemset.o [4]
+__iar_Stdout            0x2000'0120    0x48  Data  Gb  xfiles.o [2]
+__iar_Strchr             0x800'11c1          Code  Gb  strchr.o [4]
+__iar_dadd               0x800'1a01          Code  Gb  DblSub.o [3]
+__iar_data_init3         0x800'84d1    0x28  Code  Gb  data_init.o [4]
+__iar_dsub               0x800'1d69          Code  Gb  DblAdd.o [3]
+__iar_dsubStart          0x800'1d7b          Code  Gb  DblAdd.o [3]
+__iar_frexp              0x800'1791          Code  Gb  frexp.o [3]
+__iar_frexpl             0x800'1791          Code  Gb  frexp.o [3]
+__iar_globLocale        0x2000'00d8    0x48  Data  Lc  xlocale_c.o [2]
+__iar_global_Locale      0x800'1149     0x4  Code  Gb  xlocale_c.o [2]
+__iar_init_vfp           0x800'8541          Code  Gb  fpinit_M.o [3]
+__iar_ldexp64            0x800'1855          Code  Gb  ldexp.o [3]
+__iar_lz77_init_single3
+                         0x800'10cf    0x7a  Code  Gb  lz77_init_single.o [4]
+__iar_program_start      0x800'8815          Code  Gb  cstartup_M.o [4]
+__iar_scalbln64          0x800'1855          Code  Gb  ldexp.o [3]
+__iar_scalbn64           0x800'1855          Code  Gb  ldexp.o [3]
+__iar_softfp___iar_frexp64
+                         0x800'1785          Code  Gb  frexp.o [3]
+__iar_softfp_frexp       0x800'1785          Code  Gb  frexp.o [3]
+__iar_softfp_frexpl      0x800'1785          Code  Gb  frexp.o [3]
+__iar_zero_init3         0x800'11d7    0x3a  Code  Gb  zero_init3.o [4]
+__low_level_init         0x800'8663     0x4  Code  Gb  low_level_init.o [2]
+__modules_init_spi_flash_init
+                        0x2000'0168     0x8  Data  Gb  bl_spi_flash.o [1]
+__vector_table           0x800'0000          Data  Gb  startup_stm32l471xx.o [1]
+_call_main               0x800'8651          Code  Gb  cmain.o [4]
+_exit                    0x800'866d          Code  Gb  cexit.o [4]
+_gLocale_mblen           0x800'11ad     0x4  Code  Gb  xlocale_c.o [2]
+_gLocale_mblenInt        0x800'1171    0x2c  Code  Gb  xlocale_c.o [2]
+_gLocale_wctomb          0x800'11b1     0x4  Code  Gb  xlocale_c.o [2]
+_gLocale_wctombInt       0x800'11a9     0x4  Code  Gb  xlocale_c.o [2]
+_main                    0x800'865f          Code  Gb  cmain.o [4]
+abort                    0x800'1d5f     0x6  Code  Gb  abort.o [2]
+bootload_download_to_flash
+                         0x800'23ef    0xd8  Code  Gb  bootloader_main.o [1]
+bootloader_iap           0x800'24ed   0x292  Code  Gb  bootloader_main.o [1]
+cfg                     0x2000'1170   0x2ac  Data  Gb  bootloader_main.o [1]
+chip_flash_earse         0x800'2df9    0x5e  Code  Gb  chipFlash.o [1]
+chip_flash_read          0x800'2edf    0x62  Code  Gb  chipFlash.o [1]
+chip_flash_write         0x800'2e57    0x88  Code  Gb  chipFlash.o [1]
+clear_ota_mark           0x800'24c7    0x1c  Code  Gb  bootloader_main.o [1]
+console_getchar          0x800'1f07     0x2  Code  Gb  bootloader_main.o [1]
+console_port            0x2000'18a4     0x4  Data  Gb  bootloader_main.o [1]
+crc16_ccitt              0x800'2f75    0x30  Code  Gb  crc16.o [1]
+crc16tab                 0x800'7a94   0x200  Data  Lc  crc16.o [1]
+endFlashAddr            0x2000'18c0     0x4  Data  Gb  flash_sector.o [1]
+exit                     0x800'8667     0x4  Code  Gb  exit.o [2]
+fb                      0x2000'0170  0x1000  Data  Gb  bl_spi_flash.o [1]
+flash                   0x2000'0000    0x1c  Data  Gb  bl_spi_flash.o [1]
+flash_sector_init        0x800'715d    0xb8  Code  Gb  flash_sector.o [1]
+fputc                    0x800'2aa9    0x28  Code  Gb  bootloader_main.o [1]
+gdwCrc32Table            0x800'7694   0x400  Data  Gb  crc32.o [1]
+gdwUnixTimeMax           0x800'8920     0x4  Data  Gb  bsp_rtc.o [1]
+gdwUnixTimeStampYear     0x800'7c94   0x190  Data  Gb  bsp_rtc.o [1]
+get_week                 0x800'7235    0x5c  Code  Gb  bsp_rtc.o [1]
+gwUnixTimeStampMonth     0x800'86cc    0x18  Data  Gb  bsp_rtc.o [1]
+halSpi                  0x2000'0050    0x14  Data  Gb  hal_spi.o [1]
+hal_rtc_read             0x800'3663    0x4a  Code  Gb  rtc.o [1]
+hal_rtc_set              0x800'36ad    0x66  Code  Gb  rtc.o [1]
+hal_spi_init             0x800'7fbd     0x2  Code  Gb  hal_spi.o [1]
+hal_spi_send_and_receive_buffer
+                         0x800'8045    0x18  Code  Gb  hal_spi.o [1]
+hal_spi_send_and_receive_byte
+                         0x800'801f    0x26  Code  Gb  hal_spi.o [1]
+hal_spi_set_cs           0x800'7fdb    0x44  Code  Gb  hal_spi.o [1]
+hal_spi_set_gpio         0x800'7fbf    0x1c  Code  Gb  hal_spi.o [1]
+hiwdg                   0x2000'1888    0x10  Data  Gb  iwdg.o [1]
+hrtc                    0x2000'1844    0x24  Data  Gb  rtc.o [1]
+hspi1                   0x2000'1688    0x64  Data  Gb  spi.o [1]
+hspi2                   0x2000'16ec    0x64  Data  Gb  spi.o [1]
+hspi3                   0x2000'1750    0x64  Data  Gb  spi.o [1]
+htim                    0x2000'1804    0x40  Data  Gb  tim.o [1]
+huart1                  0x2000'1514    0x7c  Data  Gb  usart.o [1]
+huart2                  0x2000'1590    0x7c  Data  Gb  usart.o [1]
+huart3                  0x2000'160c    0x7c  Data  Gb  usart.o [1]
+huart4                  0x2000'141c    0x7c  Data  Gb  usart.o [1]
+huart5                  0x2000'1498    0x7c  Data  Gb  usart.o [1]
+is_leap_year             0x800'7215    0x20  Code  Gb  bsp_rtc.o [1]
+jump_application         0x800'2785    0xa8  Code  Gb  bootloader_main.o [1]
+ldexp                    0x800'1855          Code  Gb  ldexp.o [3]
+ldexpl                   0x800'1855          Code  Gb  ldexp.o [3]
+leap_year                0x800'8808     0xc  Data  Lc  bsp_rtc.o [1]
+localeconv               0x800'11b5     0x4  Code  Gb  xlocale_c.o [2]
+main                     0x800'282d   0x132  Code  Gb  bootloader_main.o [1]
+memchr                   0x800'12a5          Code  Gb  memchr.o [4]
+no_leap_year             0x800'87fc     0xc  Data  Lc  bsp_rtc.o [1]
+obuf                    0x2000'17b4    0x50  Data  Lc  xfiles.o [2]
+openLogDataAddr         0x2000'18b4     0x4  Data  Gb  flash_sector.o [1]
+osGetCPUUsage            0x800'2b91     0x4  Code  Gb  bootloader_main.o [1]
+ota_ver_file             0x800'1f35   0x144  Code  Gb  bootloader_main.o [1]
+pFlash                  0x2000'1868    0x20  Data  Gb  stm32l4xx_hal_flash.o [1]
+passwordBootAddr        0x2000'18b8     0x4  Data  Gb  flash_sector.o [1]
+passwordDataAddr        0x2000'18bc     0x4  Data  Gb  flash_sector.o [1]
+permiListBootAddr       0x2000'18ac     0x4  Data  Gb  flash_sector.o [1]
+permiListDataAddr       0x2000'18b0     0x4  Data  Gb  flash_sector.o [1]
+printf                   0x800'2c6d    0x28  Code  Gb  printf.o [2]
+printf_time              0x800'2c95    0x38  Code  Gb  unit.o [1]
+putchar                  0x800'86fd     0xc  Code  Gb  putchar.o [2]
+read_sys_cfg             0x800'20e3   0x138  Code  Gb  bootloader_main.o [1]
+rtc                     0x2000'0020    0x18  Data  Gb  bsp_rtc.o [1]
+rtcTimerEnable          0x2000'18cc     0x1  Data  Gb  freertos.o [1]
+rtc_read_stamp           0x800'7495    0x18  Code  Gb  bsp_rtc.o [1]
+rtc_read_time            0x800'74ad    0x2c  Code  Gb  bsp_rtc.o [1]
+rtc_set_time             0x800'7479    0x1c  Code  Gb  bsp_rtc.o [1]
+rtc_set_time_form_stamp
+                         0x800'7605    0x36  Code  Gb  bsp_rtc.o [1]
+rtc_stamp_to_time        0x800'7559    0x38  Code  Gb  bsp_rtc.o [1]
+rtc_time_to_stamp        0x800'74d9    0x80  Code  Gb  bsp_rtc.o [1]
+scalbln                  0x800'1855          Code  Gb  ldexp.o [3]
+scalblnl                 0x800'1855          Code  Gb  ldexp.o [3]
+scalbn                   0x800'1855          Code  Gb  ldexp.o [3]
+scalbnl                  0x800'1855          Code  Gb  ldexp.o [3]
+scale                    0x800'095f    0x46  Code  Lc  xprintffull.o [2]
+sec_hand                0x2000'18c8     0x4  Data  Lc  xfail_s.o [2]
+serial                  0x2000'008c    0x10  Data  Gb  serial.o [1]
+serial_console_init      0x800'1f09    0x2a  Code  Gb  bootloader_main.o [1]
+serial_init              0x800'814d    0x10  Code  Lc  serial.o [1]
+serial_open              0x800'817b    0x34  Code  Gb  serial.o [1]
+serial_putc              0x800'815d    0x10  Code  Lc  serial.o [1]
+serial_puts              0x800'816d     0xe  Code  Lc  serial.o [1]
+serial_t                0x2000'0064    0x28  Data  Gb  serial.o [1]
+spiFlashPort            0x2000'1898     0x4  Data  Lc  bl_spi_flash.o [1]
+spi_flash_erase          0x800'414b     0xe  Code  Lc  bl_spi_flash.o [1]
+spi_flash_erase_sector   0x800'3e59    0x50  Code  Lc  bl_spi_flash.o [1]
+spi_flash_init           0x800'4159    0x20  Code  Gb  bl_spi_flash.o [1]
+spi_flash_read           0x800'412b    0x10  Code  Lc  bl_spi_flash.o [1]
+spi_flash_read_buffer    0x800'403f    0x62  Code  Lc  bl_spi_flash.o [1]
+spi_flash_read_chip_id   0x800'40a1    0x8a  Code  Lc  bl_spi_flash.o [1]
+spi_flash_wait_for_write_end
+                         0x800'3e29    0x30  Code  Lc  bl_spi_flash.o [1]
+spi_flash_write          0x800'413b    0x10  Code  Lc  bl_spi_flash.o [1]
+spi_flash_write_buffer   0x800'3f0b   0x134  Code  Lc  bl_spi_flash.o [1]
+spi_flash_write_enable   0x800'3e09    0x20  Code  Lc  bl_spi_flash.o [1]
+spi_flash_write_page     0x800'3ea9    0x62  Code  Lc  bl_spi_flash.o [1]
+spi_open                 0x800'805d    0x34  Code  Gb  hal_spi.o [1]
+spi_t                   0x2000'0038    0x18  Data  Gb  hal_spi.o [1]
+stamp_to_time            0x800'731f   0x15a  Code  Gb  bsp_rtc.o [1]
+strchr                   0x800'11c1          Code  Gb  strchr.o [4]
+strcmp                   0x800'80a5          Code  Gb  strcmp.o [4]
+strlen                   0x800'1251          Code  Gb  strlen.o [4]
+sysCfgAddr              0x2000'18a8     0x4  Data  Gb  flash_sector.o [1]
+sysCfg_save              0x800'20a1    0x42  Code  Gb  bootloader_main.o [1]
+sysDebugFlag            0x2000'009c     0x4  Data  Gb  unit.o [1]
+sys_cfg_read             0x800'2079    0x14  Code  Gb  bootloader_main.o [1]
+sys_cfg_write            0x800'208d    0x14  Code  Gb  bootloader_main.o [1]
+time_to_stamp            0x800'7291    0x8e  Code  Gb  bsp_rtc.o [1]
+timer_isr                0x800'1f33     0x2  Code  Gb  bootloader_main.o [1]
+uwTick                  0x2000'18c4     0x4  Data  Gb  stm32l4xx_hal.o [1]
+
+
+[1] = D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj
+[2] = dl7M_tlf.a
+[3] = m7M_tls.a
+[4] = rt7M_tl.a
+[5] = shb_l.a
+
+  31 844 bytes of readonly  code memory
+   3 771 bytes of readonly  data memory
+  10 445 bytes of readwrite data memory
+
+Errors: none
+Warnings: none

@@ -1,0 +1,31 @@
+﻿工程没有出来bin文件
+自己做一个脚本 HEX->BIN
+拖进来
+1.HEX我给你做一个1.bin这样
+
+文件夹现在是本次编译的3个HEX
+-------现在就是释放文件夹
+举例：orange文件夹 吧HEX拿出来 写成1.hex 执行EXE 获得1。bin  和文件夹里面的BIN是一样的
+
+
+测试可以的
+直接烧录boot-hex
+在0X0800A000烧录BIN就可以！！！
+
+既然已经可以 现在把1.bin搞到平台去
+https://blog.csdn.net/weixin_42381351/article/details/98725889
+第一步：http://ibinhub.com/login.php 上传一个文件
+V7.7
+HTTP/1.1 200 OK
+Date: Wed, 07 Aug 2019 07:10:29 GMT
+Server: Apache/2.4.23 (Win32) OpenSSL/1.0.2h PHP/5.6.24
+X-Powered-By: PHP/5.6.24
+Content-Length: 212
+Connection: close
+Content-Type: text/html; charset=UTF-8
+
+{"ver":"7.7","url":"http://www.ibinhub.com/upload/687775290.bin","len":"161460","hash":"md5","hashvalue":"1a1a82cddac07165b7e7047e1b921a30","info":"钃濆姞鐨勫彲浠ユ祴璇曟垚鍔熺殑BIN-鏂囦欢澶逛腑鐨?.bin"}
+
+找到名字upload/687775290.bin
+
+代码：    sendLen = sprintf((char *)request, "GET /upload/687775290.bin HTTP/1.1\r\nHost:ibinhub.com\r\nRange: bytes=0-5\r\n\r\n");

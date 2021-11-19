@@ -70,8 +70,6 @@ uint16_t DeviceMajor = 0x00;
 uint16_t DeviceMinor = 0x00;
 uint8_t DeviceCheckRssi = 0xBC;
 
-uint8_t btPhone[20];
-
 
 AppHandleArryType gAppTaskArry[]=
 {
@@ -189,7 +187,7 @@ static uint8_t BleAppDataDecry(BleAppMsgType *pRecvData ,  BleAppMsgType *pRtDat
             
             //pRtData->ucType = USE_USER_PRIV;
             log(DEBUG,"Only use open command, ID=08.\r\n");
-			memcpy(pRtData->Data+48 , pRecvData->Data+48 ,pRecvData->DataLength-48 );
+            memcpy(pRtData->Data+48 , pRecvData->Data+48 ,pRecvData->DataLength-48 );
             return APP_OK;
         }
     }
@@ -209,7 +207,7 @@ static uint8_t BleApplicationHandle(const BleAppMsgType *pMsg)
             
 
           //  for(int i=0;i<140;i++)
-          //  {printf("%02X",pMsg->Data[i]);	if((i+1)%20 ==0)printf("\n"); }
+          //  {printf("%02X",pMsg->Data[i]);    if((i+1)%20 ==0)printf("\n"); }
             
             
             if(gAppTaskArry[idx].EventHandlerFn != NULL)
@@ -260,12 +258,7 @@ uint8_t BleDataProcess(BleAppMsgType *msg)
     { 
         uRt = BleApplicationHandle(&BleAppMsg);//处理
         BeepOpen(uRt);     
-        if(BleAppMsg.Data[0] == 0x05 && BleAppMsg.Flag == 0xAB)
-        {
-         // btModule.send(&BleAppMsg ,"00LOSE",6);///貌似APP不处理
-          btModule.force_normal();    
-       }
-      
+
     }
    
     return uRt;
@@ -323,7 +316,7 @@ uint8_t BleSetDeviceInitInfo( BleAppMsgType *pMsg)
 #endif
     if((aiot_strcmp((uint8_t *)&(communityTemp.communities[0]) , (uint8_t *)&(deviceCommunity->communities[0]) , sizeof(TSLCommunityModel)) == FALSE ))
     {
-    	log(INFO,"安装位置有变化\n");
+        log(INFO,"安装位置有变化\n");
     }
 
     config.write(CFG_SYS_COMMUN_CODE , &communityTemp , false);  
@@ -414,7 +407,7 @@ uint8_t BleModifyUserPwd( BleAppMsgType *pMsg)
 */
 uint8_t BleGetOpenDoorCmd( BleAppMsgType *pMsg)
 {
-	ble_open_door(pMsg);
+    ble_open_door(pMsg);
 
     btModule.send(pMsg ,"08SUCC",strlen("08SUCC"));
    
@@ -490,9 +483,9 @@ uint8_t BleRestoreDevice(BleAppMsgType *pMsg)
 
 char cj_parse_Para(const char * pJson)
 {
-	 #define TEMSIZE 50
+     #define TEMSIZE 50
       char tem[TEMSIZE];
-	  char *p=NULL;
+      char *p=NULL;
       if(NULL == pJson) return 1;
       cJSON * pRoot = cJSON_Parse(pJson);
       if(NULL == pRoot) 
@@ -509,18 +502,18 @@ char cj_parse_Para(const char * pJson)
       if(NULL == pSub){cJSON_Delete(pRoot);return 3;}
       printf("【%d】【%s】\r\n",__LINE__,pSub->valuestring);  
 // "httpUrl":"192.168.66.34:8211"  可以 优化
-	  memset(tem,0,TEMSIZE);
+      memset(tem,0,TEMSIZE);
       
       if(p = strstr(pSub->valuestring,"://"))
         p+=3;
       else
         p=pSub->valuestring;
       
-	  sprintf(tem,"%.20s",p);
+      sprintf(tem,"%.20s",p);
 
-	  p = strstr(tem,":");
-	  *p = 0;
-	  cfg.server.httpport = atoi(++p);
+      p = strstr(tem,":");
+      *p = 0;
+      cfg.server.httpport = atoi(++p);
       memcpy(cfg.server.net.ip , tem , strlen(tem));
   printf("HTTP----【%d】【%s】\r\n", cfg.server.httpport, cfg.server.net.ip    );  
  
@@ -528,32 +521,32 @@ char cj_parse_Para(const char * pJson)
       if(NULL == pSub){cJSON_Delete(pRoot);return 3;}
       printf("【%d】【%s】\r\n",__LINE__,pSub->valuestring);  
 // "httpUrl":"192.168.66.34:8211"
-	  memset(tem,0,TEMSIZE);
+      memset(tem,0,TEMSIZE);
       if(p = strstr(pSub->valuestring,"://"))
         p+=3;
       else
         p=pSub->valuestring;
     
-	  sprintf(tem,"%.20s",p);
+      sprintf(tem,"%.20s",p);
  
-	  p = strstr(tem,":");
-	  *p = 0;
-	  cfg.server.net.port = atoi(++p);
+      p = strstr(tem,":");
+      *p = 0;
+      cfg.server.net.port = atoi(++p);
  
   printf("MQTT----【%d】【%s】\r\n",  cfg.server.net.port, cfg.server.net.ip    );  
  
       
-	  pSub = cJSON_GetObjectItem(pRoot, "isDHCP");
+      pSub = cJSON_GetObjectItem(pRoot, "isDHCP");
       if(NULL == pSub){cJSON_Delete(pRoot);return 3;}
       printf("【%d】【%d】\r\n",__LINE__,pSub->valueint);
       
         if(pSub->valueint ==1 )
-		{
+        {
             printf("----------------------设置为DHCP---------------------\r\n");
             cfg.devIp.dhcpFlag = 1;
-		}	  
-		else
-		{
+        }      
+        else
+        {
             cfg.devIp.dhcpFlag = 0;
             printf("----------------------设置为静态cfg.devIp.dhcpFlag = 0---------------------\r\n");
             pSub = cJSON_GetObjectItem(pRoot, "ip");
@@ -589,8 +582,8 @@ char cj_parse_Para(const char * pJson)
             log(DEBUG,"SUB: %d.%d.%d.%d\n", cfg.devIp.mark[0],cfg.devIp.mark[1],cfg.devIp.mark[2],cfg.devIp.mark[3]);
             log(DEBUG,"DNS: %d.%d.%d.%d\n", cfg.devIp.dns[0],cfg.devIp.dns[1],cfg.devIp.dns[2],cfg.devIp.dns[3]);
       }  
-	 
-	  
+     
+      
       cJSON_Delete(pRoot);
      #undef TEMSIZE 
       return 0;
@@ -650,7 +643,7 @@ char cj_parse_install(const char * pJson)
       if(NULL == pSub){cJSON_Delete(pRoot);return 3;}
       printf("【%d】【%s】\r\n",__LINE__,(char *)pSub->valuestring);
       sprintf(bh->committeeID,"%.32s",(char *)pSub->valuestring);
-	  
+      
       pSub = cJSON_GetObjectItem(pRoot, "villageID");
       if(NULL == pSub){cJSON_Delete(pRoot);return 3;}
       sprintf(bh->villageID,"%.32s",(char *)pSub->valuestring); 
@@ -849,26 +842,26 @@ uint16_t BLE_packINFO(uint8_t *buf)
     char *outStr;
 
     root =  cJSON_CreateObject();
-    cJSON_AddStringToObject(root,"httpUrl", 		"");
-    cJSON_AddStringToObject(root,"mqttUrl",  		"");
+    cJSON_AddStringToObject(root,"httpUrl",         "");
+    cJSON_AddStringToObject(root,"mqttUrl",          "");
 
-    cJSON_AddStringToObject(root,"centerSip", 	"");
+    cJSON_AddStringToObject(root,"centerSip",     "");
     cJSON_AddStringToObject(root,"sipAccount",  "");
-    cJSON_AddStringToObject(root,"sipUrl", 		"");
-    cJSON_AddStringToObject(root,"sipPwd",  	"");
+    cJSON_AddStringToObject(root,"sipUrl",         "");
+    cJSON_AddStringToObject(root,"sipPwd",      "");
 
     memset(tem,0,TEMSIZE);
     IP4ARRToStr(cfg.devIp.ip,tem);
-    cJSON_AddStringToObject(root,"ip",  		tem);
+    cJSON_AddStringToObject(root,"ip",          tem);
     memset(tem,0,TEMSIZE);
     IP4ARRToStr(cfg.devIp.mark,tem);
-    cJSON_AddStringToObject(root,"mask",  		tem);
+    cJSON_AddStringToObject(root,"mask",          tem);
     memset(tem,0,TEMSIZE);
     IP4ARRToStr(cfg.devIp.gateway,tem);
-    cJSON_AddStringToObject(root,"gateway",  	tem);
+    cJSON_AddStringToObject(root,"gateway",      tem);
     memset(tem,0,TEMSIZE);
     IP4ARRToStr(cfg.devIp.dns,tem);
-    cJSON_AddStringToObject(root,"DNS",  		tem);
+    cJSON_AddStringToObject(root,"DNS",          tem);
 
 
     outStr = cJSON_Print(root);

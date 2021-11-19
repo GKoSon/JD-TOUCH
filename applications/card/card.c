@@ -1,24 +1,19 @@
 #include "card.h"
 #include "swipeTag.h"
 #include "config.h"
-
 #include "beep.h"
 #include "timer.h"
 #include "tagComponent.h"
 
-
-
-static xTaskHandle 	swipTask;
+static xTaskHandle     swipTask;
 
 void swipe_task( void const *pvPar )
 {
+    configASSERT( ( ( unsigned long ) pvPar ) == 0 );
     uint8_t result = TAG_NONE , rt = TAG_LIST_NULL;
     tagBufferType tag;
-    configASSERT( ( ( unsigned long ) pvPar ) == 0 );
-
-	while(1)
-	{
-
+    while(1)
+    {
           result = read_tag(&tag);
 
           if(( result != TAG_SAME_ID_ERR)&&(result != TAG_NONE))
@@ -31,15 +26,14 @@ void swipe_task( void const *pvPar )
           
           if( result == TAG_SUCESS)
           {
-                  result = tag_data_process(&tag);
+                result = tag_data_process(&tag);
           }
-		
-          
+               
           tag_interaction_buzzer(&tag , &result); 
           tagComp->turnOffField(&tag);
           memset(&tag , 0x00 , sizeof(tagBufferType));
           task_keep_alive(TASK_SWIPE_BIT); 
-	}
+    }
 }
 
 

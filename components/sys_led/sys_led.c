@@ -195,7 +195,7 @@ void sysLed_write(uint8_t mode)
             twinkle_set(&boardsysLed , BLINK_OPEN_ALWAYS ,2 , 50 , 200 , 1500 );
         }break;
         case SYS_LED_CONNECT_SERVER:
-        {			
+        {            
             twinkle_set(&boardsysLed , BLINK_OPEN_ALWAYS ,3 , 50 , 200 , 1500 );
         }break;
 
@@ -215,31 +215,31 @@ void sysLed_test_mode( void )
 
 void twinkle_timer_isr_led( twinkleType *p )
 {
-	if( p->cnt < p->flashCnt)
-	{
-		if( p->timeCnt ++ < p->openTime)
-		{
-			pin_ops.pin_write(p->pin , PIN_HIGH);
-		}
-		else
-		{
-			pin_ops.pin_write(p->pin , PIN_LOW);
-		}
-		
-		if( p->timeCnt > p->openTime+p->closeTime)
-		{
-			p->timeCnt = 0;
-			p->cnt++;
-		}
-	}
-	else
-	{
-		if(p->timeCnt++ > p->delayTime)
+    if( p->cnt < p->flashCnt)
+    {
+        if( p->timeCnt ++ < p->openTime)
+        {
+            pin_ops.pin_write(p->pin , PIN_HIGH);
+        }
+        else
+        {
+            pin_ops.pin_write(p->pin , PIN_LOW);
+        }
+        
+        if( p->timeCnt > p->openTime+p->closeTime)
+        {
+            p->timeCnt = 0;
+            p->cnt++;
+        }
+    }
+    else
+    {
+        if(p->timeCnt++ > p->delayTime)
         {
             p->timeCnt = 0;
             p->cnt = 0;
         }
-	}
+    }
    
 }
 
@@ -259,8 +259,8 @@ static void sysLed_init( void )
     pin_ops.pin_mode(SYS_LED_PIN , PIN_MODE_OUTPUT);
     
     timer.creat(1 , TRUE , sysLed_timer_isr);
-	
-	sysLed_write(SYS_LED_NORMAL);
+    
+    sysLed_write(SYS_LED_NORMAL);
 }
 
 

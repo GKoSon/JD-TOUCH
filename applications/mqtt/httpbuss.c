@@ -12,10 +12,10 @@
 #include "httpbuss.h"
 #include "beep.h"
 
-static char 			httptxData[1024];
-extern char 			rxOtaData[2048];
+static char             httptxData[1024];
+extern char             rxOtaData[2048];
 
-		
+        
 typedef enum
 {
     SLEEP,
@@ -26,7 +26,7 @@ typedef enum
 
 typedef struct
 {
-    httpStatusEnum	status;
+    httpStatusEnum    status;
     int8_t          scoketId;
 
 }HttpType;
@@ -66,7 +66,7 @@ static void http_task( void const *pvParameters)
         switch(http.status)
         {
             case SLEEP:
-        	{     		
+            {             
                     if(xQueueReceive(xHttpRecvQueue, &p, 1000) == pdTRUE) 
                     {
                       log(INFO,"HTTP准备启动 执行rule消息%c \n", p.rule); 
@@ -74,42 +74,42 @@ static void http_task( void const *pvParameters)
                     }
                    // else
                    //   printf("-----------HTTP睡觉------------\r\n"); 
-        	}break;  
+            }break;  
             case HTTPCONNECT:  
               
-					   if(p.rule=='A')
-					   {
-				   
-					                     if( (port  =  config.read(CFG_HTTP_ADDR , (void **)&addr)) == 0 )
-										  {
-											 printf("HTTP port=0 从未安装过 直接去睡觉\r\n");
-											 cleanup();
-										  }
-										  else if( (ret = socket.connect(addr->ip , port ,rxOtaData , sizeof(rxOtaData))) >= 0)
-										  {
-											  http.scoketId = ret;
-											  log(INFO,"HTTP connect server success , client id = %d \n" , http.scoketId);
-											  http.status = STRATEGY;
-										  }
-										  else 
+                       if(p.rule=='A')
+                       {
+                   
+                                         if( (port  =  config.read(CFG_HTTP_ADDR , (void **)&addr)) == 0 )
+                                          {
+                                             printf("HTTP port=0 从未安装过 直接去睡觉\r\n");
+                                             cleanup();
+                                          }
+                                          else if( (ret = socket.connect(addr->ip , port ,rxOtaData , sizeof(rxOtaData))) >= 0)
+                                          {
+                                              http.scoketId = ret;
+                                              log(INFO,"HTTP connect server success , client id = %d \n" , http.scoketId);
+                                              http.status = STRATEGY;
+                                          }
+                                          else 
                                           {
                                             retry();
                                           }
-					   
-					   }
-					   else if(p.rule=='B')
-					   {
+                       
+                       }
+                       else if(p.rule=='B')
+                       {
                                           port  =  config.read(CFG_HTTP_ADDR , (void **)&addr);
                                           if( (ret = socket.connect(addr->ip , port ,rxOtaData , sizeof(rxOtaData))) >= 0)
-										  {
-											  http.scoketId = ret;
-											  log(INFO,"HTTP connect server success , client id = %d \n" , http.scoketId);
-											  http.status = STRATEGY;/*主要是可以看到立刻DEL 当然只有else也可以*/
-										  }
-										  else  
-                                            http.status = OFFNETDEL;				   
-					   
-					   }
+                                          {
+                                              http.scoketId = ret;
+                                              log(INFO,"HTTP connect server success , client id = %d \n" , http.scoketId);
+                                              http.status = STRATEGY;/*主要是可以看到立刻DEL 当然只有else也可以*/
+                                          }
+                                          else  
+                                            http.status = OFFNETDEL;                   
+                       
+                       }
                   break;
             case STRATEGY:/* 开始策略 */
                   level = config.read(CFG_DEV_LEVEL , NULL);/*每次都有读一读*/
@@ -231,11 +231,11 @@ log(INFO,"[HTTP recv] =%s \n" , rxOtaData);
 
               break;
             case OFFNETDEL:
-        	{     		
+            {             
                       set_clear_flash(FLASH_ALL_DATA);
                       
                       cleanup();  
-        	}break;          
+            }break;          
             default:break;
         }
         sys_delay(200);
@@ -255,7 +255,7 @@ void Reset_HTTPStatus(void)
 
 void creat_http_task( void )
 {
-    static xTaskHandle		http_task_;
+    static xTaskHandle        http_task_;
     osThreadDef( http,http_task, osPriorityLow, 0, configMINIMAL_STACK_SIZE*10);
     http_task_= osThreadCreate(osThread(http), NULL);
     configASSERT(http_task_);

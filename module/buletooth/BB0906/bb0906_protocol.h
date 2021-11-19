@@ -14,7 +14,7 @@
 #define BLEMODE_PHONE_MAX               (2)
 #define BLEMODE_SEND_MAX_LENG           (BLEMODE_FARM_MAX*BLEMODE_PHONE_MAX)
 
-#define	HAL_READ_TIME_OUT_GAP           (5)
+#define HAL_READ_TIME_OUT_GAP           (5)
 
 
 #define BLE_CALSEE_LENG                 (4)

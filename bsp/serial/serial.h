@@ -7,7 +7,7 @@
 #include <string.h>
 #include "usart.h"
 
-typedef void (*rxIsrCb)	(uint8_t);
+typedef void (*rxIsrCb)    (uint8_t);
 
 
 typedef struct _stm32_uart_ops

@@ -5,7 +5,7 @@
 
 
 
-extern tagObjType	st25Tag;
+extern tagObjType    st25Tag;
 extern void st25_hal_init( void );
 
 

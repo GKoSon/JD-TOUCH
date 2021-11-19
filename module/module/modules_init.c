@@ -15,14 +15,14 @@ void modules_init( void )
         HAL_IWDG_Refresh(&hiwdg);
         if( tp != NULL)
         { 
-        	//mdu_log(DEBUG,"%s\n", tp->name);
+            //mdu_log(DEBUG,"%s\n", tp->name);
             tp->fun();
         }
         else
         {
-        	mdu_log(ERR , "conponents init is error , start=%x , end = %x\n" ,
+            mdu_log(ERR , "conponents init is error , start=%x , end = %x\n" ,
                         __modules_init_start ,__modules_init_end );
         }
-	}
+    }
     chip_flash_init();
 }

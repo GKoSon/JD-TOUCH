@@ -20,132 +20,132 @@
 #include "socket.h"
 
 extern char    mqttSocketBuffer[2048];
-MqttSocketId	mqttSocketId;
+MqttSocketId    mqttSocketId;
 
-int		mqttSocketRecvLen = 0;
+int        mqttSocketRecvLen = 0;
 
 int ThreadStart(Thread* thread, void (*fn)(void*), void* arg)
 {
-	int rc = 0;
-	uint16_t usTaskStackSize = (configMINIMAL_STACK_SIZE * 10);
-	UBaseType_t uxTaskPriority = uxTaskPriorityGet(NULL); /* set the priority as the same as the calling task*/
+    int rc = 0;
+    uint16_t usTaskStackSize = (configMINIMAL_STACK_SIZE * 10);
+    UBaseType_t uxTaskPriority = uxTaskPriorityGet(NULL); /* set the priority as the same as the calling task*/
 
-	rc = xTaskCreate(fn,	/* The function that implements the task. */
-		"MQTTTask",			/* Just a text name for the task to aid debugging. */
-		usTaskStackSize,	/* The stack size is defined in FreeRTOSIPConfig.h. */
-		arg,				/* The task parameter, not used in this case. */
-		uxTaskPriority,		/* The priority assigned to the task is defined in FreeRTOSConfig.h. */
-		NULL);		/* The task handle is not used. */
+    rc = xTaskCreate(fn,    /* The function that implements the task. */
+        "MQTTTask",            /* Just a text name for the task to aid debugging. */
+        usTaskStackSize,    /* The stack size is defined in FreeRTOSIPConfig.h. */
+        arg,                /* The task parameter, not used in this case. */
+        uxTaskPriority,        /* The priority assigned to the task is defined in FreeRTOSConfig.h. */
+        NULL);        /* The task handle is not used. */
         
-	return rc;
+    return rc;
 }
 
 void MutexInit(Mutex* mutex)
 {
-	mutex->sem = xSemaphoreCreateMutex();
+    mutex->sem = xSemaphoreCreateMutex();
 }
 
 int MutexLock(Mutex* mutex)
 {
-	return xSemaphoreTake(mutex->sem, portMAX_DELAY);
+    return xSemaphoreTake(mutex->sem, portMAX_DELAY);
 }
 
 int MutexUnlock(Mutex* mutex)
 {
-	return xSemaphoreGive(mutex->sem);
+    return xSemaphoreGive(mutex->sem);
 }
 
 
 void TimerCountdownMS(Timer* timer, unsigned int timeout_ms)
 {
-	timer->xTicksToWait = timeout_ms ; /* convert milliseconds to ticks */
-	vTaskSetTimeOutState(&timer->xTimeOut); /* Record the time at which this function was entered. */
+    timer->xTicksToWait = timeout_ms ; /* convert milliseconds to ticks */
+    vTaskSetTimeOutState(&timer->xTimeOut); /* Record the time at which this function was entered. */
 }
 
 void TimerCountdown(Timer* timer, unsigned int timeout) 
 {
-	TimerCountdownMS(timer, timeout * 1000);
+    TimerCountdownMS(timer, timeout * 1000);
 }
 
 int TimerLeftMS(Timer* timer) 
 {
-	xTaskCheckForTimeOut(&timer->xTimeOut, &timer->xTicksToWait); /* updates xTicksToWait to the number left */
-	return (timer->xTicksToWait );
+    xTaskCheckForTimeOut(&timer->xTimeOut, &timer->xTicksToWait); /* updates xTicksToWait to the number left */
+    return (timer->xTicksToWait );
 }
 
 char TimerIsExpired(Timer* timer)
 {
-	return xTaskCheckForTimeOut(&timer->xTimeOut, &timer->xTicksToWait) == pdTRUE;
+    return xTaskCheckForTimeOut(&timer->xTimeOut, &timer->xTicksToWait) == pdTRUE;
 }
 
 void TimerInit(Timer* timer)
 {
-	timer->xTicksToWait = 0;
-	memset(&timer->xTimeOut, '\0', sizeof(timer->xTimeOut));
+    timer->xTicksToWait = 0;
+    memset(&timer->xTimeOut, '\0', sizeof(timer->xTimeOut));
 }
 
 int FreeRTOS_recv(void *socketId, uint8_t *buffer, int len, int timeout_ms)
 {
-	//int ret = 0;
-	//int timeout = 	timeout_ms / 5;
-	uint8_t bufferTemp[2000];
-	MqttSocketId *mqttId = (MqttSocketId *)(socketId);
+    //int ret = 0;
+    //int timeout =     timeout_ms / 5;
+    uint8_t bufferTemp[2000];
+    MqttSocketId *mqttId = (MqttSocketId *)(socketId);
 
-	if( mqttSocketRecvLen == len )
-	{
-		memcpy(buffer , mqttSocketBuffer , len);
-		memset(mqttSocketBuffer , 0x00 , len);
-		mqttSocketRecvLen -= len;
-		return len;
-	}	
-	else if( mqttSocketRecvLen > len )
-	{
-		memcpy(bufferTemp , mqttSocketBuffer , mqttSocketRecvLen);
-		memcpy(buffer , mqttSocketBuffer , len);
-		memset(mqttSocketBuffer , 0x00 , mqttSocketRecvLen);
-		memcpy(mqttSocketBuffer , bufferTemp+len , mqttSocketRecvLen-len);
-		mqttSocketRecvLen -= len;
-		return len;
-	}
-	else
-	{
-		int8_t rt = 0;
-		
-		rt = socket.read(mqttId->id , timeout_ms);
-		
-		if( rt < 0)
-		{
-			if( rt == SOCKET_READ_TIMEOUT )
-			{
-				return 0;
-			}
-			
-			return rt;
-		}
-		
-		//log(DEBUG,"Recv len = %d \n" , rt);
-		
-		mqttSocketRecvLen += rt;
-		if( mqttSocketRecvLen == len )
-		{
-			memcpy(buffer , mqttSocketBuffer , len);
-			memset(mqttSocketBuffer , 0x00 , len);
-			mqttSocketRecvLen -= len;
-			return len;
-		}	
-		else if( mqttSocketRecvLen > len )
-		{
-			memcpy(bufferTemp , mqttSocketBuffer , mqttSocketRecvLen);
-			memcpy(buffer , mqttSocketBuffer , len);
-			memset(mqttSocketBuffer , 0x00 , mqttSocketRecvLen);
-			memcpy(mqttSocketBuffer , bufferTemp+len , mqttSocketRecvLen-len);
-			mqttSocketRecvLen -= len;
-			return len;
-		}
-		
-		return 0 ;
-		
-	}
+    if( mqttSocketRecvLen == len )
+    {
+        memcpy(buffer , mqttSocketBuffer , len);
+        memset(mqttSocketBuffer , 0x00 , len);
+        mqttSocketRecvLen -= len;
+        return len;
+    }    
+    else if( mqttSocketRecvLen > len )
+    {
+        memcpy(bufferTemp , mqttSocketBuffer , mqttSocketRecvLen);
+        memcpy(buffer , mqttSocketBuffer , len);
+        memset(mqttSocketBuffer , 0x00 , mqttSocketRecvLen);
+        memcpy(mqttSocketBuffer , bufferTemp+len , mqttSocketRecvLen-len);
+        mqttSocketRecvLen -= len;
+        return len;
+    }
+    else
+    {
+        int8_t rt = 0;
+        
+        rt = socket.read(mqttId->id , timeout_ms);
+        
+        if( rt < 0)
+        {
+            if( rt == SOCKET_READ_TIMEOUT )
+            {
+                return 0;
+            }
+            
+            return rt;
+        }
+        
+        //log(DEBUG,"Recv len = %d \n" , rt);
+        
+        mqttSocketRecvLen += rt;
+        if( mqttSocketRecvLen == len )
+        {
+            memcpy(buffer , mqttSocketBuffer , len);
+            memset(mqttSocketBuffer , 0x00 , len);
+            mqttSocketRecvLen -= len;
+            return len;
+        }    
+        else if( mqttSocketRecvLen > len )
+        {
+            memcpy(bufferTemp , mqttSocketBuffer , mqttSocketRecvLen);
+            memcpy(buffer , mqttSocketBuffer , len);
+            memset(mqttSocketBuffer , 0x00 , mqttSocketRecvLen);
+            memcpy(mqttSocketBuffer , bufferTemp+len , mqttSocketRecvLen-len);
+            mqttSocketRecvLen -= len;
+            return len;
+        }
+        
+        return 0 ;
+        
+    }
 }
 
 int FreeRTOS_recv_buffer(void *socketId ,  uint8_t *buffer , int len ,int timeout_ms)
@@ -167,113 +167,113 @@ int FreeRTOS_recv_buffer(void *socketId ,  uint8_t *buffer , int len ,int timeou
 
 int FreeRTOS_read(Network* n, unsigned char* buffer, int len, int timeout_ms)
 {
-	int time = timeout_ms/10 ; /* convert milliseconds to ticks */
+    int time = timeout_ms/10 ; /* convert milliseconds to ticks */
 
-	int recvLen = 0;
+    int recvLen = 0;
 
-	do
-	{
-		int rc = 0;
-		
-		rc = FreeRTOS_recv_buffer(n->my_socket, buffer + recvLen, len - recvLen, 10);
-		if (rc > 0)
-			recvLen += rc;
-		else if (rc < 0)
-		{
-			recvLen = rc;
-			break;
-		}
+    do
+    {
+        int rc = 0;
+        
+        rc = FreeRTOS_recv_buffer(n->my_socket, buffer + recvLen, len - recvLen, 10);
+        if (rc > 0)
+            recvLen += rc;
+        else if (rc < 0)
+        {
+            recvLen = rc;
+            break;
+        }
 
-	} while ((recvLen < len) && ( time-- ));
+    } while ((recvLen < len) && ( time-- ));
 
-	return recvLen;
+    return recvLen;
 }
 
 int FreeRTOS_send(void *socketId ,  uint8_t *buffer , int len ,int timeout_ms)
 {
-	MqttSocketId *mqttId = (MqttSocketId *)(socketId);
-	int ret = 0;
-	
-	ret = socket.send(mqttId->id , buffer , len , timeout_ms);
-	
-	if( ret == SOCKET_OK)
-	{
-		return len;
-	}
-	
-	return  ret;
+    MqttSocketId *mqttId = (MqttSocketId *)(socketId);
+    int ret = 0;
+    
+    ret = socket.send(mqttId->id , buffer , len , timeout_ms);
+    
+    if( ret == SOCKET_OK)
+    {
+        return len;
+    }
+    
+    return  ret;
 }
 
 int FreeRTOS_write(Network* n, unsigned char* buffer, int len, int timeout_ms)
 {
-	int time = timeout_ms/10000;
-	int sentLen = 0;
+    int time = timeout_ms/10000;
+    int sentLen = 0;
 
-	do
-	{
-		int rc = 0;
+    do
+    {
+        int rc = 0;
 
-		rc = FreeRTOS_send(n->my_socket, buffer + sentLen, len - sentLen, 10000);
-		if (rc > 0)
-		{
-			sentLen += rc;
-		}
-		else if (rc < 0)
-		{
-			sentLen = rc;
-			break;
-		}
-		
-	} while (sentLen < len && time--);
+        rc = FreeRTOS_send(n->my_socket, buffer + sentLen, len - sentLen, 10000);
+        if (rc > 0)
+        {
+            sentLen += rc;
+        }
+        else if (rc < 0)
+        {
+            sentLen = rc;
+            break;
+        }
+        
+    } while (sentLen < len && time--);
 
     if( sentLen < 0)
     {
         log(WARN,"Send error =%d\n" , sentLen);
     }
 
-	return sentLen;
+    return sentLen;
 }
 
 void FreeRTOS_disconnect(Network* n)
 {
-	MqttSocketId *mqttId = (MqttSocketId *)(n->my_socket);
-	
-	//FreeRTOS_closesocket(n->my_socket);
-	socket.disconnect(mqttId->id);
+    MqttSocketId *mqttId = (MqttSocketId *)(n->my_socket);
+    
+    //FreeRTOS_closesocket(n->my_socket);
+    socket.disconnect(mqttId->id);
 }
 
 void mqtt_network_init(Network* n)
 {
-	n->my_socket = (void *)&mqttSocketId;
-	n->mqttread = FreeRTOS_read;
-	n->mqttwrite = FreeRTOS_write;
-	n->disconnect = FreeRTOS_disconnect;
+    n->my_socket = (void *)&mqttSocketId;
+    n->mqttread = FreeRTOS_read;
+    n->mqttwrite = FreeRTOS_write;
+    n->disconnect = FreeRTOS_disconnect;
 }
 
 void mqtt_network_close( void )
 {
-	socket.close();
+    socket.close();
 }
 
 int mqtt_network_connect(Network* n, uint8_t* addr, int port)
-{		
-	int8_t ret = 0;
-	MqttSocketId *mqttId = (MqttSocketId *)(n->my_socket);
-	
+{        
+    int8_t ret = 0;
+    MqttSocketId *mqttId = (MqttSocketId *)(n->my_socket);
+    
     while( socket.isOK() != TRUE )
     {
         sys_delay(500);
     }
     log(DEBUG,"socket 底层驱动已经加载成功，开始连接MQTT服务器\n");
-	
-	if( (ret = socket.connect(addr , port, mqttSocketBuffer , sizeof(mqttSocketBuffer))) >= 0)
-	{
-		mqttId->id = ret;
+    
+    if( (ret = socket.connect(addr , port, mqttSocketBuffer , sizeof(mqttSocketBuffer))) >= 0)
+    {
+        mqttId->id = ret;
         log(DEBUG,"MQTT服务器连接成功\n");
-	}
+    }
     else
     {
-	    log(DEBUG,"MQTT服务器连接失败\n");	
+        log(DEBUG,"MQTT服务器连接失       躙n");	
     }
     return ret;
 }
@@ -281,61 +281,61 @@ int mqtt_network_connect(Network* n, uint8_t* addr, int port)
 #if 0
 int NetworkConnectTLS(Network *n, char* addr, int port, SlSockSecureFiles_t* certificates, unsigned char sec_method, unsigned int cipher, char server_verify)
 {
-	SlSockAddrIn_t sAddr;
-	int addrSize;
-	int retVal;
-	unsigned long ipAddress;
+    SlSockAddrIn_t sAddr;
+    int addrSize;
+    int retVal;
+    unsigned long ipAddress;
 
-	retVal = sl_NetAppDnsGetHostByName(addr, strlen(addr), &ipAddress, AF_INET);
-	if (retVal < 0) {
-		return -1;
-	}
+    retVal = sl_NetAppDnsGetHostByName(addr, strlen(addr), &ipAddress, AF_INET);
+    if (retVal < 0) {
+        return -1;
+    }
 
-	sAddr.sin_family = AF_INET;
-	sAddr.sin_port = sl_Htons((unsigned short)port);
-	sAddr.sin_addr.s_addr = sl_Htonl(ipAddress);
+    sAddr.sin_family = AF_INET;
+    sAddr.sin_port = sl_Htons((unsigned short)port);
+    sAddr.sin_addr.s_addr = sl_Htonl(ipAddress);
 
-	addrSize = sizeof(SlSockAddrIn_t);
+    addrSize = sizeof(SlSockAddrIn_t);
 
-	n->my_socket = sl_Socket(SL_AF_INET, SL_SOCK_STREAM, SL_SEC_SOCKET);
-	if (n->my_socket < 0) {
-		return -1;
-	}
+    n->my_socket = sl_Socket(SL_AF_INET, SL_SOCK_STREAM, SL_SEC_SOCKET);
+    if (n->my_socket < 0) {
+        return -1;
+    }
 
-	SlSockSecureMethod method;
-	method.secureMethod = sec_method;
-	retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECMETHOD, &method, sizeof(method));
-	if (retVal < 0) {
-		return retVal;
-	}
+    SlSockSecureMethod method;
+    method.secureMethod = sec_method;
+    retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECMETHOD, &method, sizeof(method));
+    if (retVal < 0) {
+        return retVal;
+    }
 
-	SlSockSecureMask mask;
-	mask.secureMask = cipher;
-	retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECURE_MASK, &mask, sizeof(mask));
-	if (retVal < 0) {
-		return retVal;
-	}
+    SlSockSecureMask mask;
+    mask.secureMask = cipher;
+    retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECURE_MASK, &mask, sizeof(mask));
+    if (retVal < 0) {
+        return retVal;
+    }
 
-	if (certificates != NULL) {
-		retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECURE_FILES, certificates->secureFiles, sizeof(SlSockSecureFiles_t));
-		if (retVal < 0)
-		{
-			return retVal;
-		}
-	}
+    if (certificates != NULL) {
+        retVal = sl_SetSockOpt(n->my_socket, SL_SOL_SOCKET, SL_SO_SECURE_FILES, certificates->secureFiles, sizeof(SlSockSecureFiles_t));
+        if (retVal < 0)
+        {
+            return retVal;
+        }
+    }
 
-	retVal = sl_Connect(n->my_socket, (SlSockAddr_t *)&sAddr, addrSize);
-	if (retVal < 0) {
-		if (server_verify || retVal != -453) {
-			sl_Close(n->my_socket);
-			return retVal;
-		}
-	}
+    retVal = sl_Connect(n->my_socket, (SlSockAddr_t *)&sAddr, addrSize);
+    if (retVal < 0) {
+        if (server_verify || retVal != -453) {
+            sl_Close(n->my_socket);
+            return retVal;
+        }
+    }
 
-	SysTickIntRegister(SysTickIntHandler);
-	SysTickPeriodSet(80000);
-	SysTickEnable();
+    SysTickIntRegister(SysTickIntHandler);
+    SysTickPeriodSet(80000);
+    SysTickEnable();
 
-	return retVal;
+    return retVal;
 }
 #endif

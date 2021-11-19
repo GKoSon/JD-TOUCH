@@ -39,10 +39,10 @@ int mqtt_send_publish(mqttClientType *c,
     
     len = MQTTSerialize_publish(buff, sizeof(buff), 0, qos , retained , id, topic , sendBuf ,sendLen);
     if (len <= 0)
-	{
-		log(WARN,"MQTT publish %d组包失败\n",__LINE__);
-		return FAILURE;
-	}
+    {
+        log(WARN,"MQTT publish %d组包失败\n",__LINE__);
+        return FAILURE;
+    }
 
     p.time = 0 ; 
     p.id = id;
@@ -51,7 +51,7 @@ int mqtt_send_publish(mqttClientType *c,
     
     memset(p.msg,0x00,412);
     memcpy(p.msg , buff , len );
-	
+    
     xQueueSend( xMqttSendQueue, ( void* )&p, NULL );    
     
     return MQTT_SUCCESS;
@@ -81,16 +81,16 @@ int mqtt_send_publish_form_isr(mqttClientType *c,
     
     len = MQTTSerialize_publish(buff, sizeof(buff), 0, qos , retained , id, topic , sendBuf ,sendLen);
     if (len <= 0)
-	{
-		log(WARN,"MQTT publish 组包失败\n");
-		return FAILURE;
-	}
-	
+    {
+        log(WARN,"MQTT publish 组包失败\n");
+        return FAILURE;
+    }
+    
     p.time = 0 ; 
     p.id = id;
     p.qos = qos;
     p.len = len;
-	memset(p.msg,0x00,256);
+    memset(p.msg,0x00,256);
     memcpy(p.msg , buff , len );
 
     xQueueSendFromISR( xMqttSendQueue, ( void* )&p, NULL );    
@@ -159,17 +159,17 @@ exit:
 
 static void mqtt_send_task( void const *pvParameters)
 {
-    mqttClientType	*client = NULL;
-	mqttSendMsgType msg;
-	configASSERT(pvParameters);
-	
-	client = (mqttClientType *)pvParameters;
+    mqttClientType    *client = NULL;
+    mqttSendMsgType msg;
+    configASSERT(pvParameters);
+    
+    client = (mqttClientType *)pvParameters;
 
     memset(&msg , 0x00 , sizeof(mqttSendMsgType));
-	while(1)
-	{
-		if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
-		{
+    while(1)
+    {
+        if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
+        {
             //if( network_read_status() ==  TRUE )
             {
                 //log(DEBUG,"1   time=%d\n" , HAL_GetTick() - sysRunTimerCnt);
@@ -184,9 +184,9 @@ static void mqtt_send_task( void const *pvParameters)
                 //log(INFO,"网络未连接\n");
             }
             memset(&msg , 0x00 , sizeof(mqttSendMsgType));
-		}
-		//read_task_stack(__func__,mqttSendtask);
-	}
+        }
+        //read_task_stack(__func__,mqttSendtask);
+    }
 }
 
 xTaskHandle creat_mqtt_send_task( mqttClientType* c )
@@ -246,16 +246,16 @@ static int getNextPacketId(mqttClientType *c)
 
 int mqtt_send_packet(mqttClientType* c, uint8_t *buf , int length)
 {
-	int len = 0;
-	
-	len = c->ipstack->mqttwrite(c->ipstack , buf , length , c->commandTimeoutMs);
-	
-	if( len != length )
-	{
-		return FAILURE;
-	}
-	
-	return MQTT_SUCCESS;
+    int len = 0;
+    
+    len = c->ipstack->mqttwrite(c->ipstack , buf , length , c->commandTimeoutMs);
+    
+    if( len != length )
+    {
+        return FAILURE;
+    }
+    
+    return MQTT_SUCCESS;
 }
 
 int mqtt_decode_packet(mqttClientType* c, int* value, int timeout)
@@ -290,23 +290,23 @@ int mqtt_read_packet( mqttClientType* c)
     MQTTHeader header = {0};
     int len = 0;
     int rem_len = 0;
-	
-	/* 1. read the header byte.  This has the packet type in it */
+    
+    /* 1. read the header byte.  This has the packet type in it */
     int rc = c->ipstack->mqttread(c->ipstack, c->readbuf, 1, c->commandTimeoutMs );
 
-	if (rc != 1)
-	{
-		if( rc != 0 )
-			log(WARN,"MQTT 获取数据失败 , err = %d \n" , rc);
+    if (rc != 1)
+    {
+        if( rc != 0 )
+            log(WARN,"MQTT 获取数据失败 , err = %d \n" , rc);
         goto exit;
-	}
-	
-	len = 1;
+    }
+    
+    len = 1;
     /* 2. read the remaining length.  This is variable in itself */
     mqtt_decode_packet(c, &rem_len,  c->commandTimeoutMs );
-	len += MQTTPacket_encode(c->readbuf + 1, rem_len); /* put the original remaining length back into the buffer */
+    len += MQTTPacket_encode(c->readbuf + 1, rem_len); /* put the original remaining length back into the buffer */
 
-	if (rem_len > (c->readbufSize - len))
+    if (rem_len > (c->readbufSize - len))
     {
         rc = BUFFER_OVERFLOW;
         goto exit;
@@ -320,7 +320,7 @@ int mqtt_read_packet( mqttClientType* c)
 
     header.byte = c->readbuf[0];
     rc = header.bits.type;
-	
+    
 exit:
     return rc;
 }
@@ -328,23 +328,23 @@ exit:
 int mqtt_wait_ack( mqttClientType *c , int packet_type )
 {
     int rc = FAILURE;
-	int time =  c->commandTimeoutMs /50;
-	int timeTemp = time;
-	c->commandTimeoutMs = 50;
-	
+    int time =  c->commandTimeoutMs /50;
+    int timeTemp = time;
+    c->commandTimeoutMs = 50;
+    
     do
     {
         rc = mqtt_read_packet( c );
-		if((rc == packet_type) || ( rc < 0) )
-		{
-			c->commandTimeoutMs = timeTemp*50;
-			return rc;
-		}
+        if((rc == packet_type) || ( rc < 0) )
+        {
+            c->commandTimeoutMs = timeTemp*50;
+            return rc;
+        }
     }
     while ( time-- );
 
-	c->commandTimeoutMs = timeTemp*50;
-    return rc;	
+    c->commandTimeoutMs = timeTemp*50;
+    return rc;    
 }
 
 static void NewMessageData(MessageData* md, MQTTString* aTopicName, MQTTMessage* aMessage) {
@@ -465,37 +465,37 @@ int mqtt_set_message_handler(mqttClientType* c, uint8_t* topicFilter, messageHan
 int mqtt_keepalive( mqttClientType* c)
 {
     int rc = MQTT_SUCCESS;
-	int len = 0;
-	uint8_t buff[256];
-	
-	if (c->pingOutStanding)
-	{
-		rc = FAILURE; /* PINGRESP not received in keepalive interval */
-	}
-	else
-	{
-		len = MQTTSerialize_pingreq(buff, sizeof(buff));
-		if (len > 0 && (rc = mqtt_send_packet(c, buff , len)) == MQTT_SUCCESS) // send the ping packet
-		{
-			c->pingOutStanding = 1;   
-		}
-	}
+    int len = 0;
+    uint8_t buff[256];
+    
+    if (c->pingOutStanding)
+    {
+        rc = FAILURE; /* PINGRESP not received in keepalive interval */
+    }
+    else
+    {
+        len = MQTTSerialize_pingreq(buff, sizeof(buff));
+        if (len > 0 && (rc = mqtt_send_packet(c, buff , len)) == MQTT_SUCCESS) // send the ping packet
+        {
+            c->pingOutStanding = 1;   
+        }
+    }
     return rc;
 }
 
 int mqtt_cycle( mqttClientType* c)
 {
-	uint8_t buff[1500];
+    uint8_t buff[1500];
     int len = 0,rc = MQTT_SUCCESS;
-	int packet_type = 0;
-		
-	if (!c->isconnected) /* don't send connect packet again if we are already connected */
+    int packet_type = 0;
+        
+    if (!c->isconnected) /* don't send connect packet again if we are already connected */
     {
         log(DEBUG,"MQTT服务器未建立连接\n");
-		rc = FAILURE;
+        rc = FAILURE;
         goto exit;
     }
-	
+    
     packet_type = mqtt_read_packet(c);     /* read the socket, see what work is due */
 
     switch (packet_type)
@@ -535,7 +535,7 @@ int mqtt_cycle( mqttClientType* c)
                (unsigned char**)&msg.payload, (int*)&msg.payloadlen, c->readbuf, c->readbufSize) != 1)
                 goto exit;
             msg.qos = (enum QoS)intQoS;
-			
+            
             if (msg.qos != QOS0)
             {
                 if (msg.qos == QOS1)
@@ -588,18 +588,18 @@ int mqtt_cycle( mqttClientType* c)
             
         }break;
         case PINGRESP:
-			//log(INFO,"Get a ping response\n");
+            //log(INFO,"Get a ping response\n");
             c->pingOutStanding = 0;
             break;
     }
 
-	if( mqttKeepAlive )
-	{
-		mqttKeepAlive = FALSE;
-		rc = mqtt_keepalive( c );
-	}
+    if( mqttKeepAlive )
+    {
+        mqttKeepAlive = FALSE;
+        rc = mqtt_keepalive( c );
+    }
     /*if (keepalive(c) != MQTT_SUCCESS) {
-		log(WARN,"send ping request is error\n");
+        log(WARN,"send ping request is error\n");
         //check only keepalive FAILURE status so that previous FAILURE status can be considered as FAULT
         rc = FAILURE;
     }*/
@@ -608,10 +608,10 @@ exit:
     if (rc == MQTT_SUCCESS)
         rc = packet_type;
     else if (c->isconnected)
-	{
-		log(WARN,"close connect , rc = %d \n" , rc);
+    {
+        log(WARN,"close connect , rc = %d \n" , rc);
         mqtt_close_session(c);
-	}
+    }
     return rc;
 }
 
@@ -619,62 +619,62 @@ exit:
 int mqtt_wait_and_handle( mqttClientType* c, int packet_type)
 {
     int rc = FAILURE;
-	int time =  c->commandTimeoutMs/50;
-	int timeTemp = time;
-	c->commandTimeoutMs = 50;
+    int time =  c->commandTimeoutMs/50;
+    int timeTemp = time;
+    c->commandTimeoutMs = 50;
     do
     {
         rc = mqtt_cycle( c );
-		if((rc == packet_type) || ( rc < 0) )
-		{
-			c->commandTimeoutMs = timeTemp*50;
-			return rc;
-		}
+        if((rc == packet_type) || ( rc < 0) )
+        {
+            c->commandTimeoutMs = timeTemp*50;
+            return rc;
+        }
     }while ( time-- );
 
-	c->commandTimeoutMs = timeTemp*50;
+    c->commandTimeoutMs = timeTemp*50;
     return rc;
 }
 
 
 int mqtt_connect_with_results(mqttClientType* c, MQTTPacket_connectData* options, mqttConnackDataType* data)
 {
-	int len = 0;
-	int rc = FAILURE;
-	uint8_t buff[256];
-	
-	MQTTPacket_connectData default_options = MQTTPacket_connectData_initializer;
-	
-	MutexLock(&c->mutex);
-	
-	if (c->isconnected) /* don't send connect packet again if we are already connected */
-	{
-		log(DEBUG,"MQTT 服务器已经建立连接\n");
-		goto exit;
-	}
-	
-	if (options == 0)
-	{
-		log(INFO,"连接参数设置为空，选用默认参数连接\n");
+    int len = 0;
+    int rc = FAILURE;
+    uint8_t buff[256];
+    
+    MQTTPacket_connectData default_options = MQTTPacket_connectData_initializer;
+    
+    MutexLock(&c->mutex);
+    
+    if (c->isconnected) /* don't send connect packet again if we are already connected */
+    {
+        log(DEBUG,"MQTT 服务器已经建立连接\n");
+        goto exit;
+    }
+    
+    if (options == 0)
+    {
+        log(INFO,"连接参数设置为空，选用默认参数连接\n");
         options = &default_options; /* set default options if none were supplied */
-	}
-	
-	c->keepAliveInterval = options->keepAliveInterval;
+    }
+    
+    c->keepAliveInterval = options->keepAliveInterval;
         c->cleansession = options->cleansession;
-	log(DEBUG,"keet alive inter val=%d , clean session = %d\n" , c->keepAliveInterval , c->cleansession);
-	if ((len = MQTTSerialize_connect(buff, sizeof(buff), options)) <= 0)
-	{
-		log(WARN,"MQTT connect 组包失败\n");
-		goto exit;
-	}
-	//log_arry(DEBUG,"send connect message" ,buff ,  len);
-	if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the connect packet
-	{
-		log(WARN,"MQTT 连接服务器 发送数据失败,err = %d\n" , len);
+    log(DEBUG,"keet alive inter val=%d , clean session = %d\n" , c->keepAliveInterval , c->cleansession);
+    if ((len = MQTTSerialize_connect(buff, sizeof(buff), options)) <= 0)
+    {
+        log(WARN,"MQTT connect 组包失败\n");
+        goto exit;
+    }
+    //log_arry(DEBUG,"send connect message" ,buff ,  len);
+    if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the connect packet
+    {
+        log(WARN,"MQTT 连接服务器 发送数据失败,err = %d\n" , len);
         goto exit;             // there was a problem
-	}
-	
-	    // this will be a blocking call, wait for the connack
+    }
+    
+        // this will be a blocking call, wait for the connack
     if (mqtt_wait_ack(c, CONNACK) == CONNACK)
     {
         data->rc = 0;
@@ -686,7 +686,7 @@ int mqtt_connect_with_results(mqttClientType* c, MQTTPacket_connectData* options
     }
     else
         rc = FAILURE;
-	
+    
 exit:
     if (rc == MQTT_SUCCESS)
     {
@@ -694,54 +694,54 @@ exit:
         c->pingOutStanding = 0;
     }
 
-	MutexUnlock(&c->mutex);
+    MutexUnlock(&c->mutex);
 
     return rc;
 }
 
 int mqtt_connect_server(mqttClientType* c, MQTTPacket_connectData* options)
 {
-	mqttConnackDataType data;
-	
-	return mqtt_connect_with_results(c, options, &data);
-	
+    mqttConnackDataType data;
+    
+    return mqtt_connect_with_results(c, options, &data);
+    
 }
 
 
 
 
-					  
+                      
 int mqtt_subscribe_with_results(mqttClientType* c, uint8_t * topicFilter, enum QoS qos,
        messageHandler messageHandler, mqttSubackDataType* data)
 {
-	int rc = FAILURE;
+    int rc = FAILURE;
     int len = 0;
-	uint8_t buff[256];
-	
+    uint8_t buff[256];
+    
     MQTTString topic = MQTTString_initializer;
     topic.cstring = topicFilter;
-	
-	MutexLock(&c->mutex);
-	
-	if (!c->isconnected) /* don't send connect packet again if we are already connected */
-	{
-		log(DEBUG,"MQTT服务器未建立连接\n");
-		goto exit;
-	}
-	
-	len = MQTTSerialize_subscribe(buff, sizeof(buff), 0, getNextPacketId(c), 1, &topic, (int*)&qos);
-	if (len <= 0)
-	{
-		log(WARN,"MQTT publish %d组包失败\n",__LINE__);
-		goto exit;
-	}
-	
-	if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the subscribe packet
-	{
-		log(WARN,"MQTT 订阅 发送数据失败,err = %d\n" , len);
+    
+    MutexLock(&c->mutex);
+    
+    if (!c->isconnected) /* don't send connect packet again if we are already connected */
+    {
+        log(DEBUG,"MQTT服务器未建立连接\n");
+        goto exit;
+    }
+    
+    len = MQTTSerialize_subscribe(buff, sizeof(buff), 0, getNextPacketId(c), 1, &topic, (int*)&qos);
+    if (len <= 0)
+    {
+        log(WARN,"MQTT publish %d组包失败\n",__LINE__);
+        goto exit;
+    }
+    
+    if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the subscribe packet
+    {
+        log(WARN,"MQTT 订阅 发送数据失败,err = %d\n" , len);
         goto exit;             // there was a problem
-	}
-	
+    }
+    
     if (mqtt_wait_and_handle(c, SUBACK) == SUBACK)      // wait for suback
     {
         int count = 0;
@@ -755,16 +755,16 @@ int mqtt_subscribe_with_results(mqttClientType* c, uint8_t * topicFilter, enum Q
     }
     else
         rc = FAILURE;
-	
-	
-	
+    
+    
+    
 exit:
     if (rc == FAILURE)
-	{
-		mqtt_close_session(c);
-	}
+    {
+        mqtt_close_session(c);
+    }
 
-	MutexUnlock(&c->mutex);
+    MutexUnlock(&c->mutex);
 
     printf("Gsubscribe %s rc=%d\r\n",topicFilter,rc);
 
@@ -776,7 +776,7 @@ exit:
 int mqtt_subscribe(mqttClientType* c, uint8_t* topicFilter, enum QoS qos,messageHandler messageHandler)
 {
     mqttSubackDataType data;
-	
+    
     return mqtt_subscribe_with_results(c, topicFilter, qos, messageHandler, &data);
 }
 
@@ -801,15 +801,15 @@ int mqtt_unsubscribe(mqttClientType* c, uint8_t* topicFilter)
 
     if ((len = MQTTSerialize_unsubscribe(buff, sizeof(buff), 0, getNextPacketId(c), 1, &topic)) <= 0)
     {
-		log(WARN,"MQTT publish %d组包失败\n",__LINE__);
-		goto exit;
-	}
+        log(WARN,"MQTT publish %d组包失败\n",__LINE__);
+        goto exit;
+    }
     
     if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the subscribe packet
-	{
-		log(WARN,"MQTT 订阅 发送数据失败,err = %d\n" , len);
+    {
+        log(WARN,"MQTT 订阅 发送数据失败,err = %d\n" , len);
         goto exit;             // there was a problem
-	}
+    }
 
 
     if (mqtt_wait_and_handle(c, UNSUBACK) == UNSUBACK)  
@@ -857,10 +857,10 @@ int mqtt_publish(mqttClientType* c, uint8_t* topicName, MQTTMessage* message)
     len = MQTTSerialize_publish(buff, sizeof(buff), 0, message->qos, message->retained, message->id,
               topic, (unsigned char*)message->payload, message->payloadlen);
     if (len <= 0)
-	{
-		log(WARN,"MQTT publish %d组包失败\n",__LINE__);
-		goto exit;
-	}
+    {
+        log(WARN,"MQTT publish %d组包失败\n",__LINE__);
+        goto exit;
+    }
     
     
     if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the publish packet
@@ -884,7 +884,7 @@ int mqtt_publish(mqttClientType* c, uint8_t* topicName, MQTTMessage* message)
     }
     else if (message->qos == QOS2)
     {
-		if (mqtt_wait_and_handle(c, PUBCOMP) == PUBCOMP)  
+        if (mqtt_wait_and_handle(c, PUBCOMP) == PUBCOMP)  
         {
             unsigned short mypacketid;
             unsigned char dup, type;
@@ -907,30 +907,30 @@ int mqtt_disconnect(mqttClientType* c)
 {
     int rc = FAILURE;
     int len = 0;
-	uint8_t buff[256];
+    uint8_t buff[256];
 
-	MutexLock(&c->mutex);
+    MutexLock(&c->mutex);
 
-	len = MQTTSerialize_disconnect(buff, sizeof(buff));
-	
-	if( len > 0 )
-	{
-		if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the publish packet
-		{
-			log(WARN,"MQTT 发布发送数据失败,err = %d\n" , len);
-		}
-	}
-	
+    len = MQTTSerialize_disconnect(buff, sizeof(buff));
+    
+    if( len > 0 )
+    {
+        if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the publish packet
+        {
+            log(WARN,"MQTT 发布发送数据失败,err = %d\n" , len);
+        }
+    }
+    
     mqtt_close_session(c);
 
-	MutexUnlock(&c->mutex);
+    MutexUnlock(&c->mutex);
 
     return rc;
 }
 
 void mqtt_send_keep_alive( void )
 {
-	mqttKeepAlive = TRUE;
+    mqttKeepAlive = TRUE;
 }
 
 int mqtt_run( mqttClientType* c )
@@ -942,14 +942,14 @@ int mqtt_run( mqttClientType* c )
 
     timeout = c->commandTimeoutMs;
     c->commandTimeoutMs = 50;
-	
+    
     rt = mqtt_cycle(c) ;
-	
+    
     c->commandTimeoutMs = timeout;
 
     MutexUnlock(&c->mutex);
-	
-	sys_delay(10);
+    
+    sys_delay(10);
 
     return rt;
 }
@@ -980,22 +980,22 @@ log(INFO,"Message arrived on topic %.*s\n", data->topicName->lenstring.len, data
    // log_arry(ERR,"recv data:" , data->message->payload , data->message->payloadlen);
 log(INFO,"data->message->payload: \r\n %.*s \r\n",data->message->payloadlen, (char *)data->message->payload);
 log(ERR, "\r\n\r\ndata->message->payloadlen = %d\r\n",data->message->payloadlen);//一般200以内
-	if( data->message->payloadlen != 0 && (0 == RXOKLOCK))
-	{
-		memset(&p , 0x00 , sizeof(mqttRecvMsgType));
+    if( data->message->payloadlen != 0 && (0 == RXOKLOCK))
+    {
+        memset(&p , 0x00 , sizeof(mqttRecvMsgType));
         p.topicNo =  GettopicNo(data->topicName->lenstring.data);//CURTOPIC
-		p.id = data->message->id;
-		p.payloadlen = data->message->payloadlen;
-		p.qos = data->message->qos;
-		p.dup = data->message->dup;
-		p.retained = data->message->retained;
-		p.payload = malloc( sizeof(uint8_t)*data->message->payloadlen);
+        p.id = data->message->id;
+        p.payloadlen = data->message->payloadlen;
+        p.qos = data->message->qos;
+        p.dup = data->message->dup;
+        p.retained = data->message->retained;
+        p.payload = malloc( sizeof(uint8_t)*data->message->payloadlen);
 
-		if( p.payload == NULL )
-		{
-			log_err("内存不够\n");
-			soft_system_resert(__func__);
-		}
+        if( p.payload == NULL )
+        {
+            log_err("内存不够\n");
+            soft_system_resert(__func__);
+        }
 
       //  memset(COMMONSTATIC, 0x00, 1024);
       //  p.payload =  COMMONSTATIC;     
@@ -1010,7 +1010,7 @@ log(ERR, "\r\n\r\ndata->message->payloadlen = %d\r\n",data->message->payloadlen)
 
 //       log(INFO,"recv mqtt data [ 123456 -2] \n");
 //        SHOWME
-	}
+    }
 }
 
 

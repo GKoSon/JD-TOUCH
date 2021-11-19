@@ -154,7 +154,7 @@
    #elif _WIZCHIP_IO_BUS_WIDTH_ == 16
       typedef   uint16_t   iodata_t;
    #else
-      #error "Unknown _WIZCHIP_IO_BUS_WIDTH_. It should be 8 or 16."	
+      #error "Unknown _WIZCHIP_IO_BUS_WIDTH_. It should be 8 or 16."    
    #endif
 //
    #include "W5300/w5300.h"
@@ -222,7 +222,7 @@ typedef struct __WIZCHIP
     * The set of interface IO callback func.
     */
    union _IF
-   {	 
+   {     
       /**
        * For BUS interface IO
        */

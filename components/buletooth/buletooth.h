@@ -12,10 +12,10 @@
 
 
 #define BLEMODE_FARM_MAX                (700)
-#define BLE_CONNECT_MAX_NUM             (2)  //4
+#define BLE_CONNECT_MAX_NUM             (2)  
 
 
-
+//UART
 typedef enum{
     BLE_OK = 0 ,
     BLE_INIT_ERR , 
@@ -36,21 +36,6 @@ typedef enum{
     BLE_APP_LENGTH_ERR,
 }BleFuncsErrType;
 
-//////////模块/////////
-typedef struct _bleFrameProtocol
-{
-    uint8_t     pos;
-    uint8_t     addr[6];
-    uint16_t    handle;
-    uint8_t     writeType;
-    uint16_t    heard;
-    uint16_t    length;
-    uint8_t     type;
-    uint8_t     data[BLEMODE_FARM_MAX];
-    uint16_t    crc;
-    uint8_t     finsh;
-    uint8_t     cnt;
-}bleFrameProtocolType;
 
 typedef struct  _BleModuleAppMsgType
 {
@@ -76,7 +61,7 @@ typedef struct  _BleModuleAppData
 
 
 
-//////////用户/////////
+//////////USER////////
 typedef struct  _BleAppMsgType
 {
 
@@ -85,7 +70,7 @@ typedef struct  _BleAppMsgType
     uint8_t  WriteType;
     uint8_t  Data[BLEMODE_FARM_MAX];
     uint16_t DataLength;
-    uint8_t Flag;///和模块一样 就是多了这个
+    uint8_t Flag;///BleModuleAppMsgType ADD THIS
 }BleAppMsgType;
 
 
@@ -101,24 +86,23 @@ typedef struct _BleUserMsgType
 typedef struct
 {
 
-	void		(*resert)			(void);
-	uint8_t		(*read_mac)			(uint8_t *mac);
-	uint8_t 	(*read_ver)			(uint8_t *version);
-	uint8_t		(*send)				(uint8_t *ptAddr , uint8_t *ptSenddata , uint16_t uLegnth , uint16_t dHandle);
-	uint8_t		(*set_default)		(void);
-       void		(*force_normal)		(void);
+    void        (*resert)             (void);
+    uint8_t     (*read_mac)            (uint8_t *mac);
+    uint8_t     (*read_ver)            (uint8_t *version);
+    uint8_t     (*send)                (uint8_t *ptAddr , uint8_t *ptSenddata , uint16_t uLegnth , uint16_t dHandle);
+    uint8_t     (*set_default)         (void);
+
 }btDrvType;
 
 typedef struct
 {
-    void		(*init)				(void);
-    void		(*send)				( BleAppMsgType *nanopb , uint8_t *data , uint16_t length  );
-	uint8_t		(*read_mac)			(uint8_t *mac);
-    uint32_t	(*read_version)		( void );
-	void		(*set_default)		(void);
-    void		(*resert)			(void);
-    void		(*timer_isr)		(void);
-    void		(*force_normal)		(void);
+    void        (*init)                (void);
+    void        (*send)                (BleAppMsgType *nanopb , uint8_t *data , uint16_t length  );
+    uint8_t      (*read_mac)            (uint8_t *mac);
+    uint32_t     (*read_version)        (void);
+    void        (*set_default)         (void);
+    void        (*resert)              (void);
+    void        (*timer_isr)           (void);
 }buletoothDriveType;
 
 extern buletoothDriveType btModule;

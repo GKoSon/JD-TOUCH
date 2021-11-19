@@ -5,9 +5,9 @@
 #include "spi_flash.h"
 
 
-#define	PWD_MAX_NUM			        (5000)
-#define	PWD_SIZE	                sizeof(tempwdType)
-#define	PWD_INDEX_SIZE	            (sizeof(int))
+#define    PWD_MAX_NUM                    (5000)
+#define    PWD_SIZE                    sizeof(tempwdType)
+#define    PWD_INDEX_SIZE                (sizeof(int))
 #define EMPTY_ID                     0xFFFFFFFF
 
 #define PWD_SUCCESS                 (1)
@@ -18,9 +18,9 @@
 typedef struct
 {
 
-	uint32_t pwd;
-	uint32_t time;
-	uint8_t temp[8];
+    uint32_t pwd;
+    uint32_t time;
+    uint8_t temp[8];
 }tempwdType;
 
 

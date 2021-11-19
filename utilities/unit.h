@@ -12,58 +12,58 @@
 #include "EncryDecry.h"
 
 #ifndef NULL
-#define NULL				(void*)(0)
+#define NULL                (void*)(0)
 #endif
 
 #ifndef FALSE
-#define FALSE				0
+#define FALSE                0
 #endif
 #ifndef TRUE
-#define TRUE				!FALSE
+#define TRUE                !FALSE
 #endif
 
 #ifndef BOOL
-#define BOOL				bool
+#define BOOL                bool
 #endif
 #ifndef false
-#define false				FALSE
+#define false                FALSE
 #endif
 #ifndef true
-#define true				TRUE
+#define true                TRUE
 #endif
 
-#define BIT0		(0x00000001ul)
-#define BIT1		(0x00000002ul)
-#define BIT2		(0x00000004ul)
-#define BIT3		(0x00000008ul)
-#define BIT4		(0x00000010ul)
-#define BIT5		(0x00000020ul)
-#define BIT6		(0x00000040ul)
-#define BIT7		(0x00000080ul)
-#define BIT8		(0x00000100ul)
-#define BIT9		(0x00000200ul)
-#define BIT10	(0x00000400ul)
-#define BIT11	(0x00000800ul)
-#define BIT12	(0x00001000ul)
-#define BIT13	(0x00002000ul)
-#define BIT14	(0x00004000ul)
-#define BIT15	(0x00008000ul)
-#define BIT16	(0x00010000ul)
-#define BIT17	(0x00020000ul)
-#define BIT18	(0x00040000ul)
-#define BIT19	(0x00080000ul)
-#define BIT20	(0x00100000ul)
-#define BIT21	(0x00200000ul)
-#define BIT22	(0x00400000ul)
-#define BIT23	(0x00800000ul)
-#define BIT24	(0x01000000ul)
-#define BIT25	(0x02000000ul)
-#define BIT26	(0x04000000ul)
-#define BIT27	(0x08000000ul)
-#define BIT28	(0x10000000ul)
-#define BIT29	(0x20000000ul)
-#define BIT30	(0x40000000ul)
-#define BIT31	(0x80000000ul)
+#define BIT0        (0x00000001ul)
+#define BIT1        (0x00000002ul)
+#define BIT2        (0x00000004ul)
+#define BIT3        (0x00000008ul)
+#define BIT4        (0x00000010ul)
+#define BIT5        (0x00000020ul)
+#define BIT6        (0x00000040ul)
+#define BIT7        (0x00000080ul)
+#define BIT8        (0x00000100ul)
+#define BIT9        (0x00000200ul)
+#define BIT10    (0x00000400ul)
+#define BIT11    (0x00000800ul)
+#define BIT12    (0x00001000ul)
+#define BIT13    (0x00002000ul)
+#define BIT14    (0x00004000ul)
+#define BIT15    (0x00008000ul)
+#define BIT16    (0x00010000ul)
+#define BIT17    (0x00020000ul)
+#define BIT18    (0x00040000ul)
+#define BIT19    (0x00080000ul)
+#define BIT20    (0x00100000ul)
+#define BIT21    (0x00200000ul)
+#define BIT22    (0x00400000ul)
+#define BIT23    (0x00800000ul)
+#define BIT24    (0x01000000ul)
+#define BIT25    (0x02000000ul)
+#define BIT26    (0x04000000ul)
+#define BIT27    (0x08000000ul)
+#define BIT28    (0x10000000ul)
+#define BIT29    (0x20000000ul)
+#define BIT30    (0x40000000ul)
+#define BIT31    (0x80000000ul)
 
 #ifndef U8_MAX
 #define U8_MAX     (255)
@@ -132,8 +132,8 @@ void log_err( char* fmt, ...);
 
 #define log(level, fmt, args...)  do{\
     if(LOG_BIT_ON(sysDebugFlag,level)){\
-		if(level == ERR){\
-		printf("\033[0;31m");}\
+        if(level == ERR){\
+        printf("\033[0;31m");}\
         else if(level == WARN)\
         printf("\033[0;32m");\
         else if(level == INFO)\

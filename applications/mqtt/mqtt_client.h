@@ -24,12 +24,12 @@ enum returnCode { BUFFER_OVERFLOW = -2, FAILURE = -1, MQTT_SUCCESS = 0 };
 
 typedef struct MQTTMessage
 {
-    enum QoS	qos;
-    uint8_t	retained;
-    uint8_t	dup;
-    uint16_t	id;
-    void	*payload;
-    size_t	payloadlen;
+    enum QoS    qos;
+    uint8_t    retained;
+    uint8_t    dup;
+    uint16_t    id;
+    void    *payload;
+    size_t    payloadlen;
 } MQTTMessage;
 
 typedef struct MessageData
@@ -42,27 +42,27 @@ typedef struct MessageData
 typedef void (*messageHandler)(void * , MessageData*);
 typedef struct _mqttClient
 {
-	uint32_t	nextPacketId;
-	uint32_t	commandTimeoutMs;
+    uint32_t    nextPacketId;
+    uint32_t    commandTimeoutMs;
     uint32_t    dataRepeatTimeSec;
-	size_t		readbufSize;
-	uint8_t		*readbuf;
-	uint32_t	keepAliveInterval;
-	char		pingOutStanding;
-	int			isconnected;
-	int			cleansession;
+    size_t        readbufSize;
+    uint8_t        *readbuf;
+    uint32_t    keepAliveInterval;
+    char        pingOutStanding;
+    int            isconnected;
+    int            cleansession;
 
-	struct MessageHandlers
-	{
-		uint8_t *topicFilter;
-		void (*fp) (void * , MessageData*);
-	} messageHandlers[MAX_MESSAGE_HANDLERS];      /* Message handlers are indexed by subscription topic */
+    struct MessageHandlers
+    {
+        uint8_t *topicFilter;
+        void (*fp) (void * , MessageData*);
+    } messageHandlers[MAX_MESSAGE_HANDLERS];      /* Message handlers are indexed by subscription topic */
 
-	void (*defaultMessageHandler) (MessageData*);
-	
-	
-	Network*	ipstack;
-	Mutex		mutex;
+    void (*defaultMessageHandler) (MessageData*);
+    
+    
+    Network*    ipstack;
+    Mutex        mutex;
     xTaskHandle sendTaskHandle;
 } mqttClientType;
 

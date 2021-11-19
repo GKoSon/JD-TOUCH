@@ -127,7 +127,7 @@
 
 //A201505 : For W5300
 #if _WIZCHIP_ == 5300
-   #define SF_TCP_ALIGN		     0x02			   ///< Valid only \ref Sn_MR_TCP and W5300, refer to \ref Sn_MR_ALIGN
+   #define SF_TCP_ALIGN             0x02               ///< Valid only \ref Sn_MR_TCP and W5300, refer to \ref Sn_MR_ALIGN
 #endif
 
 #define SF_IO_NONBLOCK           0x01              ///< Socket nonblock io mode. It used parameter in \ref socket().
@@ -228,7 +228,7 @@ int8_t  eth_disconnect(uint8_t sn);
 
 /**
  * @ingroup WIZnet_socket_APIs
- * @brief	Send data to the connected peer in TCP socket.
+ * @brief    Send data to the connected peer in TCP socket.
  * @details It is used to send outgoing data to the connected socket.
  * @note    It is valid only in TCP server or client mode. It can't send data greater than socket buffer size. \n
  *          In block io mode, It doesn't return until data send is completed - socket buffer size is greater than data. \n
@@ -236,10 +236,10 @@ int8_t  eth_disconnect(uint8_t sn);
  * @param sn Socket number. It should be <b>0 ~ @ref \_WIZCHIP_SOCK_NUM_</b>.
  * @param buf Pointer buffer containing data to be sent.
  * @param len The byte length of data in buf.
- * @return	@b Success : The sent data size \n
+ * @return    @b Success : The sent data size \n
  *          @b Fail    : \n @ref SOCKERR_SOCKSTATUS - Invalid socket status for socket operation \n
  *                          @ref SOCKERR_TIMEOUT    - Timeout occurred \n
- *                          @ref SOCKERR_SOCKMODE 	- Invalid operation in the socket \n
+ *                          @ref SOCKERR_SOCKMODE     - Invalid operation in the socket \n
  *                          @ref SOCKERR_SOCKNUM    - Invalid socket number \n
  *                          @ref SOCKERR_DATALEN    - zero data length \n
  *                          @ref SOCK_BUSY          - Socket is busy.
@@ -248,7 +248,7 @@ int32_t eth_send(uint8_t sn, uint8_t * buf, uint16_t len);
 
 /**
  * @ingroup WIZnet_socket_APIs
- * @brief	Receive data from the connected peer.
+ * @brief    Receive data from the connected peer.
  * @details It is used to read incoming data from the connected socket.\n
  *          It waits for data as much as the application wants to receive.
  * @note    It is valid only in TCP server or client mode. It can't receive data greater than socket buffer size. \n
@@ -258,7 +258,7 @@ int32_t eth_send(uint8_t sn, uint8_t * buf, uint16_t len);
  * @param sn  Socket number. It should be <b>0 ~ @ref \_WIZCHIP_SOCK_NUM_</b>.
  * @param buf Pointer buffer to read incoming data.
  * @param len The max data length of data in buf.
- * @return	@b Success : The real received data size \n
+ * @return    @b Success : The real received data size \n
  *          @b Fail    :\n
  *                     @ref SOCKERR_SOCKSTATUS - Invalid socket status for socket operation \n
  *                     @ref SOCKERR_SOCKMODE   - Invalid operation in the socket \n
@@ -270,7 +270,7 @@ int32_t eth_recv(uint8_t sn, uint8_t * buf, uint16_t len);
 
 /**
  * @ingroup WIZnet_socket_APIs
- * @brief	Sends datagram to the peer with destination IP address and port number passed as parameter.
+ * @brief    Sends datagram to the peer with destination IP address and port number passed as parameter.
  * @details It sends datagram of UDP or MACRAW to the peer with destination IP address and port number passed as parameter.\n
  *          Even if the connectionless socket has been previously connected to a specific address,
  *          the address and port number parameters override the destination address for that particular datagram only.
@@ -318,7 +318,7 @@ int32_t eth_sendto(uint8_t sn, uint8_t * buf, uint16_t len, uint8_t * addr, uint
  *             It is valid only when the first call recvform for receiving the packet.
 *             When it is valid, @ref  packinfo[7] should be set as '1' after call @ref getsockopt(sn, SO_PACKINFO, &packinfo).
  *
- * @return	@b Success : This function return real received data size for success.\n
+ * @return    @b Success : This function return real received data size for success.\n
  *          @b Fail    : @ref SOCKERR_DATALEN    - zero data length \n
  *                       @ref SOCKERR_SOCKMODE   - Invalid operation in the socket \n
  *                       @ref SOCKERR_SOCKNUM    - Invalid socket number \n

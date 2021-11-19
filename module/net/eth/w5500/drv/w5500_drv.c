@@ -46,7 +46,7 @@ uint8_t w5500_read_byte( void )
 
 
 void w5500_mutex_enter(void)
-{	
+{    
     __set_PRIMASK(1);  
 }
 

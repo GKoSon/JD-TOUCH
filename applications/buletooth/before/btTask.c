@@ -13,8 +13,6 @@
 #include "timer.h"
 
 xTaskHandle              BtHandle;
-uint8_t                  btOpenDoorPhoneClearTimerHdl = 0xFF;
-
 
 void bt_check_work( void )
 {
@@ -23,28 +21,20 @@ void bt_check_work( void )
     if( ( ver = btModule.read_version()) != 140)
     {
         beep.write_base(&checkErr);
-        log_err("蓝牙模块工作不正常\n");
+        log_err("[BLE]蓝牙模块工作不正常\n");
     }
-    log(DEBUG,"BT module version:%d\n" , ver );
+    log(DEBUG,"[BLE]module version:%d\n" , ver );
     
 }
 
-void bt_open_door_phone_timer_isr(void)
-{
-    memset(btPhone ,0x00 , 20);
-    timer.stop(btOpenDoorPhoneClearTimerHdl);
-    log(DEBUG,"bt phone number clear\n");
-}
-
-void ble_old_process( void const *pvParameters)
+void ble_data_process( void const *pvParameters)
 {
     configASSERT( ( ( unsigned long ) pvParameters ) == 0 );
-    
-    btOpenDoorPhoneClearTimerHdl = timer.creat(1000 , FALSE , bt_open_door_phone_timer_isr );
-    
+      
     btModule.init();
     
     bt_check_work();
+    
     while(1)
     {
         if( xSemaphoreTake( xBtSemaphore, 1000 ) == pdTRUE )
@@ -64,9 +54,10 @@ void ble_old_process( void const *pvParameters)
     }
 }
 
+
 void creat_buletooth_task( void )
 {
-    osThreadDef( bt, ble_old_process , osPriorityHigh, 0, configMINIMAL_STACK_SIZE*12);
+    osThreadDef( bt, ble_data_process , osPriorityHigh, 0, configMINIMAL_STACK_SIZE*10);
     BtHandle = osThreadCreate(osThread(bt), NULL);
     configASSERT(BtHandle);  
 }

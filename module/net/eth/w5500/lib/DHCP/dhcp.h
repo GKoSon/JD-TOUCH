@@ -54,13 +54,13 @@
 
 
 /* Retry to processing DHCP */
-#define	MAX_DHCP_RETRY          2        ///< Maxium retry count
-#define	DHCP_WAIT_TIME          10       ///< Wait Time 10s
+#define    MAX_DHCP_RETRY          2        ///< Maxium retry count
+#define    DHCP_WAIT_TIME          10       ///< Wait Time 10s
 
 
 /* UDP port numbers for DHCP */
-#define DHCP_SERVER_PORT      	67	      ///< DHCP server port number
-#define DHCP_CLIENT_PORT         68	      ///< DHCP client port number
+#define DHCP_SERVER_PORT          67          ///< DHCP server port number
+#define DHCP_CLIENT_PORT         68          ///< DHCP client port number
 
 
 #define MAGIC_COOKIE             0x63825363  ///< Any number. You can be modifyed it any number
@@ -108,7 +108,7 @@ void reg_dhcp_cbfunc(void(*ip_assign)(void), void(*ip_update)(void), void(*ip_co
  *            @ref DHCP_RUNNING    \n
  *            @ref DHCP_IP_ASSIGN  \n
  *            @ref DHCP_IP_CHANGED \n
- * 			  @ref DHCP_IP_LEASED  \n
+ *               @ref DHCP_IP_LEASED  \n
  *            @ref DHCP_STOPPED    \n
  *
  * @note This function is always called by you main task.
@@ -149,4 +149,4 @@ void getDNSfromDHCP(uint8_t* ip);
  */
 uint32_t getDHCPLeasetime(void);
 
-#endif	/* _DHCP_H_ */
+#endif    /* _DHCP_H_ */

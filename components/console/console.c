@@ -85,167 +85,167 @@ void serial_console_init( void )
  */
 cmd_tbl_t *find_cmd (const char *cmd)
 {
-	cmd_tbl_t *cmdtp;
-	cmd_tbl_t *cmdtp_temp = __u_boot_cmd_start;	/*Init value */
-	const char *p;
-	int len;
-	int n_found = 0;
+    cmd_tbl_t *cmdtp;
+    cmd_tbl_t *cmdtp_temp = __u_boot_cmd_start;    /*Init value */
+    const char *p;
+    int len;
+    int n_found = 0;
 
-	/*
-	 * Some commands allow length modifiers (like "cp.b");
-	 * compare command name only until first dot.
-	 */
-	len = ((p = strchr(cmd, '.')) == NULL) ? strlen (cmd) : (p - cmd);
+    /*
+     * Some commands allow length modifiers (like "cp.b");
+     * compare command name only until first dot.
+     */
+    len = ((p = strchr(cmd, '.')) == NULL) ? strlen (cmd) : (p - cmd);
 
-	for (cmdtp = __u_boot_cmd_start;
-	     cmdtp != __u_boot_cmd_end;
-	     cmdtp++) {
-		if (strncmp (cmd, cmdtp->name, len) == 0) {
-			if (len == strlen (cmdtp->name))
-				return cmdtp;	/* full match */
+    for (cmdtp = __u_boot_cmd_start;
+         cmdtp != __u_boot_cmd_end;
+         cmdtp++) {
+        if (strncmp (cmd, cmdtp->name, len) == 0) {
+            if (len == strlen (cmdtp->name))
+                return cmdtp;    /* full match */
 
-			cmdtp_temp = cmdtp;	/* abbreviated command ? */
-			n_found++;
-		}
-	}
-	if (n_found == 1) {			/* exactly one match */
-		return cmdtp_temp;
-	}
+            cmdtp_temp = cmdtp;    /* abbreviated command ? */
+            n_found++;
+        }
+    }
+    if (n_found == 1) {            /* exactly one match */
+        return cmdtp_temp;
+    }
 
-	return NULL;	/* not found or ambiguous command */
+    return NULL;    /* not found or ambiguous command */
 }
 
 static int parse_line (char *line, char *argv[])
 {
-	int nargs = 0;
+    int nargs = 0;
 
-	while (nargs < CFG_MAXARGS) {
+    while (nargs < CFG_MAXARGS) {
 
-		/* skip any white space */
-		while ((*line == ' ') || (*line == '\t')) {
-			++line;
-		}
+        /* skip any white space */
+        while ((*line == ' ') || (*line == '\t')) {
+            ++line;
+        }
 
-		if (*line == '\0') {	/* end of line, no more args	*/
-			argv[nargs] = NULL;
-			return (nargs);
-		}
+        if (*line == '\0') {    /* end of line, no more args    */
+            argv[nargs] = NULL;
+            return (nargs);
+        }
 
-		argv[nargs++] = line;	/* begin of argument string	*/
+        argv[nargs++] = line;    /* begin of argument string    */
 
-		/* find end of string */
-		while (*line && (*line != ' ') && (*line != '\t')) {
-			++line;
-		}
+        /* find end of string */
+        while (*line && (*line != ' ') && (*line != '\t')) {
+            ++line;
+        }
 
-		if (*line == '\0') {	/* end of line, no more args	*/
-			argv[nargs] = NULL;
-			return (nargs);
-		}
+        if (*line == '\0') {    /* end of line, no more args    */
+            argv[nargs] = NULL;
+            return (nargs);
+        }
 
-		*line++ = '\0';		/* terminate current arg	 */
-	}
+        *line++ = '\0';        /* terminate current arg     */
+    }
 
-	log (ERR,"** Too many args (max. %d) **\n", CFG_MAXARGS);
-	return (nargs);
+    log (ERR,"** Too many args (max. %d) **\n", CFG_MAXARGS);
+    return (nargs);
 }
 
 /****************************************************************************/
 
 static void process_macros (const char *input, char *output)
 {
-	char c, prev;
+    char c, prev;
 
-	int inputcnt = strlen (input);
-	int outputcnt = CFG_CBSIZE;
-	int state = 0;		/* 0 = waiting for '$'  */
+    int inputcnt = strlen (input);
+    int outputcnt = CFG_CBSIZE;
+    int state = 0;        /* 0 = waiting for '$'  */
 
-	/* 1 = waiting for '(' or '{' */
-	/* 2 = waiting for ')' or '}' */
-	/* 3 = waiting for '''  */
+    /* 1 = waiting for '(' or '{' */
+    /* 2 = waiting for ')' or '}' */
+    /* 3 = waiting for '''  */
 
-	prev = '\0';		/* previous character   */
+    prev = '\0';        /* previous character   */
 
-	while (inputcnt && outputcnt) {
-		c = *input++;
-		inputcnt--;
+    while (inputcnt && outputcnt) {
+        c = *input++;
+        inputcnt--;
 
-		if (state != 3) {
-			/* remove one level of escape characters */
-			if ((c == '\\') && (prev != '\\')) {
-				if (inputcnt-- == 0)
-					break;
-				prev = c;
-				c = *input++;
-			}
-		}
+        if (state != 3) {
+            /* remove one level of escape characters */
+            if ((c == '\\') && (prev != '\\')) {
+                if (inputcnt-- == 0)
+                    break;
+                prev = c;
+                c = *input++;
+            }
+        }
 
-		switch (state) {
-		case 0:	/* Waiting for (unescaped) $    */
-			if ((c == '\'') && (prev != '\\')) {
-				state = 3;
-				break;
-			}
-			if ((c == '$') && (prev != '\\')) {
-				state++;
-			} else {
-				*(output++) = c;
-				outputcnt--;
-			}
-			break;
-		case 1:	/* Waiting for (        */
-			if (c == '(' || c == '{') {
-				state++;
-			} else {
-				state = 0;
-				*(output++) = '$';
-				outputcnt--;
+        switch (state) {
+        case 0:    /* Waiting for (unescaped) $    */
+            if ((c == '\'') && (prev != '\\')) {
+                state = 3;
+                break;
+            }
+            if ((c == '$') && (prev != '\\')) {
+                state++;
+            } else {
+                *(output++) = c;
+                outputcnt--;
+            }
+            break;
+        case 1:    /* Waiting for (        */
+            if (c == '(' || c == '{') {
+                state++;
+            } else {
+                state = 0;
+                *(output++) = '$';
+                outputcnt--;
 
-				if (outputcnt) {
-					*(output++) = c;
-					outputcnt--;
-				}
-			}
-			break;
-		case 2:	/* Waiting for )        */
-			if (c == ')' || c == '}') {
+                if (outputcnt) {
+                    *(output++) = c;
+                    outputcnt--;
+                }
+            }
+            break;
+        case 2:    /* Waiting for )        */
+            if (c == ')' || c == '}') {
 
-				char *envval;
+                char *envval;
 
-				envval = NULL;
+                envval = NULL;
 
-				/* Copy into the line if it exists */
-				if (envval != NULL)
-					while ((*envval) && outputcnt) {
-						*(output++) = *(envval++);
-						outputcnt--;
-					}
-				/* Look for another '$' */
-				state = 0;
-			}
-			break;
-		case 3:	/* Waiting for '        */
-			if ((c == '\'') && (prev != '\\')) {
-				state = 0;
-			} else {
-				*(output++) = c;
-				outputcnt--;
-			}
-			break;
-		}
-		prev = c;
-	}
+                /* Copy into the line if it exists */
+                if (envval != NULL)
+                    while ((*envval) && outputcnt) {
+                        *(output++) = *(envval++);
+                        outputcnt--;
+                    }
+                /* Look for another '$' */
+                state = 0;
+            }
+            break;
+        case 3:    /* Waiting for '        */
+            if ((c == '\'') && (prev != '\\')) {
+                state = 0;
+            } else {
+                *(output++) = c;
+                outputcnt--;
+            }
+            break;
+        }
+        prev = c;
+    }
 
-	if (outputcnt)
-		*output = 0;
+    if (outputcnt)
+        *output = 0;
 }
 
 /****************************************************************************
  * returns:
- *	1  - command executed, repeatable
- *	0  - command executed but not repeatable, interrupted commands are
- *	     always considered not repeatable
- *	-1 - not executed (unrecognized, bootd recursion or too many args)
+ *    1  - command executed, repeatable
+ *    0  - command executed but not repeatable, interrupted commands are
+ *         always considered not repeatable
+ *    -1 - not executed (unrecognized, bootd recursion or too many args)
  *           (If cmd is NULL or "" or longer than CFG_CBSIZE-1 it is
  *           considered unrecognized)
  *
@@ -259,94 +259,94 @@ static void process_macros (const char *input, char *output)
 
 static int console_command (const char *cmd, int flag)
 {
-	cmd_tbl_t *cmdtp;
-	char cmdbuf[CFG_CBSIZE];	/* working copy of cmd		*/
-	char *token;			/* start of token in cmdbuf	*/
-	char *sep;			/* end of token (separator) in cmdbuf */
-	char finaltoken[CFG_CBSIZE];
-	char *str = cmdbuf;
-	char *argv[CFG_MAXARGS + 1];	/* NULL terminated	*/
-	int argc, inquotes;
-	int repeatable = 1;
-	int rc = 0;
+    cmd_tbl_t *cmdtp;
+    char cmdbuf[CFG_CBSIZE];    /* working copy of cmd        */
+    char *token;            /* start of token in cmdbuf    */
+    char *sep;            /* end of token (separator) in cmdbuf */
+    char finaltoken[CFG_CBSIZE];
+    char *str = cmdbuf;
+    char *argv[CFG_MAXARGS + 1];    /* NULL terminated    */
+    int argc, inquotes;
+    int repeatable = 1;
+    int rc = 0;
 
 
-	if (!cmd || !*cmd) {
-		return -1;	/* empty command */
-	}
+    if (!cmd || !*cmd) {
+        return -1;    /* empty command */
+    }
 
-	if (strlen(cmd) >= CFG_CBSIZE) {
-		log_err("%s" ,"## Command too long!\n");
-		return -1;
-	}
+    if (strlen(cmd) >= CFG_CBSIZE) {
+        log_err("%s" ,"## Command too long!\n");
+        return -1;
+    }
 
-	strcpy (cmdbuf, cmd);
+    strcpy (cmdbuf, cmd);
 
-	/* Process separators and check for invalid
-	 * repeatable commands
-	 */
-	while (*str) {
+    /* Process separators and check for invalid
+     * repeatable commands
+     */
+    while (*str) {
 
-		/*
-		 * Find separator, or string end
-		 * Allow simple escape of ';' by writing "\;"
-		 */
-		for (inquotes = 0, sep = str; *sep; sep++) {
-			if ((*sep=='\'') &&
-			    (*(sep-1) != '\\'))
-				inquotes=!inquotes;
+        /*
+         * Find separator, or string end
+         * Allow simple escape of ';' by writing "\;"
+         */
+        for (inquotes = 0, sep = str; *sep; sep++) {
+            if ((*sep=='\'') &&
+                (*(sep-1) != '\\'))
+                inquotes=!inquotes;
 
-			if (!inquotes &&
-			    (*sep == ';') &&	/* separator		*/
-			    ( sep != str) &&	/* past string start	*/
-			    (*(sep-1) != '\\'))	/* and NOT escaped	*/
-				break;
-		}
+            if (!inquotes &&
+                (*sep == ';') &&    /* separator        */
+                ( sep != str) &&    /* past string start    */
+                (*(sep-1) != '\\'))    /* and NOT escaped    */
+                break;
+        }
 
-		/*
-		 * Limit the token to data between separators
-		 */
-		token = str;
-		if (*sep) {
-			str = sep + 1;	/* start of command for next pass */
-			*sep = '\0';
-		}
-		else
-			str = sep;	/* no more commands for next pass */
+        /*
+         * Limit the token to data between separators
+         */
+        token = str;
+        if (*sep) {
+            str = sep + 1;    /* start of command for next pass */
+            *sep = '\0';
+        }
+        else
+            str = sep;    /* no more commands for next pass */
 
-		/* find macros in this token and replace them */
-		process_macros (token, finaltoken);
+        /* find macros in this token and replace them */
+        process_macros (token, finaltoken);
 
-		/* Extract arguments */
-		if ((argc = parse_line (finaltoken, argv)) == 0) {
-			rc = -1;	/* no command at all */
-			continue;
-		}
+        /* Extract arguments */
+        if ((argc = parse_line (finaltoken, argv)) == 0) {
+            rc = -1;    /* no command at all */
+            continue;
+        }
 
-		/* Look up command in command table */
-		if ((cmdtp = find_cmd(argv[0])) == NULL) {
-			printf ("Unknown command '%s' - try 'help'\n", argv[0]);
-			rc = -1;	/* give up after bad command */
-			continue;
-		}
+        /* Look up command in command table */
+        if ((cmdtp = find_cmd(argv[0])) == NULL) {
+            printf ("Unknown command '%s' - try 'help'\n", argv[0]);
+            rc = -1;    /* give up after bad command */
+            continue;
+        }
         
-		/* found - check max args */
-		if (argc > cmdtp->maxargs) {
-			log (ERR,"Too many parameters to allow at most %d\n %s", cmdtp->maxargs , cmdtp->help);
-			rc = -1;
-			continue;
-		}
+        /* found - check max args */
+        if (argc > cmdtp->maxargs) {
+            log (ERR,"Too many parameters to allow at most %d\n %s", cmdtp->maxargs , cmdtp->help);
+            rc = -1;
+            continue;
+        }
 
-		/* OK - call function to do the command */
-		if ((cmdtp->cmd) (cmdtp, flag, argc, argv) != 0) {
-			rc = -1;
-		}
+        /* OK - call function to do the command */
+        if ((cmdtp->cmd) (cmdtp, flag, argc, argv) != 0) {
+            rc = -1;
+        }
 
-		repeatable &= cmdtp->repeatable;
+        repeatable &= cmdtp->repeatable;
 
-	}
+    }
 
-	return rc ? rc : repeatable;
+    return rc ? rc : repeatable;
 }
 
 
@@ -395,9 +395,9 @@ int fputc(int ch, FILE *f)
         serial.putc(console_port,'\r');
     }
     
-	serial.putc(console_port, ch);
+    serial.putc(console_port, ch);
     
-	return ch;
+    return ch;
 }
 
 

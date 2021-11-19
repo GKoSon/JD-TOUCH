@@ -12,7 +12,7 @@
 
 #define FLASH_ALL_DATA          0X0001
 #define FLASH_PERMI_LIST_BIT    0x0002
-#define	FLASH_PWD_BIT			0x0004
+#define    FLASH_PWD_BIT            0x0004
 #define FLASH_ALL_BIT_BUT_CFG   0x0008 
 
 
@@ -51,7 +51,7 @@ extern QueueHandle_t        xMqttSendQueue;
 extern QueueHandle_t        xMqttRecvQueue;
 extern QueueHandle_t        xHttpRecvQueue;
 
-extern xTaskHandle		        mqttTask;
+extern xTaskHandle                mqttTask;
 
 extern void task_keep_alive( uint32_t taskBit);
 extern void set_clear_flash( uint32_t bits);

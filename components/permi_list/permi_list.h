@@ -9,8 +9,8 @@
 #define FIND_NULL_ID        (-1)
 #define LIST_FULL           (-2)
 
-#define	PERMI_LIST_MAX			(20000)
-#define	PERMI_LISD_INDEX_SIZE	(sizeof(int))
+#define    PERMI_LIST_MAX            (20000)
+#define    PERMI_LISD_INDEX_SIZE    (sizeof(int))
 #define PERMI_LIST_SIZE         (sizeof(permiListType))
 
 typedef enum

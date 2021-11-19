@@ -27,15 +27,15 @@ list *list_create( void )
 
 list *list_init(listFunType *listFun)
 {
-	struct list *list;
-	
-	list = list_create();
-	
-	list->dup = listFun->dup;
+    struct list *list;
+    
+    list = list_create();
+    
+    list->dup = listFun->dup;
     list->free = listFun->free;
     list->match = listFun->match;
-	
-	return list;
+    
+    return list;
 }
 
 

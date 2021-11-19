@@ -5,7 +5,6 @@
 #include "stm32l4xx_hal.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "fatfs.h"
 #include "iwdg.h"
 #include "rtc.h"
 #include "spi.h"
@@ -200,14 +199,14 @@ uint32_t chip_flash_write( uint32_t addr , uint8_t* data , uint16_t len)
     uint32_t ramsource = 0;
     uint8_t buff[2048];
 
-	
+    
     memset(buff , 0x00 , 2048);
     memcpy(buff , data , len);
     
     if( chip_flash_earse(addr) != FLASHIF_OK)
-	{
-		return FALSE;
-	}
+    {
+        return FALSE;
+    }
     
     ramsource = (uint32_t)&buff;
     
@@ -243,21 +242,21 @@ uint32_t chip_flash_read( uint32_t addr , uint8_t* data , uint16_t len )
 
 uint8_t chip_flash_get_lock( void )
 {
-	if( xSemaphoreTake( xChipFlashSemaphore, 3000 ) == pdTRUE )
-	{
+    if( xSemaphoreTake( xChipFlashSemaphore, 3000 ) == pdTRUE )
+    {
         //vTaskSuspendAll(); 
-		__set_PRIMASK(1);  
-		return TRUE;
-	}
-	
-	return FALSE;
+        __set_PRIMASK(1);  
+        return TRUE;
+    }
+    
+    return FALSE;
 }
 
 void chip_flash_release_lock( void )
 {
-	 __set_PRIMASK(0);  
+     __set_PRIMASK(0);  
     //xTaskResumeAll();
-	xSemaphoreGive( xChipFlashSemaphore );
+    xSemaphoreGive( xChipFlashSemaphore );
 }
 
 

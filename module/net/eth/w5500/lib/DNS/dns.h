@@ -48,8 +48,8 @@
 //
 //*****************************************************************************
 
-#ifndef	_DNS_H_
-#define	_DNS_H_
+#ifndef    _DNS_H_
+#define    _DNS_H_
 
 #include <stdint.h>
 /*
@@ -58,7 +58,7 @@
  */
 //#define _DNS_DEBUG_
 
-#define	MAX_DNS_BUF_SIZE	256		///< maximum size of DNS buffer. */
+#define    MAX_DNS_BUF_SIZE    256        ///< maximum size of DNS buffer. */
 /*
  * @brief Maxium length of your queried Domain name 
  * @todo SHOULD BE defined it equal as or greater than your Domain name lenght + null character(1)
@@ -66,10 +66,10 @@
  */
 #define  MAX_DOMAIN_NAME   MAX_DNS_BUF_SIZE       // for example "www.google.com"
 
-#define	MAX_DNS_RETRY     2        ///< Requery Count
-#define	DNS_WAIT_TIME     3        ///< Wait response time. unit 1s.
+#define    MAX_DNS_RETRY     2        ///< Requery Count
+#define    DNS_WAIT_TIME     3        ///< Wait response time. unit 1s.
 
-#define	IPPORT_DOMAIN     53       ///< DNS server port number
+#define    IPPORT_DOMAIN     53       ///< DNS server port number
 
 #define DNS_MSG_ID         0x1122   ///< ID for DNS message. You can be modifyed it any number
 /*
@@ -98,4 +98,4 @@ int8_t DNS_run(uint8_t * dns_ip, uint8_t * name, uint8_t * ip_from_dns);
  */
 void DNS_time_handler(void);
 
-#endif	/* _DNS_H_ */
+#endif    /* _DNS_H_ */

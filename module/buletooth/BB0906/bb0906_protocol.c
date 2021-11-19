@@ -1,4 +1,3 @@
-//#if (BULETOOTH_MODE == MULTI_LINK)
 #include "bb0906_protocol.h"
 #include "config.h"
 
@@ -24,7 +23,7 @@ void ble_clear_buffer( void )
 {
     memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
     memset(&BleUserMsg ,0x00 , sizeof(BleUserMsgType));
-    ble_cleal_timer();
+    ble_clear_timerflag();
 }
 
 uint8_t BleCheckEndByte(BleAppMsgType *BleUsartData)
@@ -34,9 +33,9 @@ uint8_t BleCheckEndByte(BleAppMsgType *BleUsartData)
         ( BleUsartData->Data[BleUsartData->DataLength-3] == 0x7C)&&
         ( BleUsartData->Data[BleUsartData->DataLength-4] == 0x0B))
         {
-             //printf("BleUsartData->DataLength%d\r\n",BleUsartData->DataLength);
-             //log_arry(ERR,"À¶ÑÀÄ£¿éEND "  , BleUsartData->Data ,BleUsartData->DataLength);
-             ble_cleal_timer();
+             printf("BleUsartData->DataLength%d\r\n",BleUsartData->DataLength);
+             log_arry(ERR,"BleCheckEndByte "  , BleUsartData->Data ,BleUsartData->DataLength);
+             ble_clear_timerflag();
              return TRUE;
         }
                                         
@@ -175,7 +174,7 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
         case DATA_POS:
         {
             BleModuleAppData.Msg.Data[BleModuleAppData.cnt++] = ucData ;
-            if( BleModuleAppData.cnt ==BleModuleAppData.Length - BLE_DATA_HEARD_LENG)
+            if( BleModuleAppData.cnt == BleModuleAppData.Length - BLE_DATA_HEARD_LENG)
             {
                 BleModuleAppData.Msg.DatLength = BleModuleAppData.Length - BLE_DATA_HEARD_LENG;
                 BleModuleAppData.BytePos = CRC_POS;
@@ -264,4 +263,3 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
         
     }
 }
-//#endif

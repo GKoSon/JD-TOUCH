@@ -12,7 +12,6 @@
 #include "iso14443a.h"
 #include "rfal_isoDep.h"
 #include "fm1208.h"
-#include "cqBus.h"
 
 
 #define chartonumber(x) (x-'0')
@@ -62,25 +61,25 @@ ReturnCode iso14443TransmitAndReceiveL4(const uint8_t* txbuf,
 
 uint8_t st25WriteAndRead14443aData( uint8_t *data , uint8_t len , uint8_t *response , uint16_t *rxSize)
 {
-	uint8_t rx[128];
-	uint16_t rxLen = 0;
-	uint16_t err = 0;
-	
-	memset(rx , 0x00 , 128);  
-	err = iso14443TransmitAndReceiveL4( data,len, rx, 128, &rxLen  );
-	if( err == ERR_NONE )
-	{
-		log_arry(INFO,"data:" , rx , rxLen);
-		memcpy(response ,rx , rxLen -1 );
-		*rxSize = rxLen -1 ;
-	}
-	else
-	{
-		//log(INFO,"[%s]err = %d\n" , __func__ , err);
-		return FALSE;
-	}
-		
-	return TRUE;
+    uint8_t rx[128];
+    uint16_t rxLen = 0;
+    uint16_t err = 0;
+    
+    memset(rx , 0x00 , 128);  
+    err = iso14443TransmitAndReceiveL4( data,len, rx, 128, &rxLen  );
+    if( err == ERR_NONE )
+    {
+        log_arry(INFO,"data:" , rx , rxLen);
+        memcpy(response ,rx , rxLen -1 );
+        *rxSize = rxLen -1 ;
+    }
+    else
+    {
+        //log(INFO,"[%s]err = %d\n" , __func__ , err);
+        return FALSE;
+    }
+        
+    return TRUE;
 }
 
 

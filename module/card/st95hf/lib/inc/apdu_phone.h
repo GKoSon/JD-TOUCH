@@ -4,7 +4,7 @@
 
 #include "lib_iso14443A.h"
 #include "swipeTag.h"
-#include "phoneTag.h"
+
 
 
 void hal_log(uint8_t *pdata);
@@ -23,9 +23,6 @@ void hal_log(uint8_t *pdata);
 #define ST95_NDEF_DATA_OFFSET_LEN    (ST95_APUD_BIT_LEN+ST95_APUD_CRC_LEN+ST95_END_LEN)
 #define ST95_NDEF_DATA_OFFESET       (ST95_HEARD_LEN + ST95_APUD_BIT_LEN)
 
-
-uint8_t SelectApplicationFormApdu(uint8_t *ucSelectName);
-uint8_t st95WriteMessageToPhone(uint8_t ucCmd,uint8_t ucType,uint8_t *pucSendBUff ,uint8_t ucBuffLength, ApduRecvDataType *pucReadBuff);
 
 
 #endif

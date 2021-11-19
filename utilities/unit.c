@@ -12,16 +12,16 @@ char otasee   = 0;
 //比较AB相等 1是的 0 不是 AB的差距是不是再rang内部 1是 0不是
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)
 {
-	if(A>B)
-	{
-		if((A-B)>range)			return 0;
-		else return 1;
-	}
-	else
-	{
-		if((B-A)>range)			return 0;
-		else return 1;
-	}
+    if(A>B)
+    {
+        if((A-B)>range)            return 0;
+        else return 1;
+    }
+    else
+    {
+        if((B-A)>range)            return 0;
+        else return 1;
+    }
 
 }
 
@@ -44,16 +44,16 @@ unsigned char aiot_strcmp( unsigned char *pst , unsigned char *str , unsigned ch
 {
 
      if((len == 0)||(pst == NULL)||(str == NULL))
-	{
-		return FALSE;
-	}
-		
-	while( len-- )
-	{
-		if(*str++ != *pst++ )
-			return FALSE;
-	}
-	return TRUE;
+    {
+        return FALSE;
+    }
+        
+    while( len-- )
+    {
+        if(*str++ != *pst++ )
+            return FALSE;
+    }
+    return TRUE;
 }
 
 
@@ -71,30 +71,30 @@ void printf_time( void )
 
 void log_err( char* fmt, ...)
 {
-	va_list args;
-	int fmt_result;
-	char log_buf[512];
+    va_list args;
+    int fmt_result;
+    char log_buf[512];
 
-	memset(log_buf , 0x00 , 512);
-	
-	va_start(args, fmt);
-	
-	fmt_result = vsprintf(log_buf , fmt, args);
-	if (( fmt_result > 0 ) && ( fmt_result < 512))
-	{
+    memset(log_buf , 0x00 , 512);
+    
+    va_start(args, fmt);
+    
+    fmt_result = vsprintf(log_buf , fmt, args);
+    if (( fmt_result > 0 ) && ( fmt_result < 512))
+    {
 #ifndef BOOTLOADER
-		err_log(DEBUG_MESSAGE , (uint8_t *)log_buf , fmt_result);
+        err_log(DEBUG_MESSAGE , (uint8_t *)log_buf , fmt_result);
 #endif
-		printf("\033[0;31m");
+        printf("\033[0;31m");
         printf("[#]");
         printf("[%d%]" , osGetCPUUsage());
         printf_time();\
-		printf("%.*s" , fmt_result , log_buf);
-		printf("\033[0;39m");
-	}
-	
-	va_end(args);
-	 	
+        printf("%.*s" , fmt_result , log_buf);
+        printf("\033[0;39m");
+    }
+    
+    va_end(args);
+         
 }
 
 
@@ -155,12 +155,12 @@ uint64_t atol64( char *str)
 
 uint8_t  hex_to_char(uint8_t ucData)
 {
-	if(ucData < 10){
-		return ucData+'0';
-	}
-	else{
-		return ucData-10+'A';
-	}
+    if(ucData < 10){
+        return ucData+'0';
+    }
+    else{
+        return ucData-10+'A';
+    }
 }
 
 unsigned char str_to_hex(unsigned char data)
@@ -169,7 +169,7 @@ unsigned char str_to_hex(unsigned char data)
     {
         return data-'0';
     }
-	else if((data >= 'A')&&(data <= 'F'))
+    else if((data >= 'A')&&(data <= 'F'))
     {
         return data+10-'A';
     }
@@ -182,9 +182,9 @@ unsigned char str_to_hex(unsigned char data)
 
 unsigned char str_to_int(unsigned char dData)
 {
-	if(dData <= '9')
+    if(dData <= '9')
           return dData-'0';
-	else if((dData >= 'A')&&(dData <= 'F'))
+    else if((dData >= 'A')&&(dData <= 'F'))
           return dData+10-'A';
         else
           return dData+10-'a';
@@ -193,38 +193,38 @@ unsigned char str_to_int(unsigned char dData)
 int string_to_hex( char *data , int length , char *respone)
 {
 
-	if(length%2 != 0)	return -1;
+    if(length%2 != 0)    return -1;
 
-	for( int i = 0 ; i < length/2 ;i++)
-	{
-		*respone++ = (((str_to_int(data[i*2])<<4)&0xf0)|(str_to_int(data[i*2+1])&0x0f)); 
-	}
+    for( int i = 0 ; i < length/2 ;i++)
+    {
+        *respone++ = (((str_to_int(data[i*2])<<4)&0xf0)|(str_to_int(data[i*2+1])&0x0f)); 
+    }
 
-	return 0;
-	
+    return 0;
+    
 }
 
 
 void sys_delay(uint32_t ms)
 {
 
-	if(ms < 500)
-	{
-		osDelay(ms);
-	}
-	else
-	{
-		for(uint16_t i = 0 ; i <  ms/500 ; i++)
-		{
-			osDelay(500);
+    if(ms < 500)
+    {
+        osDelay(ms);
+    }
+    else
+    {
+        for(uint16_t i = 0 ; i <  ms/500 ; i++)
+        {
+            osDelay(500);
             HAL_IWDG_Refresh(&hiwdg);
-			task_keep_alive(TASK_ALL_BIT); 
-		}
-		osDelay( ms%500);
+            task_keep_alive(TASK_ALL_BIT); 
+        }
+        osDelay( ms%500);
         HAL_IWDG_Refresh(&hiwdg);
-		task_keep_alive(TASK_ALL_BIT); 
+        task_keep_alive(TASK_ALL_BIT); 
         
-	}
+    }
 
 
 }
@@ -257,7 +257,7 @@ void IPStrTO4ARR(unsigned char *arr,unsigned char *str)
     int Arr[4];
     sscanf((const char*)str,"%d.%d.%d.%d",&Arr[0],&Arr[1],&Arr[2],&Arr[3]);
     for(char i=0;i<4;i++)
-    	arr[i]=Arr[i];
+        arr[i]=Arr[i];
 
 }
 

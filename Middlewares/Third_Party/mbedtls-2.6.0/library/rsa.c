@@ -1762,7 +1762,7 @@ int mbedtls_rsa_self_test( int verbose )
 #if defined(MBEDTLS_SHA1_C)
     unsigned char sha1sum[20];
 #endif
-	
+    
     mbedtls_rsa_init( &rsa, MBEDTLS_RSA_PKCS_V15, 0 );
 
     rsa.len = KEY_LEN;

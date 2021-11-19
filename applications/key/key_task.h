@@ -11,7 +11,7 @@
 
 #define PASSWORD_MAX_LENGTH             6
 #define FIXED_PASSWORD_LENGTH           6
-#define TEMPORARY_PASSWORD_LENGTH		4
+#define TEMPORARY_PASSWORD_LENGTH        4
 
 #if ((TEMPORARY_PASSWORD_LENGTH > PASSWORD_MAX_LENGTH)||(FIXED_PASSWORD_LENGTH > PASSWORD_MAX_LENGTH))
 #error  "临时密码或者固定密码长度大于密码缓存最大长度"
@@ -21,7 +21,6 @@
 typedef enum
 {
     SYS_KEY,
-    TOUCH_KEY,
     FUN_KEY,
 } keyHandleEnum;
 

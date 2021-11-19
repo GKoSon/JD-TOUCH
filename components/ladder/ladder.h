@@ -1,6 +1,6 @@
 
 #ifndef LADDER_H_
-#define	LADDER_H_
+#define    LADDER_H_
 
 #include "string.h"
 #include "stdint.h"
@@ -14,15 +14,15 @@
  *  是否开启梯控功能
  */
 #if (DEVICE_FUNCTION&FIRMWARE_FLAG_TIKONG)
-#define USE_LADDER	1
+#define USE_LADDER    1
 #else
-#define USE_LADDER	0	 
+#define USE_LADDER    0     
 #endif
 
 
 //使用梯控厂家
 
-#define	TIBOSHI				
+#define    TIBOSHI                
 
 
 //协议字节偏移量及字节 协议顺序 开门ID->数据字段ID->用户楼层信息->用户房间信息->用户楼层权限
@@ -47,16 +47,16 @@
 
 typedef enum
 {
-	LADDER_USER_POWER =0,
-	LADDER_ADMIN_POWER,
+    LADDER_USER_POWER =0,
+    LADDER_ADMIN_POWER,
 }ladderPowerEnum;
 
 typedef struct
 {
-	uint16_t	userFloor;
-	uint16_t	userRoom;
-    uint8_t		cardId[4];
-	uint8_t		floor[8];
+    uint16_t    userFloor;
+    uint16_t    userRoom;
+    uint8_t        cardId[4];
+    uint8_t        floor[8];
 }LadderUserMsgType;
 
 

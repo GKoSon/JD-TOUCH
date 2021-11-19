@@ -22,7 +22,7 @@ void components_init( void )
             comp_log(ERR , "conponents init is error , start=%x , end = %x\n" ,
                         __component_start ,__component_end );
         }
-	}
+    }
     permiList_clear_overdue();
 
 }

@@ -51,8 +51,8 @@ void sys_cfg_clear( void )
 {
     uint8_t cnt = 100,ack=0;
   
-	if( chip_flash_get_lock() == TRUE )
-	{
+    if( chip_flash_get_lock() == TRUE )
+    {
       
       while(1)
       {
@@ -72,7 +72,7 @@ void sys_cfg_clear( void )
           log(INFO,"CFG内存格式化成功r\n");
       
     }
-		
+        
      chip_flash_release_lock();
 
 
@@ -105,7 +105,7 @@ void sys_cfg_write(SystemConfigType *cfg)
       chip_flash_release_lock(); 
     } 
     else
-	log(ERR,"sys_cfg_write ERR\n"); 
+    log(ERR,"sys_cfg_write ERR\n"); 
 }
 
 
@@ -168,7 +168,7 @@ void sys_info_read_device_module( void )
 {
     uint8_t config=0 , config1 = 0 , config2 = 0;
     uint32_t moduleValue = 0;
-	
+    
     pin_ops.pin_mode(NET_CONFIG_PIN1 , PIN_MODE_INPUT);
     pin_ops.pin_mode(NET_CONFIG_PIN2 , PIN_MODE_INPUT);
     
@@ -177,11 +177,11 @@ void sys_info_read_device_module( void )
     
     config = (config1<<1|config2)&0x03;
     
-	
+    
     if( config ==0)
     {
         log(DEBUG,"GPRS联网模式\n");	
-        cfg.parm.support_net_types = TSLNetType_TSLGPRS;	
+        cfg.parm.support_net_types = TSLNetType_TSLGPRS;    
     }
  
     if( config ==1)
@@ -207,7 +207,7 @@ void sys_info_read_device_module( void )
       }
       else if(( moduleValue >= 140) && ( moduleValue < 180))
       {
-        cfg.parm.support_ble_types = 0;	
+        cfg.parm.support_ble_types = 0;    
       }
       else if(( moduleValue >= 200) && ( moduleValue < 240))
       {
@@ -238,7 +238,7 @@ void sysCfg_set_ble_default( void )
 
     sys_delay(300);
 
-    log(ERR,"准备BLE读取MAC地址\n");
+    log(ERR,"[SYS]准备BLE读取MAC地址\n");
     if( btModule.read_mac(cfg.ble.ble_mac) == BLE_OK)
     {
 
@@ -248,7 +248,7 @@ void sysCfg_set_ble_default( void )
     }
     else
     {
-        log(DEBUG,"BLE读取MAC地址失败\n");SHOWME;
+        log(DEBUG,"[SYS]BLE读取MAC地址失败\n");
     }
 
 }
@@ -294,9 +294,9 @@ void sysCfg_set_default( void )
       memset(&cfg.commun , 0x00 , sizeof(SystemCommunitiesType));
       sys_info_read_device_module();  //获得参数 一个 三个
 
-      bluetooth_drv_init();		//初始化蓝牙模块  一个参数
+      bluetooth_drv_init();        //初始化蓝牙模块  一个参数
 
-      tag_component_init();		//初始化NFC芯片   写死
+      tag_component_init();        //初始化NFC芯片   写死
 
       socket_compon_init();       //初始化SOCKET    三个参数
 
@@ -317,7 +317,7 @@ void sysCfg_set_default( void )
       memcpy(cfg.wifi.pwd , "WXtsl66117066" , strlen("WXtsl66117066"));
 
 
-      //OTA	全0
+      //OTA    全0
       cfg.parm.soft_version = DEVICE_SW_VERSION;
 
       //云端网诺  
@@ -352,15 +352,15 @@ void sysCfg_set_default( void )
 }
 void showsyslocation(SystemCommunitiesType *p)
 {
-	log(ERR,"super_code = %d\n" ,  p->super_code);
-	for(char i=0;i<5;i++)
-	{
-		 printf("[%d]village_id  = %08X\t" ,  i,p->communities[i].village_id);
-		 printf("[%d]building_id = %08X\t" ,  i,p->communities[i].building_id);
-		 printf("[%d]floor_id    = %08X\t" ,  i,p->communities[i].floor_id);
-		 printf("[%d]house_id    = %08X\t" ,  i,p->communities[i].house_id);
-		 printf("\r\n");
-	}
+    log(ERR,"super_code = %d\n" ,  p->super_code);
+    for(char i=0;i<5;i++)
+    {
+         printf("[%d]village_id  = %08X\t" ,  i,p->communities[i].village_id);
+         printf("[%d]building_id = %08X\t" ,  i,p->communities[i].building_id);
+         printf("[%d]floor_id    = %08X\t" ,  i,p->communities[i].floor_id);
+         printf("[%d]house_id    = %08X\t" ,  i,p->communities[i].house_id);
+         printf("\r\n");
+    }
 }
 
 void sysCfg_print( void )
@@ -627,9 +627,9 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         }break;
         
         case CFG_SYS_DEVICE_NAME:
-	{
+    {
             *parma = cfg.parm.deviceName;
-	}break;
+    }break;
 
         case CFG_SYS_SW_VERSION:
         {
@@ -733,7 +733,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             *parma = &cfg.devIp;
         }break;
         
-			 
+             
         case CFG_SET_RESTORE_FLAG:
         {
             data = cfg.sysRestoreFlag;

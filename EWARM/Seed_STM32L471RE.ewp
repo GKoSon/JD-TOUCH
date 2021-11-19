@@ -773,7 +773,7 @@
             <archiveVersion>1</archiveVersion>
             <data>
                 <prebuild></prebuild>
-                <postbuild>$PROJ_DIR$\..\Tool\CombineBootloaderAndApplication.exe $PROJ_DIR$\..\bootloader\Debug\Exe\bootloader.hex $PROJ_DIR$\Seed_STM32L471RE\Exe\application.hex $PROJ_DIR$\Seed_STM32L471RE\Exe\TOUCH-BLUEV100.hex</postbuild>
+                <postbuild>$PROJ_DIR$\..\Tool\CombineBootloaderAndApplication.exe $PROJ_DIR$\..\bootloader\Debug\Exe\bootloader.hex $PROJ_DIR$\Seed_STM32L471RE\Exe\application.hex $PROJ_DIR$\Seed_STM32L471RE\Exe\JDTOUCH_V1.hex</postbuild>
             </data>
         </settings>
         <settings>
@@ -2280,18 +2280,6 @@
                 <name>$PROJ_DIR$\..\applications\card\card.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\applications\card\fKDataHand.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\card\fkDataHand.h</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\card\phoneTag.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\card\phoneTag.h</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\applications\card\swipeTag.c</name>
             </file>
             <file>
@@ -2302,39 +2290,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\applications\card\tslDataHand.h</name>
-            </file>
-        </group>
-        <group>
-            <name>debugs</name>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_buletooth.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_cpu.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_fatfs.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_get_time.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_help.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_nfc.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_permi_list.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_pwd.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_resert.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\applications\debugs\debug_run.c</name>
             </file>
         </group>
         <group>
@@ -2403,12 +2358,6 @@
                 <name>$PROJ_DIR$\..\Inc\config.h</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Src\fatfs.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\flash_fat_dev.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Src\freertos.c</name>
             </file>
             <file>
@@ -2443,9 +2392,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Src\usart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\user_diskio.c</name>
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Src\variable.c</name>
@@ -2692,21 +2638,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\components\err_log\err_log.h</name>
-            </file>
-        </group>
-        <group>
-            <name>ladder</name>
-            <group>
-                <name>TIBOSHI</name>
-                <file>
-                    <name>$PROJ_DIR$\..\components\ladder\TIBOSHI\TIBOSHI.c</name>
-                </file>
-            </group>
-            <file>
-                <name>$PROJ_DIR$\..\components\ladder\ladder.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\components\ladder\ladder.h</name>
             </file>
         </group>
         <group>
@@ -3062,15 +2993,6 @@
                     <name>$PROJ_DIR$\..\module\buletooth\BB0906\bb0906_protocol.h</name>
                 </file>
             </group>
-            <group>
-                <name>BM77</name>
-                <file>
-                    <name>$PROJ_DIR$\..\module\buletooth\BM77\bm77.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\module\buletooth\BM77\bm77.h</name>
-                </file>
-            </group>
         </group>
         <group>
             <name>card</name>
@@ -3117,18 +3039,6 @@
                 </group>
                 <group>
                     <name>drv</name>
-                    <file>
-                        <name>$PROJ_DIR$\..\module\card\st25r3911b\drv\appPhone.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\module\card\st25r3911b\drv\appPhone.h</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\module\card\st25r3911b\drv\cqBus.c</name>
-                    </file>
-                    <file>
-                        <name>$PROJ_DIR$\..\module\card\st25r3911b\drv\cqBus.h</name>
-                    </file>
                     <file>
                         <name>$PROJ_DIR$\..\module\card\st25r3911b\drv\fkCard.c</name>
                     </file>
@@ -3269,15 +3179,6 @@
             <file>
                 <name>$PROJ_DIR$\..\module\door_key\door_key.h</name>
             </file>
-        </group>
-        <group>
-            <name>keyboard</name>
-            <group>
-                <name>CY8CMBR3116</name>
-                <file>
-                    <name>$PROJ_DIR$\..\module\keyboard\CY8CMBR3116\CY8CMBR3116.c</name>
-                </file>
-            </group>
         </group>
         <group>
             <name>magnet</name>

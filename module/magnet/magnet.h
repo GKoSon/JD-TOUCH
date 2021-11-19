@@ -6,8 +6,8 @@
 
 typedef enum
 {
-	STATUS_CLOSE = 0,
-	STATUS_OPEN ,
+    STATUS_CLOSE = 0,
+    STATUS_OPEN ,
 }magnetStatusEnum;
 
 extern uint8_t magnetAlarmStatus;

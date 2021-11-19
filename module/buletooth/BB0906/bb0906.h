@@ -193,8 +193,8 @@ extern bleReceiveModeEnum           ble_receive_mode;
 extern bleModuleReceiveCmdType      bleModuleReceiveCmd;
 
 
-void ble_cleal_timer( void );
+void ble_clear_timerflag( void );
 void bb0906_init( void );
-extern btDrvType	BB0906Drv;
+extern btDrvType    BB0906Drv;
 #endif
 

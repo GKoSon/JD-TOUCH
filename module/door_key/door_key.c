@@ -23,11 +23,11 @@ static void door_key_timer_isr(void)
     }
     if( pushTime == 2)
     {
-    	keyTaskType key;
+        keyTaskType key;
 
-    	key.cmd = FUN_KEY;
-    	key.keyValue = OPEN_DOOR_KEY;
-    	xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
+        key.cmd = FUN_KEY;
+        key.keyValue = OPEN_DOOR_KEY;
+        xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
     }
 
 }

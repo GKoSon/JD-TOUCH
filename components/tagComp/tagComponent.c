@@ -3,7 +3,7 @@
 #include "component.h"
 #include "sysCfg.h"
 
-tagObjType	*tagComp = NULL;
+tagObjType    *tagComp = NULL;
 
 
 void tag_component_init( void )

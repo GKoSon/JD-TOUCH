@@ -39,19 +39,19 @@ while (0)
 
 char *getBleMac() {
   
-	uint8_t *mac;
+    uint8_t *mac;
 
-	config.read(CFG_MQTT_MAC , (void **)&mac);
+    config.read(CFG_MQTT_MAC , (void **)&mac);
         
-	return (char *)mac;
+    return (char *)mac;
 }
 
 char *getDeviceId() {
-	uint8_t *mac;
+    uint8_t *mac;
 
-	config.read(CFG_MQTT_MAC , (void **)&mac);
+    config.read(CFG_MQTT_MAC , (void **)&mac);
         
-	return (char *)mac;
+    return (char *)mac;
 }
 
 
@@ -61,7 +61,7 @@ char *getselfIP() {
   
     static char ip[16];
 
-    DeviceIpType	*devIp;
+    DeviceIpType    *devIp;
     
     memset(ip,0,16);
 
@@ -74,11 +74,11 @@ char *getselfIP() {
 }
 
 char *getprojpwd() {
-	uint8_t *pd;
+    uint8_t *pd;
 
-	config.read(CFG_PRO_PWD , (void **)&pd);
+    config.read(CFG_PRO_PWD , (void **)&pd);
 
-	return (char *)pd;
+    return (char *)pd;
 }
 
 
@@ -91,15 +91,15 @@ static void mqtt_recv_task( void const *pvParameters)
 {
     mqttRecvMsgType msg;
     
-	mqttClientType	*client = NULL;
+    mqttClientType    *client = NULL;
 
-	configASSERT(pvParameters);
-	
+    configASSERT(pvParameters);
+    
     client = (mqttClientType *)pvParameters;
 
-	memset(&msg , 0x00 , sizeof(mqttRecvMsgType));
+    memset(&msg , 0x00 , sizeof(mqttRecvMsgType));
 
-	while( 1 ) 
+    while( 1 ) 
         {
           
           if(xQueueReceive(xMqttRecvQueue, &msg, 1000) == pdTRUE) 
@@ -117,7 +117,7 @@ static void mqtt_recv_task( void const *pvParameters)
               MutexUnlock(&client->mutex);
           }
                 
-	}
+    }
 }
 
 void creat_tsl_mqtt_task( mqttClientType* c) {
@@ -176,7 +176,7 @@ char * GmakeJson(void)
         cJSON_Delete(pRoot);
         return NULL;
     }
-	printf("%s",pJson);
+    printf("%s",pJson);
     return pJson;
 }
 
@@ -188,25 +188,25 @@ int GparseJson(const char * pJson)
     {
         return 1;
     }
-	
-//Ö±½Ó½âÎö	
+    
+//Ö±½Ó        Îö	
     cJSON * pRoot = cJSON_Parse(pJson);
     if(NULL == pRoot)
     {
         return 2;
     }
-	
-//ÄÃµ½	aStr
+    
+//ÄÃ        	aStr
     cJSON * pSub_1 = cJSON_GetObjectItem(pRoot, "aStr");
     if(NULL == pSub_1)
     {
         cJSON_Delete(pRoot);
         return 3;
     }
-	
+    
     printf("get aStr : [%s]\n", pSub_1->valuestring);
-	
-//ÄÃµ½	xStr	
+    
+//ÄÃ        	xS        	
     pSub_1 = cJSON_GetObjectItem(pRoot, "xStr");
     if(NULL == pSub_1)
     {
@@ -214,9 +214,9 @@ int GparseJson(const char * pJson)
         return 4;
     }
     printf("get xStr : [%s]\n", pSub_1->valuestring);
-	
-	
-//ÄÃµ½	subobject_1	
+    
+    
+//ÄÃ        	subobject        	
     pSub_1 = cJSON_GetObjectItem(pRoot, "subobject_1");
     if(NULL == pSub_1)
     {
@@ -224,8 +224,8 @@ int GparseJson(const char * pJson)
         return 5;
     }
     printf("get Sub Obj 1\n");
-	
-//´ÓpSub_1ÄÃµ½	bStr	
+    
+//´ÓpSub_1Ä        ½	b        r	
     cJSON * pSub_2 = cJSON_GetObjectItem(pSub_1, "bStr");
     if(NULL == pSub_2)
     {
@@ -233,8 +233,8 @@ int GparseJson(const char * pJson)
         return 6;
     }
     printf("get bStr : [%s]\n", pSub_2->valuestring);
-	
-//´ÓpSub_1ÄÃµ½	subobject_2
+    
+//´ÓpSub_1Ä        ½	subobject_2
     pSub_2 = cJSON_GetObjectItem(pSub_1, "subobject_2");
     if(NULL == pSub_2)
     {
@@ -242,8 +242,8 @@ int GparseJson(const char * pJson)
         return 7;
     }
     printf("get Obj 2\n");
-	
-//´ÓpSub_2ÄÃµ½	cStr	
+    
+//´ÓpSub_2Ä        ½	c        r	
     cJSON * pStr = cJSON_GetObjectItem(pSub_2, "cStr");
     if(NULL == pStr)
     {
@@ -268,25 +268,25 @@ openResult 0-³É¹¦£¬1-ÎÞÐ§¶þÎ¬Âë , 2-ÎÞÐ§ÓÃ»§
 
 char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) 
 {
-	cJSON *root = NULL;//»ù´¡ÀàÐÍ
+    cJSON *root = NULL;//»ù´¡ÀàÐÍ
 
-	char *outStr;
+    char *outStr;
 
-	root =  cJSON_CreateObject();
-	cJSON_AddStringToObject(root,"deviceNo", getDeviceId());
-	cJSON_AddNumberToObject(root,"openType", 0);
-	cJSON_AddNumberToObject(root,"openTime",(double) openTime*1000);
-	cJSON_AddNumberToObject(root,"lockStatus", lockStatus);
-	cJSON_AddNumberToObject(root,"openResult", openResult);
-
-
-	cJSON_AddStringToObject(root,"cardNo", cardNo);
-	cJSON_AddNumberToObject(root,"cardType", cardType);
-	cJSON_AddNumberToObject(root,"cardIssueType", cardIssueType);
+    root =  cJSON_CreateObject();
+    cJSON_AddStringToObject(root,"deviceNo", getDeviceId());
+    cJSON_AddNumberToObject(root,"openType", 0);
+    cJSON_AddNumberToObject(root,"openTime",(double) openTime*1000);
+    cJSON_AddNumberToObject(root,"lockStatus", lockStatus);
+    cJSON_AddNumberToObject(root,"openResult", openResult);
 
 
-	outStr = cJSON_Print(root);
-	cJSON_Delete(root);
+    cJSON_AddStringToObject(root,"cardNo", cardNo);
+    cJSON_AddNumberToObject(root,"cardType", cardType);
+    cJSON_AddNumberToObject(root,"cardIssueType", cardIssueType);
+
+
+    outStr = cJSON_Print(root);
+    cJSON_Delete(root);
         
         if(strlen(outStr) < 2)
       soft_system_resert(__FUNCTION__);
@@ -294,14 +294,14 @@ char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResu
     printf("\r\n\r\n¡¾%d¡¿[%x][%x][%x]\r\n\r\n", strlen(outStr),outStr[0],outStr[1],outStr[2]);
     if(strlen(outStr) < 10)
       soft_system_resert(__FUNCTION__);
-	return outStr;
+    return outStr;
 }
 
 
 char *cj_create_uploadAccessLog_pwd(long openTime,   int passwordType) 
 {
 
-	return NULL;
+    return NULL;
 }
 
 
@@ -314,23 +314,23 @@ char *cj_create_uploadAccessLog(long openTime,int openType,int Result)
 
 char *cj_create_uploadAccessSensor(int sensorStatus) 
 {
-	cJSON *root = NULL;
-	char *outStr;
+    cJSON *root = NULL;
+    char *outStr;
 
-	root =  cJSON_CreateObject();
-	cJSON_AddStringToObject(root,"deviceNo", getDeviceId());
-	cJSON_AddNumberToObject(root,"logTime",  rtc.read_stamp());
-	cJSON_AddNumberToObject(root,"sensorStatus", sensorStatus);
+    root =  cJSON_CreateObject();
+    cJSON_AddStringToObject(root,"deviceNo", getDeviceId());
+    cJSON_AddNumberToObject(root,"logTime",  rtc.read_stamp());
+    cJSON_AddNumberToObject(root,"sensorStatus", sensorStatus);
 
-	
+    
 
-	outStr = cJSON_Print(root);
-	cJSON_Delete(root);
+    outStr = cJSON_Print(root);
+    cJSON_Delete(root);
         
     printf("\r\n\r\n¡¾%d¡¿[%x][%x][%x]\r\n\r\n", strlen(outStr),outStr[0],outStr[1],outStr[2]);
     if(strlen(outStr) < 10)
       soft_system_resert(__FUNCTION__);
-	return outStr;
+    return outStr;
 }
 
 char *cj_create_uploadDeviceVer(void)
@@ -502,7 +502,7 @@ void cj_response(char * seqNo,int statusCode) //1--Ê§°Ü 0--³É¹¦
     mqtt_send_publish(&client, (uint8_t *)topicPath, (uint8_t *)outStr, strlen(outStr), QOS1, 0);
     
 //    log(DEBUG,"topicPath¡¾%s¡¿[%s]\n",topicPath,outStr);
-	return ;
+    return ;
 }
              
 void upuploadDevicever(void) 
@@ -544,14 +544,14 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
     SHOWME
     char topicPath[50];    memset(topicPath,0,50); 
         
- 	char *send = cj_create_uploadAccessLog_card(openTime,lockStatus, openResult,cardNo, cardType,cardIssueType);
+     char *send = cj_create_uploadAccessLog_card(openTime,lockStatus, openResult,cardNo, cardType,cardIssueType);
 
     //sprintf(topicPath,"%s%s","/client/uploadAccessLog/",getBleMac());
     memcpy(topicPath,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
     strcat(topicPath,getBleMac());
    
     log(DEBUG,"topicPath¡¾%s¡¿[%s]\n",topicPath,send);
-	mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+    mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
         
     journal.send_queue(LOG_DEL , 0);
     
@@ -626,7 +626,7 @@ void upkeepAlive(char isr)
 {
     SHOWME
     char topicPath[50];    memset(topicPath,0,50); 
- 	char *send = cj_create_keepAlive(0);//-------------1 ¹ÊÕÏ     0ÔÚÏß  ¿ÉÒÔ×öÈ«¾Ö±êÊ¶£¡£¡£¡£¡£¡
+     char *send = cj_create_keepAlive(0);//-------------1 ¹ÊÕÏ     0ÔÚÏß  ¿ÉÒÔ×öÈ«¾Ö±êÊ¶£¡£¡£¡£¡£¡
     
     sprintf(topicPath,"%s%s","/client/keepAlive/",getBleMac());
     
@@ -636,7 +636,7 @@ void upkeepAlive(char isr)
     if(isr)
       mqtt_send_publish_form_isr(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
     else
-	  mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+      mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
 }
 
 
@@ -747,7 +747,7 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
 char downProgramURL(char *pJson)
 {
       SHOWME 
-	  char code = 1;/*1--Ê§°Ü*/
+      char code = 1;/*1--Ê§°Ü*/
       int port = 0,ver=0;
       char *p = NULL;
       char url[64];
@@ -768,7 +768,7 @@ char downProgramURL(char *pJson)
           cJSON_Delete(pRoot);
           return code;
       }
-	  memset(CommonseqNo,0,33);
+      memset(CommonseqNo,0,33);
       sprintf(CommonseqNo,"%.32s",pSubONE->valuestring);
       printf("NO--%s\r\n",pSubONE->valuestring);
       
@@ -801,7 +801,7 @@ char downProgramURL(char *pJson)
           p[i]=' ';break;
         }
 
-      	sscanf(p, "%d%s",  &port, &url[1]);
+          sscanf(p, "%d%s",  &port, &url[1]);
         printf("[port-d-%d][url--%s]\r\n",port,url);
         
         config.write(CFG_OTA_URL ,url ,0);
@@ -832,7 +832,7 @@ char downProgramURL(char *pJson)
       
 out:
      cj_response(CommonseqNo ,code ); 
-	 return code;
+     return code;
 }
 
 void downdispatchFilterItem(char *p)
@@ -851,7 +851,7 @@ void downdispatchFilterItem(char *p)
         list.ID = atol64((char*)item.cardNo);
         list.time = item.endTime;
 
-				
+                
         switch( item.filterType )
         {
             case 0:
@@ -887,10 +887,10 @@ void downdispatchFilterItem(char *p)
 
 typedef struct _cj_uploadDeviceInfoRequest
 {
-	char deviceNo[12] ;
-	int  apkVersion;
-	char bluetoothMac[12] ;
-	char ipAddress[16];
+    char deviceNo[12] ;
+    int  apkVersion;
+    char bluetoothMac[12] ;
+    char ipAddress[16];
 } cj_uploadDeviceInfoRequest;
 
 void showuploadDeviceInfoRequest(cj_uploadDeviceInfoRequest *p)
@@ -934,7 +934,7 @@ int cj_parse_uploadDeviceInfoRequest(const char * pJson,cj_uploadDeviceInfoReque
     pSub = cJSON_GetObjectItem(pRoot, "apkVersion");
     if(NULL != pSub)
     {
-      cnt++;	
+      cnt++;    
       item->apkVersion = pSub->valueint;
     }
 
@@ -942,16 +942,16 @@ int cj_parse_uploadDeviceInfoRequest(const char * pJson,cj_uploadDeviceInfoReque
     pSub = cJSON_GetObjectItem(pRoot, "bluetoothMac");
     if(NULL != pSub)
     {
-      cnt++;	
+      cnt++;    
       memcpy(item->bluetoothMac,pSub->valuestring,strlen(pSub->valuestring));
     }
 
     pSub = cJSON_GetObjectItem(pRoot, "ipAddress");
     if(NULL != pSub)
     {
-      cnt++;	
+      cnt++;    
       memcpy(item->ipAddress,pSub->valuestring,strlen(pSub->valuestring));
-    }		
+    }        
 
     cJSON_Delete(pRoot);
 
@@ -994,7 +994,7 @@ char downtimeCalibration(char *pJson)
 
   
   stamp = (uint32_t)(pSub_2->valuedouble/1000);   //https://tool.lu/timestamp/ ÊäÈëºÁÃë×¼»°Îª±±¾©Ê±¼ä
-		
+        
   
   if( !Gequal( stamp, rtc.read_stamp(), 5))
   {
@@ -1103,8 +1103,8 @@ const char httpurl[4][12]={\
 void HTTP_POSTHEAD(char *out,const char *url,uint8_t *strip,uint16_t intport,uint16_t len)
 {
 sprintf(out,"POST /v1/device/%s HTTP/1.1\r\n"\
-							"Host:%s:%d\r\n"\
-							"Content-Length:%d\r\n\r\n",url,(char *)strip,intport,len);
+                            "Host:%s:%d\r\n"\
+                            "Content-Length:%d\r\n\r\n",url,(char *)strip,intport,len);
 
 }
 
@@ -1121,37 +1121,37 @@ uint16_t cj_create_httpreg0update1(char id,char *out)
 
       config.read(CFG_PRO_PWD , (void **)&pd);
       root =  cJSON_CreateObject();
-      cJSON_AddStringToObject(root,"deviceName", 		bh->NAME);
-      cJSON_AddStringToObject(root,"deviceNo",  		getDeviceId());
+      cJSON_AddStringToObject(root,"deviceName",         bh->NAME);
+      cJSON_AddStringToObject(root,"deviceNo",          getDeviceId());
       cJSON_AddStringToObject(root,"bluetoothPassword",     pd);
-      cJSON_AddStringToObject(root,"doorOpenPassword",		pd);
-      cJSON_AddNumberToObject(root,"doorOpenDelay", 		config.read(CFG_SYS_OPEN_TIME , NULL));//¡¾1¡¿
-      cJSON_AddNumberToObject(root,"doorAlarmDelay", 		config.read(CFG_SYS_ALARM_TIME , NULL));//¡¾2¡¿
-      cJSON_AddStringToObject(root,"streetID", 		        bh->streetID);
-      cJSON_AddStringToObject(root,"committeeID", 		    bh->committeeID);
-      cJSON_AddStringToObject(root,"villageID",		        bh->villageID);
-      cJSON_AddStringToObject(root,"buildingID", 		    bh->buildingID);
-      cJSON_AddStringToObject(root,"type",		            "access");
-      cJSON_AddStringToObject(root,"productModel", 		    bh->productName_productModel);//-------------------------Ð´ËÀ
-      cJSON_AddNumberToObject(root,"longitude", 		    bh->longitude);//¡¾3¡¿
-      cJSON_AddNumberToObject(root,"latitude", 		        bh->latitude);//¡¾4¡¿
+      cJSON_AddStringToObject(root,"doorOpenPassword",        pd);
+      cJSON_AddNumberToObject(root,"doorOpenDelay",         config.read(CFG_SYS_OPEN_TIME , NULL));//¡¾1¡¿
+      cJSON_AddNumberToObject(root,"doorAlarmDelay",         config.read(CFG_SYS_ALARM_TIME , NULL));//¡¾2¡¿
+      cJSON_AddStringToObject(root,"streetID",                 bh->streetID);
+      cJSON_AddStringToObject(root,"committeeID",             bh->committeeID);
+      cJSON_AddStringToObject(root,"villageID",                bh->villageID);
+      cJSON_AddStringToObject(root,"buildingID",             bh->buildingID);
+      cJSON_AddStringToObject(root,"type",                    "access");
+      cJSON_AddStringToObject(root,"productModel",             bh->productName_productModel);//-------------------------Ð´ËÀ
+      cJSON_AddNumberToObject(root,"longitude",             bh->longitude);//¡¾3¡¿
+      cJSON_AddNumberToObject(root,"latitude",                 bh->latitude);//¡¾4¡¿
 
       son =  cJSON_CreateObject();
-      DeviceIpType	*devIp;    
+      DeviceIpType    *devIp;    
       config.read(CFG_IP_INFO , (void **)&devIp);
       char temp[16];
       memset(temp,0,16);
       IP4ARRToStr(devIp->ip,temp);
-      cJSON_AddStringToObject(son,"deviceIP", 		temp);
+      cJSON_AddStringToObject(son,"deviceIP",         temp);
       memset(temp,0,16);
       IP4ARRToStr(devIp->mark,temp) ;
-      cJSON_AddStringToObject(son,"deviceMask", 	        temp);
+      cJSON_AddStringToObject(son,"deviceMask",             temp);
       memset(temp,0,16);
       IP4ARRToStr(devIp->gateway,temp) ;
-      cJSON_AddStringToObject(son,"deviceGateway", 	        temp);
+      cJSON_AddStringToObject(son,"deviceGateway",             temp);
       memset(temp,0,16);
       IP4ARRToStr(devIp->dns,temp) ;
-      cJSON_AddStringToObject(son,"dnsServer", 		temp);
+      cJSON_AddStringToObject(son,"dnsServer",         temp);
       cJSON_AddItemToObject(root, "network", son);
 
 /*³åÍ» seriesType 12Î§Ç½»ú  10ÃÅ¿Ú»ú*/
@@ -1189,7 +1189,7 @@ uint16_t cj_create_httpdel2canreg3(char id,char *out)
       char *outStr;uint16_t bodylen=0;
 
       root =  cJSON_CreateObject();
-      cJSON_AddStringToObject(root,"deviceNo", 		getDeviceId());
+      cJSON_AddStringToObject(root,"deviceNo",         getDeviceId());
 
       outStr = cJSON_Print(root);
       cJSON_Delete(root);

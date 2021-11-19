@@ -17,7 +17,7 @@
 typedef struct _component_init_tbls
 {
     uint8_t     *name;
-	void        (*fun)( void);
+    void        (*fun)( void);
 }modules_init_tbls;
 
   

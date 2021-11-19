@@ -15,12 +15,12 @@ void relay_control(uint8_t status);
 relayFunsType relay = 
 {
     .open = relay_open,
-	.control = relay_control,
+    .control = relay_control,
 };
 
 void relay_control(uint8_t status)
 {
-	pin_ops.pin_write(RELAY_PIN , status);
+    pin_ops.pin_write(RELAY_PIN , status);
 }
 
 void relay_open( uint32_t delay_time )

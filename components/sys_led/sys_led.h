@@ -21,8 +21,8 @@ typedef enum
 {
     SYS_LED_INIT   = 0,
     SYS_LED_NORMAL,
-	SYS_LED_CONNECT_NET,
-	SYS_LED_CONNECT_SERVER,
+    SYS_LED_CONNECT_NET,
+    SYS_LED_CONNECT_SERVER,
     SYS_LED_MAX,
 }sysLedOperationEnum;
 
@@ -34,8 +34,8 @@ typedef enum
 }sysLedConfigTypeEnum;
 
 /* External variable **********************************/
-extern twinkleType			boardBeep;
-extern sysLedFunsType		sysLed;
+extern twinkleType            boardBeep;
+extern sysLedFunsType        sysLed;
 
 /* External variable for run mode ********************/
 extern blinkParmType    sysLedNormal;

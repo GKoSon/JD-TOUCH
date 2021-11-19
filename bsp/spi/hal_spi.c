@@ -9,14 +9,14 @@ void *hal_spi_init( void *port)
 
 void hal_spi_set_gpio(GPIO_TypeDef *gpio , uint16_t pin , uint8_t statue )
 {
-	if( statue )
-	{
-		HAL_GPIO_WritePin(gpio, pin ,  GPIO_PIN_RESET );
-	}
-	else
-	{
-		HAL_GPIO_WritePin(gpio, pin , GPIO_PIN_SET );         
-	}  
+    if( statue )
+    {
+        HAL_GPIO_WritePin(gpio, pin ,  GPIO_PIN_RESET );
+    }
+    else
+    {
+        HAL_GPIO_WritePin(gpio, pin , GPIO_PIN_SET );         
+    }  
 }
 
 
@@ -26,7 +26,7 @@ void hal_spi_set_cs( void *port , uint8_t NewState )
     
     if(spi->Instance == SPI1 )
     {
-        hal_spi_set_gpio(GPIOA, GPIO_PIN_4, NewState);	
+        hal_spi_set_gpio(GPIOA, GPIO_PIN_4, NewState);    
     }
     else if(spi->Instance == SPI2 )
     {
@@ -40,7 +40,7 @@ void hal_spi_set_cs( void *port , uint8_t NewState )
 }
 
 uint8_t hal_spi_send_and_receive_byte(void *port , uint8_t  data) 
-{	
+{    
     SPI_HandleTypeDef *spi = (SPI_HandleTypeDef *)port;
     uint8_t aRxBuffer = 0;
 
@@ -63,7 +63,7 @@ uint8_t hal_spi_send_and_receive_buffer(void *port , uint8_t *pCommand, uint16_t
     }
 
     return 0xFF;
-	
+    
 }
 
 

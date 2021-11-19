@@ -3,32 +3,32 @@
 
 #include "spi_flash.h"
 
-#define		ERR_LOG_INFO_ADDR		ERR_START_ADDR
-#define		ERR_LOG_DATA_ADDR		ERR_LOG_INFO_ADDR+4096
+#define        ERR_LOG_INFO_ADDR        ERR_START_ADDR
+#define        ERR_LOG_DATA_ADDR        ERR_LOG_INFO_ADDR+4096
 
 
 typedef enum
 {
-	ASSERT_ERR = 0,
-	DEBUG_MESSAGE,
-	SYS_RESERT_ERR_CODE,
-	BOARD_VDD_ERR,
-	BOARD_TOUCH_IC_ERR,
-	BOARD_SWIP_IC_ERR,
-	TASK_OVERFLOW_ERR,
-	NET_AUTH_ERR,
+    ASSERT_ERR = 0,
+    DEBUG_MESSAGE,
+    SYS_RESERT_ERR_CODE,
+    BOARD_VDD_ERR,
+    BOARD_TOUCH_IC_ERR,
+    BOARD_SWIP_IC_ERR,
+    TASK_OVERFLOW_ERR,
+    NET_AUTH_ERR,
 }errCodeEnum;
 
 typedef struct
 {
-	uint32_t pos;
-	uint32_t cnt;
+    uint32_t pos;
+    uint32_t cnt;
 }errInfoType;
 
 typedef struct
 {
-	uint32_t time;
-	uint8_t buffer[124];
+    uint32_t time;
+    uint8_t buffer[124];
 }errMsgType;
 
 

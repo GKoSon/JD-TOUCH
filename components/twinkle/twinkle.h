@@ -11,8 +11,8 @@ typedef struct
     uint32_t        timeCnt;
     uint8_t         mode;
     uint8_t         openFlag;
-    int         	cnt;
-    int         	flashCnt;
+    int             cnt;
+    int             flashCnt;
     uint32_t        delayTime;
     uint32_t        openTime;
     uint32_t        closeTime;

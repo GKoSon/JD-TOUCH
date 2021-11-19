@@ -6,9 +6,9 @@
 
 typedef struct
 {
-	void (*putc)	(uint8_t ch);
-	void (*puts)	(uint8_t *pData , uint16_t len);
-	void (*getch)	(uint8_t ch);
+    void (*putc)    (uint8_t ch);
+    void (*puts)    (uint8_t *pData , uint16_t len);
+    void (*getch)    (uint8_t ch);
 }rs485OpsType;
 
 

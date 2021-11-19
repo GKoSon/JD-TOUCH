@@ -108,64 +108,64 @@ void MX_ADC1_Init(void)
 void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
 {
 
-	GPIO_InitTypeDef GPIO_InitStruct;
-	if(adcHandle->Instance==ADC1)
-	{
-		/* USER CODE BEGIN ADC1_MspInit 0 */
-		__HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_SYSCLK);
+    GPIO_InitTypeDef GPIO_InitStruct;
+    if(adcHandle->Instance==ADC1)
+    {
+        /* USER CODE BEGIN ADC1_MspInit 0 */
+        __HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_SYSCLK);
 
-		__HAL_RCC_GPIOC_CLK_ENABLE();
+        __HAL_RCC_GPIOC_CLK_ENABLE();
 
-		/* USER CODE END ADC1_MspInit 0 */
-		/* ADC1 clock enable */
-		__HAL_RCC_ADC_CLK_ENABLE();
+        /* USER CODE END ADC1_MspInit 0 */
+        /* ADC1 clock enable */
+        __HAL_RCC_ADC_CLK_ENABLE();
 
-		/**ADC1 GPIO Configuration    
-		PC1     ------> ADC1_IN2 
-		*/
-		GPIO_InitStruct.Pin = CHECK_VDD_Pin;
-		GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		HAL_GPIO_Init(CHECK_VDD_GPIO_Port, &GPIO_InitStruct);
+        /**ADC1 GPIO Configuration    
+        PC1     ------> ADC1_IN2 
+        */
+        GPIO_InitStruct.Pin = CHECK_VDD_Pin;
+        GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        HAL_GPIO_Init(CHECK_VDD_GPIO_Port, &GPIO_InitStruct);
 
-		/* USER CODE BEGIN ADC1_MspInit 1 */
-		/* Run the ADC calibration in single-ended mode */
-		if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED) != HAL_OK)
-		{
-			/* Calibration Error */
-			Error_Handler();
-		}
-		/* USER CODE END ADC1_MspInit 1 */
-	}
+        /* USER CODE BEGIN ADC1_MspInit 1 */
+        /* Run the ADC calibration in single-ended mode */
+        if (HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED) != HAL_OK)
+        {
+            /* Calibration Error */
+            Error_Handler();
+        }
+        /* USER CODE END ADC1_MspInit 1 */
+    }
 
-	if(adcHandle->Instance==ADC2)
-	{
-		/* USER CODE BEGIN ADC1_MspInit 0 */
-		__HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_SYSCLK);
+    if(adcHandle->Instance==ADC2)
+    {
+        /* USER CODE BEGIN ADC1_MspInit 0 */
+        __HAL_RCC_ADC_CONFIG(RCC_ADCCLKSOURCE_SYSCLK);
 
-		__HAL_RCC_GPIOC_CLK_ENABLE();
+        __HAL_RCC_GPIOC_CLK_ENABLE();
 
-		/* USER CODE END ADC1_MspInit 0 */
-		/* ADC1 clock enable */
-		__HAL_RCC_ADC_CLK_ENABLE();
+        /* USER CODE END ADC1_MspInit 0 */
+        /* ADC1 clock enable */
+        __HAL_RCC_ADC_CLK_ENABLE();
 
-		/**ADC1 GPIO Configuration    
-		PC0     ------> ADC2_IN1 
-		*/
-		GPIO_InitStruct.Pin = GPIO_PIN_0;
-		GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+        /**ADC1 GPIO Configuration    
+        PC0     ------> ADC2_IN1 
+        */
+        GPIO_InitStruct.Pin = GPIO_PIN_0;
+        GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
+        GPIO_InitStruct.Pull = GPIO_NOPULL;
+        HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-		/* USER CODE BEGIN ADC1_MspInit 1 */
-		/* Run the ADC calibration in single-ended mode */
-		if (HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED) != HAL_OK)
-		{
-			/* Calibration Error */
-			Error_Handler();
-		}
-		/* USER CODE END ADC1_MspInit 1 */
-	}
+        /* USER CODE BEGIN ADC1_MspInit 1 */
+        /* Run the ADC calibration in single-ended mode */
+        if (HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED) != HAL_OK)
+        {
+            /* Calibration Error */
+            Error_Handler();
+        }
+        /* USER CODE END ADC1_MspInit 1 */
+    }
 }
 
 /* ADC2 init function */
@@ -291,7 +291,7 @@ uint8_t hal_check_vdd( void )
     }
 
       
-	return( TRUE );
+    return( TRUE );
 }
 
 uint32_t read_module_vdd( void )
@@ -309,44 +309,44 @@ uint32_t read_module_vdd( void )
     HAL_ADC_Stop(&hadc1);
     
     log(DEBUG,"read value = %d\n" , uhADCxConvertedValue);
-	
-	return( uhADCxConvertedValue );
+    
+    return( uhADCxConvertedValue );
 }
 
 uint32_t read_choose_module_value( void )
 {
 
-	uint16_t readVdd[10] , max = 0  , min = 0xFFFF ,vddValue = 0;
-	uint32_t total = 0 ,returnvalue = 0;
+    uint16_t readVdd[10] , max = 0  , min = 0xFFFF ,vddValue = 0;
+    uint32_t total = 0 ,returnvalue = 0;
 
-	
-	for( uint8_t i = 0 ; i < 10 ; i++ )
-	{
-		HAL_ADC_Start(&hadc2);		  
-		HAL_ADC_PollForConversion(&hadc2, 50);
-		if(HAL_IS_BIT_SET(HAL_ADC_GetState(&hadc2), HAL_ADC_STATE_REG_EOC))
-		{
-			readVdd[i] = HAL_ADC_GetValue(&hadc2);
-		}
-		HAL_ADC_Stop(&hadc2);
-	
-	}
-	
-	for( uint8_t i = 0 ; i < 10 ; i++ )
-	{
-		max = MAX(max , readVdd[i]);
-		min = MIN(min , readVdd[i]);
-		
-		total += readVdd[i];
-	}
-	
-	vddValue = (total - max - min ) / 8;
+    
+    for( uint8_t i = 0 ; i < 10 ; i++ )
+    {
+        HAL_ADC_Start(&hadc2);          
+        HAL_ADC_PollForConversion(&hadc2, 50);
+        if(HAL_IS_BIT_SET(HAL_ADC_GetState(&hadc2), HAL_ADC_STATE_REG_EOC))
+        {
+            readVdd[i] = HAL_ADC_GetValue(&hadc2);
+        }
+        HAL_ADC_Stop(&hadc2);
+    
+    }
+    
+    for( uint8_t i = 0 ; i < 10 ; i++ )
+    {
+        max = MAX(max , readVdd[i]);
+        min = MIN(min , readVdd[i]);
+        
+        total += readVdd[i];
+    }
+    
+    vddValue = (total - max - min ) / 8;
 
-	returnvalue =  ((vddValue*330)/4096)+5;
-		
+    returnvalue =  ((vddValue*330)/4096)+5;
+        
     log(DEBUG,"read value adc2 = %d \n" , returnvalue );
  
-	return( returnvalue );
+    return( returnvalue );
 }
 
 /* USER CODE END 1 */

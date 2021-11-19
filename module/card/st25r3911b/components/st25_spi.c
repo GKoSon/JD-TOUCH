@@ -54,35 +54,35 @@ SPI_HandleTypeDef *pSpi = 0;
 
 void spiInit(SPI_HandleTypeDef *hspi)
 {
-	pSpi = hspi;
+    pSpi = hspi;
 }
 
 void spiSelect(GPIO_TypeDef *ssPort, uint16_t ssPin)
 {
-	HAL_GPIO_WritePin(ssPort, ssPin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(ssPort, ssPin, GPIO_PIN_RESET);
 }     
 
 void spiDeselect(GPIO_TypeDef *ssPort, uint16_t ssPin)
 {
-	HAL_GPIO_WritePin(ssPort, ssPin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(ssPort, ssPin, GPIO_PIN_SET);
 }
 
 HAL_StatusTypeDef spiTxRx(const uint8_t *txData, uint8_t *rxData, uint8_t length)
 {  
-	if(pSpi == 0)
-	return HAL_ERROR;
+    if(pSpi == 0)
+    return HAL_ERROR;
 
-	/* Initialize Tx data*/
-	if(txData != NULL)
-	{
-		memcpy(txBuf, txData, length );
-	}
-	else
-	{
-		memset(txBuf, 0x00, length );
-	}
+    /* Initialize Tx data*/
+    if(txData != NULL)
+    {
+        memcpy(txBuf, txData, length );
+    }
+    else
+    {
+        memset(txBuf, 0x00, length );
+    }
 
-	return HAL_SPI_TransmitReceive(pSpi, txBuf, (rxData != NULL) ? rxData : rxBuf, length, SPI_TIMEOUT);
+    return HAL_SPI_TransmitReceive(pSpi, txBuf, (rxData != NULL) ? rxData : rxBuf, length, SPI_TIMEOUT);
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -84,12 +84,12 @@ typedef enum
  */
 typedef struct
 {
-    uint8_t atqb; 										/*<! content of answer to request byte */
-    uint8_t pupi[ISO14443B_PUPI_LENGTH]; 				/*!< UID of the PICC */
+    uint8_t atqb;                                         /*<! content of answer to request byte */
+    uint8_t pupi[ISO14443B_PUPI_LENGTH];                 /*!< UID of the PICC */
     uint8_t applicationData[ISO14443B_APPDATA_LENGTH];  /*!< application specific data */
-    uint8_t protocolInfo[ISO14443B_PROTINFO_LENGTH]; 	/*!< protocol info */
-    bool    collision; 									/*!< true, if there was a collision which has been resolved,
-                        								otherwise no collision occured */
+    uint8_t protocolInfo[ISO14443B_PROTINFO_LENGTH];     /*!< protocol info */
+    bool    collision;                                     /*!< true, if there was a collision which has been resolved,
+                                                        otherwise no collision occured */
 }iso14443BProximityCard_t;
 
 /*! 

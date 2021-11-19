@@ -19,57 +19,57 @@ sockeArryType   sockeArry[SOCKET_CONNECT_MAX];
 
 void socket_bind_buffer( int8_t id , char *pData , uint16_t size)
 {
-	if( id < SOCKET_CONNECT_MAX)
-	{
-		sockeArry[id].len = 0;
-		sockeArry[id].status =  SOCKET_INIT;
-		sockeArry[id].useFlag = TRUE;
-		sockeArry[id].msg = pData;
+    if( id < SOCKET_CONNECT_MAX)
+    {
+        sockeArry[id].len = 0;
+        sockeArry[id].status =  SOCKET_INIT;
+        sockeArry[id].useFlag = TRUE;
+        sockeArry[id].msg = pData;
                 sockeArry[id].maxSize = size;
 
-	}
-	else
-	{
-		log_err("scoket绑定失败，id = %d\n" , id);
-	}
+    }
+    else
+    {
+        log_err("scoket绑定失败，id = %d\n" , id);
+    }
 }
 
 void socket_clear_bind( int8_t id)
 {
-	if( id < SOCKET_CONNECT_MAX)
-	{
-		sockeArry[id].len = 0;
-		sockeArry[id].status =  SOCKET_INIT;
-		sockeArry[id].useFlag = FALSE;
-		sockeArry[id].msg = NULL;
-	}
-	else
-	{
-		log_err("scoket解绑定失败，id = %d\n" , id);
-	}
+    if( id < SOCKET_CONNECT_MAX)
+    {
+        sockeArry[id].len = 0;
+        sockeArry[id].status =  SOCKET_INIT;
+        sockeArry[id].useFlag = FALSE;
+        sockeArry[id].msg = NULL;
+    }
+    else
+    {
+        log_err("scoket解绑定失败，id = %d\n" , id);
+    }
 }
 
 
 void socket_clear_all( void )
 {
-	for(uint8_t i = 0 ; i < SOCKET_CONNECT_MAX; i++)
-	{
-		sockeArry[i].len = 0;
-		sockeArry[i].status =  SOCKET_INIT;
-		sockeArry[i].useFlag = FALSE;
-		sockeArry[i].msg = NULL;
-	}
+    for(uint8_t i = 0 ; i < SOCKET_CONNECT_MAX; i++)
+    {
+        sockeArry[i].len = 0;
+        sockeArry[i].status =  SOCKET_INIT;
+        sockeArry[i].useFlag = FALSE;
+        sockeArry[i].msg = NULL;
+    }
 
-	socketStatus = SOCKET_CLOSE_STATUS;
+    socketStatus = SOCKET_CLOSE_STATUS;
 
 }
 
 void socket_clear_buffer( uint8_t id)
 {
-	if( id < SOCKET_CONNECT_MAX )
-	{
-		sockeArry[id].len =0;
-	}
+    if( id < SOCKET_CONNECT_MAX )
+    {
+        sockeArry[id].len =0;
+    }
 }
 
 sockeArryType * socket_read_obj( uint8_t id)
@@ -99,15 +99,15 @@ int8_t socket_find_port( void )
 
 void socket_set_status( socketWorkStatusEnum status)
 {
-	socketStatus = status;
-	if( socketStatus == SOCKET_WORKING_STATUS)
-	{
-		sysLed.write(SYS_LED_CONNECT_NET);
-	}
-	else
-	{
-		sysLed.write(SYS_LED_NORMAL);
-	}
+    socketStatus = status;
+    if( socketStatus == SOCKET_WORKING_STATUS)
+    {
+        sysLed.write(SYS_LED_CONNECT_NET);
+    }
+    else
+    {
+        sysLed.write(SYS_LED_NORMAL);
+    }
 }
 
 void socket_err(int8_t err , int8_t id)
@@ -131,12 +131,12 @@ int8_t socket_write(uint8_t id ,  uint8_t *sendData , uint16_t length , uint32_t
 
     if(socketStatus != SOCKET_WORKING_STATUS)
     {
-    	return SOCKERT_STATUS_ERR;
+        return SOCKERT_STATUS_ERR;
     }
 
     if(socket == NULL)
     {
-    	log_err("发送不存在这个id , id = %d\n" , id);
+        log_err("发送不存在这个id , id = %d\n" , id);
         return SOCKET_SEND_NOID ;
     }
 
@@ -146,22 +146,22 @@ int8_t socket_write(uint8_t id ,  uint8_t *sendData , uint16_t length , uint32_t
         return SOCKET_SEND_NOCON;
     }
 
-	if( xSemaphoreTake( xSocketSemaphore, timeout ) == pdTRUE )
-	{
-		if( ( ret = devCom->send(id , sendData , length )) == TRUE)
-		{
-			//log(DEBUG , "socket %d 发送数据完成\n" , id);
-			xSemaphoreGive(xSocketSemaphore);
-			return SOCKET_OK;
-		}
-		xSemaphoreGive(xSocketSemaphore);
-		return ret;
-	}
-	else
-	{
-		log(WARN,"socket %d 发送数据，有其他任务占用资源\n" , id);
-		return SOCKET_SEND_BUSY;
-	}
+    if( xSemaphoreTake( xSocketSemaphore, timeout ) == pdTRUE )
+    {
+        if( ( ret = devCom->send(id , sendData , length )) == TRUE)
+        {
+            //log(DEBUG , "socket %d 发送数据完成\n" , id);
+            xSemaphoreGive(xSocketSemaphore);
+            return SOCKET_OK;
+        }
+        xSemaphoreGive(xSocketSemaphore);
+        return ret;
+    }
+    else
+    {
+        log(WARN,"socket %d 发送数据，有其他任务占用资源\n" , id);
+        return SOCKET_SEND_BUSY;
+    }
 
 }
 
@@ -172,7 +172,7 @@ int socket_read(int8_t id , uint32_t timeout)
 
     sockeArryType *socket = socket_read_obj(id);
 
-    if(socketStatus != SOCKET_WORKING_STATUS)		    return SOCKERT_STATUS_ERR;
+    if(socketStatus != SOCKET_WORKING_STATUS)            return SOCKERT_STATUS_ERR;
 
 
     if(socket == NULL)                                  return SOCKER_READ_NOID ;
@@ -183,33 +183,33 @@ int socket_read(int8_t id , uint32_t timeout)
     {
         socket = socket_read_obj(id);
 
-        if(socket == NULL){log_err("不存在这个id , id = %d\n" , id);	return SOCKER_READ_NOID ;}
+        if(socket == NULL){log_err("不存在这个id , id = %d\n" ,       id);	return SOCKER_READ_NOID ;}
 
-        if( socket->useFlag == FALSE)	{log(WARN,"socket 未建立连接 id = %d\n" , id);	return SOCKET_READ_NOCON;}
+        if( socket->useFlag == FALSE)    {log(WARN,"socket 未建立连接 id = %d\n" ,       id);	return SOCKET_READ_NOCON;}
 
-    	if( socket->status == SOCKET_READ )
-    	{
-    		if( socket->len > 0 )
-    		{
-    			ret = socket->len;
-    			socket->len = 0;
-    			socket->status = SOCKET_INIT;
-		        if(otasee)     log_arry(INFO,"socket read data" ,(uint8_t *)socket->msg ,ret);//是怎么？socket->msg  socket_bind_buffer
+        if( socket->status == SOCKET_READ )
+        {
+            if( socket->len > 0 )
+            {
+                ret = socket->len;
+                socket->len = 0;
+                socket->status = SOCKET_INIT;
+                if(otasee)     log_arry(INFO,"socket read data" ,(uint8_t *)socket->msg ,ret);//是怎么？socket->msg  socket_bind_buffer
                  //printf("ret =%d\r\n",ret);       
-    			 return ret;
-    		}
-    		else
-    		{
-    			log_err("socket %d 获取数据,数据长度为: %d\n" , id , socket->len);
-    			return SOCKET_READ_LENERR;
-    		}
-    	}
-    	else if( socket->status == SOCKET_CLOSE )
-    	{
-    		socket_clear_bind(id);
-    		return  SOCKET_CONNECT_CLOSE;
-    	}
-    	sys_delay(5);
+                 return ret;
+            }
+            else
+            {
+                log_err("socket %d 获取数据,数据长度为: %d\n" , id , socket->len);
+                return SOCKET_READ_LENERR;
+            }
+        }
+        else if( socket->status == SOCKET_CLOSE )
+        {
+            socket_clear_bind(id);
+            return  SOCKET_CONNECT_CLOSE;
+        }
+        sys_delay(5);
     }
 
   return SOCKET_READ_TIMEOUT;
@@ -225,13 +225,13 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
     sockeArryType *socket = socket_read_obj(id);
 
     if(socketStatus != SOCKET_WORKING_STATUS)
-	{
-		return SOCKERT_STATUS_ERR;
-	}
+    {
+        return SOCKERT_STATUS_ERR;
+    }
 
     if(socket == NULL)
     {
-    	log_err("不存在这个id , id = %d\n" , id);
+        log_err("不存在这个id , id = %d\n" , id);
         return SOCKER_READ_NOID ;
     }
 
@@ -243,7 +243,7 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
 
     while(timecnt--)
     {
-    	socket = socket_read_obj(id);
+        socket = socket_read_obj(id);
 
         if(socket == NULL)
         {
@@ -257,8 +257,8 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
                 return SOCKET_READ_NOCON;
         }
 
-    	if( socket->status == SOCKET_READ )
-    	{
+        if( socket->status == SOCKET_READ )
+        {
 //log(ERR,"socket read len = %d , buffer len = %d\n"  , recvLen , socket->len );
 //if(otasee)log_arry(ERR, "socket recv", (uint8_t *)socket->msg  , socket->len );
             if( socket->len <= recvLen )
@@ -268,14 +268,14 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
                 
                 memset(socket->msg , 0x00 , socket->len);
                 socket->len = 0;
-    		socket->status = SOCKET_INIT;
+            socket->status = SOCKET_INIT;
 
                 return ret;
             }
             else
             {
                 uint8_t tempData[2048];
-				
+                
                 memcpy(recvData , socket->msg , recvLen);
                 memcpy(tempData , socket->msg , socket->len);
                 memset(socket->msg , 0x00 , socket->len);
@@ -286,22 +286,22 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
                 
             }
 
-    	}
-    	else if( socket->status == SOCKET_CLOSE )
-    	{
-    		socket_clear_bind(id);
-    		return  SOCKET_CONNECT_CLOSE;
-    	}
-    	sys_delay(5);
+        }
+        else if( socket->status == SOCKET_CLOSE )
+        {
+            socket_clear_bind(id);
+            return  SOCKET_CONNECT_CLOSE;
+        }
+        sys_delay(5);
     }
 
-	return SOCKET_READ_TIMEOUT;
+    return SOCKET_READ_TIMEOUT;
 }
 
 
 int8_t socket_connect(uint8_t *ip , uint16_t port , char *pData , uint16_t size)
 {
-	 
+     
     int8_t id =0 ,ret = SOCKET_CONNECT_ERR;
 
     if(socketStatus != SOCKET_WORKING_STATUS)
@@ -311,8 +311,8 @@ int8_t socket_connect(uint8_t *ip , uint16_t port , char *pData , uint16_t size)
 
     if( xSemaphoreTake( xSocketSemaphore, 60000 ) == pdTRUE )
     {
-    	if( (id = socket_find_port()) >=0 )
-    	{
+        if( (id = socket_find_port()) >=0 )
+        {
               if( ( ret = devCom->connect(id , ip , port)) == SOCKET_OK )
               {
                       socket_bind_buffer(id , pData , size);
@@ -323,17 +323,17 @@ int8_t socket_connect(uint8_t *ip , uint16_t port , char *pData , uint16_t size)
               {
                       log_err("与服务器建立连接失败,err = %d\n" , ret);
               }
-    	}
-    	else
-    	{
-    		ret = SOCKET_CONNECT_FULL;
-    		log_err("scoket 已达到最大连接数量\n");
-    	}
-    	xSemaphoreGive( xSocketSemaphore );
+        }
+        else
+        {
+            ret = SOCKET_CONNECT_FULL;
+            log_err("scoket 已达到最大连接数量\n");
+        }
+        xSemaphoreGive( xSocketSemaphore );
     }
     else
     {
-    	ret = SOCKET_CONNECT_BUSY;
+        ret = SOCKET_CONNECT_BUSY;
         log(WARN,"链接服务器失败，有其他任务占用资源\n");
     }
 
@@ -347,13 +347,13 @@ int8_t socket_disconnect( int8_t id )
     sockeArryType *socket = socket_read_obj(id);
 
     if(socketStatus != SOCKET_WORKING_STATUS)
-	{
-		return SOCKERT_STATUS_ERR;
-	}
+    {
+        return SOCKERT_STATUS_ERR;
+    }
 
     if(socket == NULL)
     {
-    	log_err("不存在这个id , id = %d\n" , id);
+        log_err("不存在这个id , id = %d\n" , id);
         return SOCKER_READ_NOID ;
     }
 
@@ -365,17 +365,17 @@ int8_t socket_disconnect( int8_t id )
 
     if( xSemaphoreTake( xSocketSemaphore, 30000 ) == pdTRUE )
     {
-    	socket_clear_bind(id);
-    	if( devCom->disconnect(id) == TRUE)
-    	{
-    		log(DEBUG,"Socket关闭成功\n");
-    	}
-    	else
-    	{
-    		log(DEBUG,"Socket关闭失败\n");
-    	}
-    	xSemaphoreGive( xSocketSemaphore );
-    	return SOCKET_OK;
+        socket_clear_bind(id);
+        if( devCom->disconnect(id) == TRUE)
+        {
+            log(DEBUG,"Socket关闭成功\n");
+        }
+        else
+        {
+            log(DEBUG,"Socket关闭失败\n");
+        }
+        xSemaphoreGive( xSocketSemaphore );
+        return SOCKET_OK;
     }
     else
     {
@@ -459,7 +459,7 @@ void socket_init( void )
 {   
     for( uint8_t i = 0; i < SOCKET_CONNECT_MAX ;i++)
     {
-    	sockeArry[i].id = i;
+        sockeArry[i].id = i;
         sockeArry[i].len = 0;
         sockeArry[i].msg = NULL;
         sockeArry[i].status = SOCKET_INIT;
@@ -473,30 +473,30 @@ void socket_init( void )
 
 void socket_compon_init(void )/*must--标识必须要建立任务 lev-是正常时候建立任务 */
 {
-	uint32_t runModule = config.read(CFG_SYS_NET_TYPE , NULL);
-	
-	if( runModule == TSLNetType_TSLGPRS )
-	{
-		log(DEBUG,"使用GPRS联网\n");
-		devCom = &gsm;
-	}
-	else if( runModule == TSLNetType_TSLWIFI )
-	{
-		log(DEBUG,"使用WIFI联网\n");
-		devCom = &wifi;
-	}
-	else if( runModule == TSLNetType_TSLEthernet )
-	{
-		log(DEBUG,"使用以太网联网\n");
-		devCom = &eth;
-	}
-	else
-	{
-		log(INFO,"联网方式选择未初始化 , 不能运行，恢复出厂设置\n");
-		config.write(CFG_SET_RESTORE , NULL , FALSE);
-	}
-	
-	socket_init();
+    uint32_t runModule = config.read(CFG_SYS_NET_TYPE , NULL);
+    
+    if( runModule == TSLNetType_TSLGPRS )
+    {
+        log(DEBUG,"使用GPRS联网\n");
+        devCom = &gsm;
+    }
+    else if( runModule == TSLNetType_TSLWIFI )
+    {
+        log(DEBUG,"使用WIFI联网\n");
+        devCom = &wifi;
+    }
+    else if( runModule == TSLNetType_TSLEthernet )
+    {
+        log(DEBUG,"使用以太网联网\n");
+        devCom = &eth;
+    }
+    else
+    {
+        log(INFO,"联网方式选择未初始化 , 不能运行，恢复出厂设置\n");
+        config.write(CFG_SET_RESTORE , NULL , FALSE);
+    }
+    
+    socket_init();
     
     devCom->init();
 

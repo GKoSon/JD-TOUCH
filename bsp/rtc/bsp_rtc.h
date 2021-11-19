@@ -19,8 +19,8 @@ typedef struct
 {
     void        (*set_time)                 (rtcTimeType *time);
     void        (*set_time_form_stamp)      (uint32_t unix_stamp);
-	uint32_t    (*read_stamp)	            ( void );
-	void        (*read_time)                (rtcTimeType *time);
+    uint32_t    (*read_stamp)                ( void );
+    void        (*read_time)                (rtcTimeType *time);
     uint32_t    (*time_to_stamp)            (rtcTimeType *time);
     void        (*stamp_to_time)            (rtcTimeType *time ,uint32_t unix_stamp);
 }rtcType;

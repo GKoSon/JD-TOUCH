@@ -10,8 +10,8 @@
 typedef struct
 {
     void (*init)        (void);
-    void (*open)		(uint32_t delay_time);
-	void (*control)		(uint8_t status);
+    void (*open)        (uint32_t delay_time);
+    void (*control)        (uint8_t status);
 }relayFunsType;
 
 extern twinkleType  boardRelay;

@@ -11,26 +11,26 @@
 /*
 static uint8_t permi_list_read_flash(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	//if( flash.get_lock() == TRUE )
-	{
-		flash.read(addr , buffer , length);
+    //if( flash.get_lock() == TRUE )
+    {
+        flash.read(addr , buffer , length);
 
-		//flash.release_lock();
-	}
+        //flash.release_lock();
+    }
 
-	 return TRUE;
+     return TRUE;
 }
 
 static uint8_t flash.write(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	//if( flash.get_lock() == TRUE )
-	{
-		flash.write(addr , buffer , length);
+    //if( flash.get_lock() == TRUE )
+    {
+        flash.write(addr , buffer , length);
 
-		//flash.release_lock();
-	}
+        //flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 
@@ -38,14 +38,14 @@ static uint8_t flash.write(uint32_t addr,uint8_t* buffer,  uint16_t length)
 
 static uint8_t permi_list_erase_flash(uint32_t sectorAddr)
 {
-	//if( flash.get_lock() == TRUE )
-	{
-		flash.earse(sectorAddr);
+    //if( flash.get_lock() == TRUE )
+    {
+        flash.earse(sectorAddr);
 
-		//flash.release_lock();
-	}
+        //flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 */
@@ -380,41 +380,41 @@ void permi_list_init( void )
 
 void permiList_clear_overdue( void )
 {
-	permiListType list;
-	uint32_t deviceTime;
-			
-	if( config.read(CFG_SYS_UPDATA_TIME , NULL) == TRUE )
-	{
-		deviceTime = rtc.read_stamp();
-		
-		log(DEBUG,"当前设备时间戳:%d\n" , deviceTime);
-		flash.get_lock();
-		for(uint32_t i = 0 ; i < 8000 ; i++)
-		{
-			if(  permiList_read_id(i) != EMPTY_ID)
-			{
-				permiList_read_data(i, &list);
-				if(list.time <  deviceTime)
-				{
+    permiListType list;
+    uint32_t deviceTime;
+            
+    if( config.read(CFG_SYS_UPDATA_TIME , NULL) == TRUE )
+    {
+        deviceTime = rtc.read_stamp();
+        
+        log(DEBUG,"当前设备时间戳:%d\n" , deviceTime);
+        flash.get_lock();
+        for(uint32_t i = 0 ; i < 8000 ; i++)
+        {
+            if(  permiList_read_id(i) != EMPTY_ID)
+            {
+                permiList_read_data(i, &list);
+                if(list.time <  deviceTime)
+                {
                     log(DEBUG,"删除过期黑白名单，POS=%d , ID=%llx , TIME:%u\n" , i , list.ID , list.time);
-					permiList_del_index_no_lock(i);
-				}				
-				//LIST_BLACK,1
-    			// LIST_WRITE, 2
-				if((list.status != LIST_BLACK)&&(list.status != LIST_WRITE))
-				{
-					log(INFO,"黑白名单状态错误,status=%d , 删除POS=%d\n" , list.status ,i);
-					permiList_del_index_no_lock(i);
-				}
-			}
+                    permiList_del_index_no_lock(i);
+                }                
+                //LIST_BLACK,1
+                // LIST_WRITE, 2
+                if((list.status != LIST_BLACK)&&(list.status != LIST_WRITE))
+                {
+                    log(INFO,"黑白名单状态错误,status=%d , 删除POS=%d\n" , list.status ,i);
+                    permiList_del_index_no_lock(i);
+                }
+            }
             HAL_IWDG_Refresh(&hiwdg);
-		}
+        }
         flash.release_lock();
-	}
-	else
-	{
-		log(INFO,"设备还没有同步时间\n");
-	}
+    }
+    else
+    {
+        log(INFO,"设备还没有同步时间\n");
+    }
 }
 
 

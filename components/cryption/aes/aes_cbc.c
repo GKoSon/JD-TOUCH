@@ -42,14 +42,14 @@ static uint16_t pkcs7_dncode_padding(uint8_t *buf, int buflen,uint8_t *paddingBu
   
   length = buflen - buf[buflen-1];
   
-  if( length > 0 )	
+  if( length > 0 )    
   {
-  	memcpy(paddingBuf , buf , length);
+      memcpy(paddingBuf , buf , length);
   }
   else
   {
-	  paddingBuf[0] = 0;
-	  length = 1;
+      paddingBuf[0] = 0;
+      length = 1;
   }
     
   return length;
@@ -63,7 +63,7 @@ uint8_t aes_crypt_cbc_enc(uint8_t* inMsg, uint16_t inLen,uint8_t  *oData,uint16_
     
    // if( inLen > 240)  return false;
     *oLen = 0;
-	
+    
     memcpy(tempIv , iv , 16);
     memcpy(tempKey , key , 16);
     
@@ -88,19 +88,19 @@ uint8_t aes_crypt_cbc_dec(uint8_t* inMsg, uint16_t inLen,uint8_t  *oData,uint16_
 {
     mbedtls_aes_context ctx;  
     uint8_t rt = false;
-	uint8_t tempIv[16] , tempKey[16] , *paddingBuff = NULL;
-	
-	paddingBuff = malloc(sizeof(uint8_t)*inLen);
-	if( paddingBuff == NULL )
-	{
-		log_err("%s内存不够\n" ,__func__);
-		soft_system_resert(__func__);
-	}
+    uint8_t tempIv[16] , tempKey[16] , *paddingBuff = NULL;
+    
+    paddingBuff = malloc(sizeof(uint8_t)*inLen);
+    if( paddingBuff == NULL )
+    {
+        log_err("%s内存不够\n" ,__func__);
+        soft_system_resert(__func__);
+    }
    
     memcpy(tempIv , iv , 16);
     memcpy(tempKey , key , 16);
-	memset(paddingBuff , 0x00 , inLen);
-	
+    memset(paddingBuff , 0x00 , inLen);
+    
     mbedtls_aes_init( &ctx );  
     mbedtls_aes_setkey_dec( &ctx, tempKey, 128); 
     
@@ -110,22 +110,22 @@ uint8_t aes_crypt_cbc_dec(uint8_t* inMsg, uint16_t inLen,uint8_t  *oData,uint16_
     {
         //log_arry(WARN,"AES DEC " , paddingBuff , inLen);
         
-	  	*oLen = pkcs7_dncode_padding(paddingBuff , inLen , oData);
+          *oLen = pkcs7_dncode_padding(paddingBuff , inLen , oData);
 
-		if( *oLen == 0xfe)
+        if( *oLen == 0xfe)
         {
             *oLen = 0;
-			log(WARN,"padding fail\n");
+            log(WARN,"padding fail\n");
             goto exit;
         }
         //log_arry(WARN,"AES PAD " , oData , *oLen);
         rt =  true;
         goto exit;
     }
-	
+    
 exit:
     mbedtls_aes_free( &ctx );
-	free(paddingBuff);
+    free(paddingBuff);
     return  rt;
 }
 
@@ -144,8 +144,8 @@ uint8_t aes_crypt_cbc_dec_key(uint8_t* inMsg, uint16_t inLen,uint8_t  *oData,uin
     
     if( mbedtls_aes_crypt_cbc( &ctx, MBEDTLS_AES_DECRYPT, inLen, tempIv, inMsg, inMsg) == 0)
     {
-	  	*oLen = pkcs7_dncode_padding(inMsg , inLen , oData);
-		if( *oLen == 0xfe)
+          *oLen = pkcs7_dncode_padding(inMsg , inLen , oData);
+        if( *oLen == 0xfe)
         {
             *oLen = 0;
              goto exit;
@@ -156,7 +156,7 @@ uint8_t aes_crypt_cbc_dec_key(uint8_t* inMsg, uint16_t inLen,uint8_t  *oData,uin
 
 exit:
     mbedtls_aes_free( &ctx );
-    return  rt;	
+    return  rt;    
 }
 
 uint8_t aes_cbc_config( uint8_t mode , uint8_t *msg)
@@ -179,8 +179,8 @@ uint8_t aes_cbc_config( uint8_t mode , uint8_t *msg)
 
 aesType aes=
 {
-	.decrypt        = aes_crypt_cbc_dec,
-	.encrypt        = aes_crypt_cbc_enc,
+    .decrypt        = aes_crypt_cbc_dec,
+    .encrypt        = aes_crypt_cbc_enc,
     .decrypt_key    = aes_crypt_cbc_dec_key,
     .config         = aes_cbc_config,
 };

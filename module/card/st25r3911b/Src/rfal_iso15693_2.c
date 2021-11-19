@@ -258,9 +258,9 @@ ReturnCode iso15693VICCDecode(uint8_t *inBuf,
     /* first check for valid SOF. Since it starts with 3 unmodulated pulses it is 0x17. */
     if ((inBuf[0] & 0x1f) != 0x17)
     {
-		ISO_15693_DEBUG("0x%x\n", iso15693PhyBitBuffer[0]);
-		err = ERR_FRAMING;
-		goto out;
+        ISO_15693_DEBUG("0x%x\n", iso15693PhyBitBuffer[0]);
+        err = ERR_FRAMING;
+        goto out;
     }
     ISO_15693_DEBUG("SOF\n");
 

@@ -24,12 +24,12 @@
 #include "tsl_mqtt.h"
 #include "sys_led.h"
 #include "sysCntSave.h"
-xTaskHandle		        mqttTask;
-uint8_t			        mqttRunType = GMQTT_CONNECT_TCP;
+xTaskHandle                mqttTask;
+uint8_t                    mqttRunType = GMQTT_CONNECT_TCP;
 
 
-mqttClientType 			client;
-Network				    network;
+mqttClientType             client;
+Network                    network;
 
 uint8_t                 mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
 
@@ -123,30 +123,30 @@ void BLUE_keep_alive(void)
 }
 void mqtt_keep_alive( void )
 {
-	mqtt_send_keep_alive();
+    mqtt_send_keep_alive();
 }
 
 static void mqtt_task( void const *pvParameters)
 {
-	int 	rc = 0;
-	MQTTPacket_connectData	connectData = MQTTPacket_connectData_initializer;
+    int     rc = 0;
+    MQTTPacket_connectData    connectData = MQTTPacket_connectData_initializer;
 
-	mqtt_network_init(&network);
-	mqtt_client_init(&client, &network, 30 , 30000,mqttreadbuf, sizeof(mqttreadbuf));
-	mqttAliveTimerPort = timer.creat(50000 ,  FALSE , mqtt_keep_alive );
-	mqttKEEPAliveBLUE =  timer.creat(60000 , FALSE , BLUE_keep_alive );//60000 一分钟
+    mqtt_network_init(&network);
+    mqtt_client_init(&client, &network, 30 , 30000,mqttreadbuf, sizeof(mqttreadbuf));
+    mqttAliveTimerPort = timer.creat(50000 ,  FALSE , mqtt_keep_alive );
+    mqttKEEPAliveBLUE =  timer.creat(60000 , FALSE , BLUE_keep_alive );//60000 一分钟
         
-	while(1)
-	{
+    while(1)
+    {
 
-		switch(mqttRunType)
-		{
-		case GMQTT_INIT:
+        switch(mqttRunType)
+        {
+        case GMQTT_INIT:
                   mqtt_disconnect(&client);
                   mqtt_network_close();
                   mqttRunType = GMQTT_CONNECT_TCP;
                 break;
-		case GMQTT_CONNECT_TCP:
+        case GMQTT_CONNECT_TCP:
                   /*
                   //GmakeJson();
         //          cj_create_uploadAccessLog_card(20190722,1,0,"HELLO",1,2);
@@ -163,7 +163,7 @@ static void mqtt_task( void const *pvParameters)
                   }
                   mqttRunType = GMQTT_CONNECT_MQTT;
                 break;
-		case GMQTT_CONNECT_MQTT:
+        case GMQTT_CONNECT_MQTT:
                   mqtt_login_info(&connectData);             
                   if ((rc = mqtt_connect_server(&client, &connectData)) != MQTT_SUCCESS)
                   {
@@ -173,7 +173,7 @@ static void mqtt_task( void const *pvParameters)
                   }
                   else
                   {
-                          log(DEBUG,"MQTT Connected success \n");	
+                          log(DEBUG,"MQTT Connected success \n");    
                           timer.start(mqttAliveTimerPort);
                           mqttRunType = GMQTT_SUBSCRIBE;
                   }
@@ -222,25 +222,25 @@ static void mqtt_task( void const *pvParameters)
                     mqttRunType = GMQTT_OK;
                     
                 break;                
-		case GMQTT_OK:
-		if( mqtt_run( &client ) < 0)
+        case GMQTT_OK:
+        if( mqtt_run( &client ) < 0)
                 {
                     SHOWME
                     mqtt_disconnect(&client);
                     mqttRunType = GMQTT_CONNECT_MQTT;
                 }
-		sys_delay(10);
+        sys_delay(10);
 
                 break;
               default:   break;
-		}
+        }
 
-	}
+    }
 }
 
 uint8_t network_read_status( void )
 {
-	return ((mqttRunType == GMQTT_OK ) ? TRUE : FALSE );
+    return ((mqttRunType == GMQTT_OK ) ? TRUE : FALSE );
 }
 
 void mqtt_set_resert( void )

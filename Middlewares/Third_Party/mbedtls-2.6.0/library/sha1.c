@@ -51,7 +51,7 @@
 #define MD5_DIGEST_SIZE 16
 #define SHA1_DIGEST_SIZE 20
 
-	 
+     
 #if !defined(MBEDTLS_SHA1_ALT)
 
 /* Implementation that should never be optimized out by the compiler */
@@ -403,17 +403,17 @@ void mbedtls_hmac_sha1( char *ref_hash,
         key_pad[i] ^= 0x5C;  
     }  
      
-	mbedtls_sha1_init( &ctx );
+    mbedtls_sha1_init( &ctx );
     mbedtls_sha1_starts( &ctx );
     mbedtls_sha1_update( &ctx, key_pad_temp, BLOCK_LEN);
-	mbedtls_sha1_update( &ctx, msg, msg_len);
+    mbedtls_sha1_update( &ctx, msg, msg_len);
     mbedtls_sha1_finish( &ctx, hash_temp );
     mbedtls_sha1_free( &ctx );
-	 
-	mbedtls_sha1_init( &ctx );
+     
+    mbedtls_sha1_init( &ctx );
     mbedtls_sha1_starts( &ctx );
     mbedtls_sha1_update( &ctx, key_pad, BLOCK_LEN);
-	mbedtls_sha1_update( &ctx, hash_temp, HASH_LEN);
+    mbedtls_sha1_update( &ctx, hash_temp, HASH_LEN);
     mbedtls_sha1_finish( &ctx, hash );
     mbedtls_sha1_free( &ctx );
 
@@ -459,17 +459,17 @@ void mbedtls_hmac_sha1_hex( char *ref_hash,
         key_pad[i] ^= 0x5C;  
     }  
      
-	mbedtls_sha1_init( &ctx );
+    mbedtls_sha1_init( &ctx );
     mbedtls_sha1_starts( &ctx );
     mbedtls_sha1_update( &ctx, key_pad_temp, BLOCK_LEN);
-	mbedtls_sha1_update( &ctx, msg, msg_len);
+    mbedtls_sha1_update( &ctx, msg, msg_len);
     mbedtls_sha1_finish( &ctx, hash_temp );
     mbedtls_sha1_free( &ctx );
-	 
-	mbedtls_sha1_init( &ctx );
+     
+    mbedtls_sha1_init( &ctx );
     mbedtls_sha1_starts( &ctx );
     mbedtls_sha1_update( &ctx, key_pad, BLOCK_LEN);
-	mbedtls_sha1_update( &ctx, hash_temp, HASH_LEN);
+    mbedtls_sha1_update( &ctx, hash_temp, HASH_LEN);
     mbedtls_sha1_finish( &ctx, (uint8_t *)ref_hash );
     mbedtls_sha1_free( &ctx );
 

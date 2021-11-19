@@ -39,45 +39,45 @@ typedef enum
     SOCKET_ALL,
 }socketStatusEnum;
 
-#define		SOCKET_OK 		(0)
+#define        SOCKET_OK         (0)
 
 typedef enum
 {
-	SOCKERT_STATUS_ERR = -99,
-	SOCKET_CONNECT_ERR,
-	SOCKET_CONNECT_CLOSE,
-	SOCKET_CONNECT_FULL,
-	SOCKET_CONNECT_BUSY,
-	SOCKET_CONNECT_NORES,//no response
-	SOCKET_CONNECT_FAIL,
-	SOCKET_CONNECT_TIMEOUT,
-	SOCKETCLOSE_ERR,
-	SOCKET_CLOSE_BUSY,
-	SOCKET_SEND_ERR,
-	SOCKET_SEND_NOID,
-	SOCKET_SEND_NOCON, //no connect
-	SOCKET_SEND_BUSY,
-	SOCKET_SEND_NOREADY,
-	SOCKET_SEND_NORESULT,
-	SOCKET_SEND_RETURNERR,
-	SOCKET_SEND_FAIL,
+    SOCKERT_STATUS_ERR = -99,
+    SOCKET_CONNECT_ERR,
+    SOCKET_CONNECT_CLOSE,
+    SOCKET_CONNECT_FULL,
+    SOCKET_CONNECT_BUSY,
+    SOCKET_CONNECT_NORES,//no response
+    SOCKET_CONNECT_FAIL,
+    SOCKET_CONNECT_TIMEOUT,
+    SOCKETCLOSE_ERR,
+    SOCKET_CLOSE_BUSY,
+    SOCKET_SEND_ERR,
+    SOCKET_SEND_NOID,
+    SOCKET_SEND_NOCON, //no connect
+    SOCKET_SEND_BUSY,
+    SOCKET_SEND_NOREADY,
+    SOCKET_SEND_NORESULT,
+    SOCKET_SEND_RETURNERR,
+    SOCKET_SEND_FAIL,
         SOCKER_READ_ERR,
-	SOCKER_READ_NOID,
-	SOCKET_READ_NOCON,
-	SOCKET_READ_LENERR,
-	SOCKET_READ_TIMEOUT,
+    SOCKER_READ_NOID,
+    SOCKET_READ_NOCON,
+    SOCKET_READ_LENERR,
+    SOCKET_READ_TIMEOUT,
 
 }socketErr;
 
 typedef enum
 {
-	SOCKET_CLOSE_STATUS,
-	SOCKET_WORKING_STATUS,
+    SOCKET_CLOSE_STATUS,
+    SOCKET_WORKING_STATUS,
 }socketWorkStatusEnum;
 
 typedef struct
 {
-__IO int8_t		    id;
+__IO int8_t            id;
 __IO int8_t                 useFlag;
 socketStatusEnum            status;
 char                        *msg;
@@ -90,23 +90,23 @@ __IO uint16_t               len;
 
 typedef struct
 {
-    uint8_t 	(*isOK)                 ( void );
-    int8_t    	(*disconnect)           ( int8_t id );
+    uint8_t     (*isOK)                 ( void );
+    int8_t        (*disconnect)           ( int8_t id );
     int8_t      (*connect)              ( uint8_t *ip , uint16_t port , char *pData , uint16_t size);
-    int32_t		(*read)                 ( int8_t id , uint32_t timeOut);
+    int32_t        (*read)                 ( int8_t id , uint32_t timeOut);
     int         (*read_buffer)          (int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t timeout);
-    int8_t		(*send)                 ( uint8_t id ,  uint8_t *sendData , uint16_t length , uint32_t timeout );
-    void		(*close)                ( void );
+    int8_t        (*send)                 ( uint8_t id ,  uint8_t *sendData , uint16_t length , uint32_t timeout );
+    void        (*close)                ( void );
 }socketOpsType;
 
 typedef struct
 {
-    void		(*init)              	( void );
-    uint8_t		(*isOK)              	( void );
-    int8_t    	(*disconnect)          	( int8_t id);
-    int8_t	    (*connect)             	( int8_t id , uint8_t *ip , uint16_t port);
-    int8_t		(*send)                	( uint8_t socketId , uint8_t *sendData , uint16_t length );
-    void		(*close)			   	( void );
+    void        (*init)                  ( void );
+    uint8_t        (*isOK)                  ( void );
+    int8_t        (*disconnect)              ( int8_t id);
+    int8_t        (*connect)                 ( int8_t id , uint8_t *ip , uint16_t port);
+    int8_t        (*send)                    ( uint8_t socketId , uint8_t *sendData , uint16_t length );
+    void        (*close)                   ( void );
 }devComType;
 
 

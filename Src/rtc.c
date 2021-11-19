@@ -162,7 +162,7 @@ void HAL_RTC_MspDeInit(RTC_HandleTypeDef* rtcHandle)
 
 void hal_rtc_read(uint8_t *time)
 {
-	RTC_DateTypeDef sTimeStampDateget;
+    RTC_DateTypeDef sTimeStampDateget;
     RTC_TimeTypeDef sTimeStampget;
     
     /* Get the RTC current Time */
@@ -170,13 +170,13 @@ void hal_rtc_read(uint8_t *time)
     /* Get the RTC current Date */
     HAL_RTC_GetDate(&hrtc, &sTimeStampDateget, RTC_FORMAT_BIN);
 
-	time[0]=sTimeStampDateget.Year;
-	time[1]=sTimeStampDateget.Month;
-	time[2]=sTimeStampDateget.Date;
-	time[3]=sTimeStampget.Hours;
-	time[4]=sTimeStampget.Minutes;
-	time[5]=sTimeStampget.Seconds;
-	time[6]=sTimeStampDateget.WeekDay;
+    time[0]=sTimeStampDateget.Year;
+    time[1]=sTimeStampDateget.Month;
+    time[2]=sTimeStampDateget.Date;
+    time[3]=sTimeStampget.Hours;
+    time[4]=sTimeStampget.Minutes;
+    time[5]=sTimeStampget.Seconds;
+    time[6]=sTimeStampDateget.WeekDay;
     
 }
 

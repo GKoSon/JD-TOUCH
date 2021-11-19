@@ -683,6 +683,6 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
 #endif
 
     print_call_stack(stack_pointer);
-	
-	soft_system_resert(__func__);
+    
+    soft_system_resert(__func__);
 }

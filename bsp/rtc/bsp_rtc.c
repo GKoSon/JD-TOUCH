@@ -148,11 +148,11 @@ uint32_t rtc_read_stamp( void )
 {
     uint32_t unix_stamp = 0;
     
-	uint8_t dataTime[7];
+    uint8_t dataTime[7];
 
-	hal_rtc_read(dataTime);
-	
-	time_to_stamp(&unix_stamp , dataTime);
+    hal_rtc_read(dataTime);
+    
+    time_to_stamp(&unix_stamp , dataTime);
 
     return unix_stamp;
 }
@@ -179,11 +179,11 @@ uint32_t rtc_time_to_stamp(rtcTimeType *time)
     uint8_t dataTime[7];
     
     dataTime[0] = time->year;
-	dataTime[1] = time->mon;
-	dataTime[2] = time->day;
-	dataTime[3] = time->hour;
-	dataTime[4] = time->min;
-	dataTime[5] = time->sec;
+    dataTime[1] = time->mon;
+    dataTime[2] = time->day;
+    dataTime[3] = time->hour;
+    dataTime[4] = time->min;
+    dataTime[5] = time->sec;
     dataTime[5] = time->week;
     
     time_to_stamp(&unix_stamp , dataTime);

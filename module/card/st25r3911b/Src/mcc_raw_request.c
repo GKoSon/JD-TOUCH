@@ -79,23 +79,23 @@ ReturnCode mccSendRawRequest ( uint16_t *request,
     ReturnCode err = ERR_NONE;
  //   uint8_t lsbs_in_last_byte;
     uint16_t len_bits;
-		uint16_t fdt;
+        uint16_t fdt;
 
     /* Setup receive operation. */
     //err = st25r3911PrepareReceive(TRUE);
-		st25r3911PrepareReceive(true);
+        st25r3911PrepareReceive(true);
     EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
 
     /* Mask data reception. */
     //err = st25r3911ExecuteCommand(ST25R3911_CMD_MASK_RECEIVE_DATA);
-		st25r3911ExecuteCommand(ST25R3911_CMD_MASK_RECEIVE_DATA);
+        st25r3911ExecuteCommand(ST25R3911_CMD_MASK_RECEIVE_DATA);
     EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
 
     len_bits = mccCopyToRawBuffer(request, requestLength);
 
-//ReturnCode st25r3911TxNBytes(const uint8_t* frame, uint16_t numbytes, uint8_t numbits, st25r3911TxFlag_t flags, uint16_t fdt )	
-		fdt=rfalGetFDTListen( );
-  	err = st25r3911TxNBytes(mccRawBuffer, len_bits/8, len_bits%8, ST25R3911_TX_FLAG_NONE, fdt);//ST25R3911_FDT_NONE	);
+//ReturnCode st25r3911TxNBytes(const uint8_t* frame, uint16_t numbytes, uint8_t numbits, st25r3911TxFlag_t flags, uint16_t fdt )    
+        fdt=rfalGetFDTListen( );
+      err = st25r3911TxNBytes(mccRawBuffer, len_bits/8, len_bits%8, ST25R3911_TX_FLAG_NONE, fdt);//ST25R3911_FDT_NONE    );
     EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
 
     /* Receive response. */

@@ -5,7 +5,7 @@
 #include "pwm.h"
 
 
-#define	BACKLIGHT_PIN			15
+#define    BACKLIGHT_PIN            15
 
 twinkleType    backlight;
 
@@ -13,7 +13,7 @@ void backlight_set( backlightCtrlEnum status)
 {
     if( status == BACKLIGHT_OFF)
     {
-    	twinkle_set(&backlight ,BLINK_OPEN_DELAY , 1 ,0 , 0,3000);
+        twinkle_set(&backlight ,BLINK_OPEN_DELAY , 1 ,0 , 0,3000);
     }
     else if( status == BACKLIGHT_ON)
     {
@@ -23,9 +23,9 @@ void backlight_set( backlightCtrlEnum status)
 
 void backlight_init( void )
 {
-	backlight.pin = BACKLIGHT_PIN;
-	pin_ops.pin_mode(BACKLIGHT_PIN , PIN_MODE_OUTPUT);
-	pin_ops.pin_write(BACKLIGHT_PIN , PIN_HIGH );
+    backlight.pin = BACKLIGHT_PIN;
+    pin_ops.pin_mode(BACKLIGHT_PIN , PIN_MODE_OUTPUT);
+    pin_ops.pin_write(BACKLIGHT_PIN , PIN_HIGH );
     
     pwm_init();
 }

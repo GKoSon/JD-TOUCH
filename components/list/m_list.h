@@ -6,7 +6,7 @@
 
 typedef struct
 {
-	void *(*dup)(void *ptr);
+    void *(*dup)(void *ptr);
     void (*free)(void *ptr);
     int (*match)(void *ptr, void *key);
 }listFunType;

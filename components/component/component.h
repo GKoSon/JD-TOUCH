@@ -15,7 +15,7 @@
 
 typedef struct _component_init {
     uint8_t     *name;
-	void        (*fun)( void);
+    void        (*fun)( void);
 }component_init;
 
   

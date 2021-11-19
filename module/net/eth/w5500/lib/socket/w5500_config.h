@@ -4,8 +4,8 @@
 #include "stdint.h"
 
 
-#define		DHCP_SN			7
-#define		DNS_SN			6
+#define        DHCP_SN            7
+#define        DNS_SN            6
 
 
 typedef enum

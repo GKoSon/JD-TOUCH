@@ -108,8 +108,6 @@ typedef struct
 extern blinkParmType    checkErr;
 extern uint8_t const    StrRefer[];
 extern BleUserMsgType   BleUserMsg;
-extern uint8_t          btPhone[20];
-
 
                                           
 void creat_buletooth_task( void );

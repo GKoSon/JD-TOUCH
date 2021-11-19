@@ -51,7 +51,6 @@
 #include "stm32l4xx_hal.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "fatfs.h"
 #include "iwdg.h"
 #include "rtc.h"
 #include "spi.h"

@@ -35,12 +35,12 @@ case CFG_MQTT_MAC:
 /* 
  *  软件版本号，APP需要显示104，Server需要显示1.0.4
  */
-#define	 DEVICE_SW_VERSION 		100
+#define     DEVICE_SW_VERSION         100
 
 /* 
  *  设备类型  ， 用于识别设备大类：具体见excel , TYPE=6为门禁设备
  */
-#define	DEVICE_TYPE		        0x06
+#define    DEVICE_TYPE                0x06
 
 /* 
  *  设备编号， 具体设备的详细编号 
@@ -53,18 +53,18 @@ case CFG_MQTT_MAC:
  *  会造成读取越界
  */
 
-#define	DEVICE_NAME			"CCYA" //"CCYA"   
+#define    DEVICE_NAME            "CCYA" //"CCYA"   
 
 
 //0----门口机   1----围墙机
-#define		UNIT_LOCK_MODE			0
-#define		BULID_LOCK_MODE			1
-#define		VILLAGE_LOCK_MODE		2
+#define        UNIT_LOCK_MODE            0
+#define        BULID_LOCK_MODE            1
+#define        VILLAGE_LOCK_MODE        2
 
 
-#define		WEIQIANGJI			    2        /*只需要VILLAGE判断*/
+#define        WEIQIANGJI                2        /*只需要VILLAGE判断*/
 
-#define		DEVICD_MODE		        WEIQIANGJI
+#define        DEVICD_MODE                WEIQIANGJI
 
 
 
@@ -73,10 +73,10 @@ case CFG_MQTT_MAC:
 
    
 //平台地址
-#define	    NET_IP      			"192.168.66.34"
-#define		MQTT_PORT				3001
-#define		HTTP_PORT				0//8211
-#define		OTA_PORT				0
+#define        NET_IP                  "192.168.66.34"
+#define        MQTT_PORT                3001
+#define        HTTP_PORT                0//8211
+#define        OTA_PORT                0
 
 
 
@@ -204,20 +204,20 @@ typedef struct
 
 typedef struct
 {
-	uint32_t		otaUpgMark;
-	uint32_t		ver;
-	uint32_t		fileSize;
-	uint32_t		crc32;
+    uint32_t        otaUpgMark;
+    uint32_t        ver;
+    uint32_t        fileSize;
+    uint32_t        crc32;
 }otaType;
 
 typedef struct
 {
-	uint8_t ip[50];
-	uint16_t port;
+    uint8_t ip[50];
+    uint16_t port;
 }serverAddrType;
 typedef struct
 {
-	serverAddrType	net;
+    serverAddrType    net;
     uint16_t        httpport;
     uint16_t        otaport;
     char           otaurl[64];
@@ -231,11 +231,11 @@ typedef struct
 
 typedef struct
 {
-	uint8_t dhcpFlag;
-	uint8_t	ip[4];
-	uint8_t	gateway[4];
-	uint8_t	mark[4];
-	uint8_t	dns[4];
+    uint8_t dhcpFlag;
+    uint8_t    ip[4];
+    uint8_t    gateway[4];
+    uint8_t    mark[4];
+    uint8_t    dns[4];
 }DeviceIpType;
 
 typedef struct
@@ -247,15 +247,15 @@ typedef struct
 
 typedef struct _ble2http_
 {
-  	char NAME[21];
-	char streetID[33];
-	char committeeID[33];
-	char villageID[33];
-	char buildingID[33];
+      char NAME[21];
+    char streetID[33];
+    char committeeID[33];
+    char villageID[33];
+    char buildingID[33];
     char productName_productModel[10];
-	char type;
-	float	longitude;
-	float	latitude;
+    char type;
+    float    longitude;
+    float    latitude;
 } _ble2http;
 
 extern _ble2http *bh ;
@@ -266,12 +266,12 @@ typedef struct
   uint8_t                 level;
   SystemBleInfoType       ble;
   SystemParmType          parm;
-  otaType		          otaVar;
-  netAttriType		      server;
+  otaType                  otaVar;
+  netAttriType              server;
   wifiApInfoType          wifi;
   MqttLoginInfoType       mqtt;
   _ble2http               ble2http;
-  DeviceIpType		      devIp;
+  DeviceIpType              devIp;
   uint32_t                sysRestoreFlag; 
   uint8_t                 pair_pwd[BLE_PASSWORD_LENGTH];
   uint8_t                 user_pwd[BLE_PASSWORD_LENGTH];

@@ -1,67 +1,71 @@
 ###############################################################################
 #
-# IAR ELF Linker V8.32.1.169/W32 for ARM                  15/Nov/2021  10:13:32
+# IAR ELF Linker V8.32.1.169/W32 for ARM                  18/Nov/2021  11:43:15
 # Copyright 2007-2018 IAR Systems AB.
 #
-#    Output file  =  D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Exe\bootloader.out
+#    Output file  =  
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Exe\bootloader.out
 #    Map file     =  
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\List\bootloader.map
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\List\bootloader.map
 #    Command line =  
-#        -f C:\Users\KOSON~1.GON\AppData\Local\Temp\EWA8D9.tmp
-#        (D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\adc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bl_spi_flash.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_main.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_stm32l4xx_it.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bootloader_system_stm32l4xx.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\bsp_rtc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\chipFlash.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\crc16.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\crc32.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\fatfs.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\flash_fat_dev.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\flash_sector.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\freertos.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\gpio.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\hal_spi.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\iwdg.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\rtc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\serial.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\spi.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\startup_stm32l471xx.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_adc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_adc_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_cortex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_dma.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_dma_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_flash.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_flash_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_gpio.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_iwdg.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_msp.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_pwr.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_pwr_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rcc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rcc_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rtc.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_rtc_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_spi.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_spi_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_tim.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_tim_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_uart.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_uart_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_usart.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\stm32l4xx_hal_usart_ex.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\tim.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\unit.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\usart.o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj\user_diskio.o --redirect
-#        _Printf=_PrintfFull --redirect _Scanf=_ScanfFull --no_out_extension -o
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Exe\bootloader.out --map
-#        D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\List\bootloader.map --config
-#        D:\git\AAAA\TOUCH-BLUE\bootloader/stm32l471xx_flash.icf --semihosting
-#        --entry __iar_program_start --vfe --text_out locale)
+#        -f C:\Users\KOSON~1.GON\AppData\Local\Temp\EW67EA.tmp
+#        (D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\adc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\bl_spi_flash.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\bootloader_main.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\bootloader_stm32l4xx_it.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\bootloader_system_stm32l4xx.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\bsp_rtc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\chipFlash.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\crc16.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\crc32.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\fatfs.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\flash_fat_dev.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\flash_sector.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\freertos.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\gpio.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\hal_spi.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\iwdg.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\rtc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\serial.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\spi.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\startup_stm32l471xx.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_adc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_adc_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_cortex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_dma.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_dma_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_flash.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_flash_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_gpio.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_iwdg.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_msp.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_pwr.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_pwr_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_rcc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_rcc_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_rtc.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_rtc_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_spi.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_spi_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_tim.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_tim_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_uart.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_uart_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_usart.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\stm32l4xx_hal_usart_ex.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\tim.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\unit.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\usart.o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj\user_diskio.o
+#        --redirect _Printf=_PrintfFull --redirect _Scanf=_ScanfFull
+#        --no_out_extension -o
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Exe\bootloader.out
+#        --map
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\List\bootloader.map
+#        --config
+#        D:\TSBrowserDownloads\JD-TOUCH\bootloader/stm32l471xx_flash.icf
+#        --semihosting --entry __iar_program_start --vfe --text_out locale)
 #
 ###############################################################################
 
@@ -436,7 +440,7 @@ command line/config:
     --------------------------------------------------------
     Total:
 
-D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj: [1]
+D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj: [1]
     bl_spi_flash.o                     916       81    4 136
     bootloader_main.o                3 246      932      696
     bootloader_stm32l4xx_it.o          132
@@ -903,7 +907,7 @@ timer_isr                0x800'1f33     0x2  Code  Gb  bootloader_main.o [1]
 uwTick                  0x2000'18c4     0x4  Data  Gb  stm32l4xx_hal.o [1]
 
 
-[1] = D:\git\AAAA\TOUCH-BLUE\bootloader\Debug\Obj
+[1] = D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Obj
 [2] = dl7M_tlf.a
 [3] = m7M_tls.a
 [4] = rt7M_tl.a

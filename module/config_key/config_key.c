@@ -24,19 +24,19 @@ static void config_key_timer_isr(void)
     }
     if( pushTime == 2)
     {
-    	keyTaskType key;
+        keyTaskType key;
 
-    	key.cmd = SYS_KEY;
-    	key.keyValue = KEY_1_SEC;
-    	xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
+        key.cmd = SYS_KEY;
+        key.keyValue = KEY_1_SEC;
+        xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
     }
     else if( pushTime == 40)
     {
-    	keyTaskType key;
+        keyTaskType key;
 
-		key.cmd = SYS_KEY;
-		key.keyValue = KEY_8_SEC;
-		xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
+        key.cmd = SYS_KEY;
+        key.keyValue = KEY_8_SEC;
+        xQueueSendFromISR( xKeyQueue, ( void* )&key, NULL );
     }
 }
 

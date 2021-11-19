@@ -13,9 +13,9 @@ typedef enum
 
 typedef struct 
 {
-	void        (*init)		    ( void );
-	uint8_t		(*decrypt)	    (uint8_t* inputMsg,uint16_t inputLength,uint8_t  *outputMsg,uint16_t *outputLength);
-	uint8_t		(*encrypt)	    (uint8_t* inputMsg,uint16_t inputLength,uint8_t  *outputMsg,uint16_t *outputLength);
+    void        (*init)            ( void );
+    uint8_t        (*decrypt)        (uint8_t* inputMsg,uint16_t inputLength,uint8_t  *outputMsg,uint16_t *outputLength);
+    uint8_t        (*encrypt)        (uint8_t* inputMsg,uint16_t inputLength,uint8_t  *outputMsg,uint16_t *outputLength);
     uint8_t     (*decrypt_key)  (uint8_t* inputMsg,uint16_t inputLength,uint8_t  *outputMsg,uint16_t *outputLength , uint8_t *key);  
     uint8_t     (*config)   ( uint8_t mode , uint8_t *msg);
 }aesType;

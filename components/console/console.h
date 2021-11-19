@@ -10,8 +10,8 @@
 
 #define QUEUE_CONSOLE_PARAMETER     ( 0x22UL )
 
-#define CFG_CBSIZE	                50		/* Console I/O Buffer Size	*/
-#define	CFG_MAXARGS	                16		/* max number of command args	*/
+#define CFG_CBSIZE                    50        /* Console I/O Buffer Size    */
+#define    CFG_MAXARGS                    16        /* max number of command args    */
 
 #define QUEUE_CONSOLE_LENGTH        (3)
 
@@ -22,22 +22,22 @@
 
 typedef struct
 {
-	uint8_t buff[CFG_CBSIZE];
-	uint16_t cnt;	
+    uint8_t buff[CFG_CBSIZE];
+    uint16_t cnt;    
 }consoleBufferType;
 
 
 struct cmd_tbl_s {
-	char    *name;		/* Command Name			*/
-	int     maxargs;	/* maximum number of arguments	*/
-	int     repeatable;	/* autorepeat allowed?		*/
-                        /* Implementation function	*/
-	int     (*cmd)(struct cmd_tbl_s *, int, int, char *[]);
-	char    *usage;		/* Usage message	(short)	*/
-	char    *help;		/* Help  message	(long)	*/
+    char    *name;        /* Command Name            */
+    int     maxargs;    /* maximum number of arguments    */
+    int     repeatable;    /* autorepeat allowed?        */
+                        /* Implementation function    */
+    int     (*cmd)(struct cmd_tbl_s *, int, int, char *[]);
+    char    *usage;        /* Usage message    (short)    */
+    char    *help;        /* Help  message    (long)    */
 };
 
-typedef struct cmd_tbl_s	cmd_tbl_t;
+typedef struct cmd_tbl_s    cmd_tbl_t;
 
 extern cmd_tbl_t  *__u_boot_cmd_start;
 extern cmd_tbl_t  *__u_boot_cmd_end;

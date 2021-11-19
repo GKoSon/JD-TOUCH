@@ -15,35 +15,35 @@ extern void upuploadAccessSensor(long logTime ,int sensorStatus)  ;
 #define MAXpushTime   3
 static uint8_t alarmTime=0;
 static uint32_t pushTime = 0;
-static uint8_t	sendFlag = FALSE;
+static uint8_t    sendFlag = FALSE;
 static pinValueEnum  magnetCloseStatus = PIN_HIGH;
 uint8_t magnetAlarmStatus = STATUS_CLOSE;
 uint32_t alarmStartTimer = 0;
 
 static void  magnet_input_timer_isr()
 {
-	if(pin_ops.pin_read(MAGNET_PIN)  != magnetCloseStatus)
-	{
-          	log(ERR,"门磁触发%d次低电平\n",pushTime++);
-	}
-	else
-	{
+    if(pin_ops.pin_read(MAGNET_PIN)  != magnetCloseStatus)
+    {
+              log(ERR,"门磁触发%d次低电平\n",pushTime++);
+    }
+    else
+    {
             pushTime = 0;
-		if( sendFlag == TRUE )
-		{
+        if( sendFlag == TRUE )
+        {
                   log(ERR,"门磁触发已经结束 高电平\n");
                   sendFlag = FALSE;
                   magnetAlarmStatus = STATUS_CLOSE;           
                   upuploadAccessSensor(alarmStartTimer,0);
                   log(ERR,"发送设备报警STATUS_CLOSE\r\n");               
                   
-		}            
+        }            
                 
-	}
+    }
 
-	if( pushTime > alarmTime*60)
+    if( pushTime > alarmTime*60)
     //if( pushTime > alarmTime)
-	{
+    {
           pushTime = 0;
                   
           sendFlag = TRUE;
@@ -57,7 +57,7 @@ static void  magnet_input_timer_isr()
 
           upuploadAccessSensor(alarmStartTimer,1);
           log(ERR,"发送设备报警STATUS_OPEN\r\n");
-	}
+    }
 }
 
 /*CFG写为1*/

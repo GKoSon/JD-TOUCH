@@ -25,13 +25,13 @@
 
 typedef struct SocketId
 {
-	int8_t id;
+    int8_t id;
 }MqttSocketId;
 
 typedef struct Timer 
 {
-	TickType_t xTicksToWait;
-	xTimeOutType xTimeOut;
+    TickType_t xTicksToWait;
+    xTimeOutType xTimeOut;
 } Timer;
 
 typedef struct Network Network;
@@ -43,10 +43,10 @@ Berkeley API. */
 typedef void *xSocketSet_t;
 struct Network
 {
-	xSocket_t my_socket;
-	int (*mqttread) (Network*, unsigned char*, int, int);
-	int (*mqttwrite) (Network*, unsigned char*, int, int);
-	void (*disconnect) (Network*);
+    xSocket_t my_socket;
+    int (*mqttread) (Network*, unsigned char*, int, int);
+    int (*mqttwrite) (Network*, unsigned char*, int, int);
+    void (*disconnect) (Network*);
 };
 
 void TimerInit(Timer*);
@@ -57,7 +57,7 @@ int TimerLeftMS(Timer*);
 
 typedef struct Mutex
 {
-	xSemaphoreHandle sem;
+    xSemaphoreHandle sem;
 } Mutex;
 
 void MutexInit(Mutex*);
@@ -66,7 +66,7 @@ int MutexUnlock(Mutex*);
 
 typedef struct Thread
 {
-	xTaskHandle task;
+    xTaskHandle task;
 } Thread;
 
 int ThreadStart(Thread*, void (*fn)(void*), void* arg);

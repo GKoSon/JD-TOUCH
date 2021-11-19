@@ -2,11 +2,10 @@
 #include "bb0906_protocol.h"
 #include "config.h"
 #include "timer.h"
+#include "beep.h"
 
-//#if (BULETOOTH_MODE == MULTI_LINK)
-
-static uint8_t prefix[] ={0x4C ,0X00,0X02,0X15};
-static uint8_t UUID[] = {0xF1 ,0xCE,0xBB,0x2A,0xB2,0xF8,0x47,0x92,0x85,0x7A,0x2D,0x26,0x8E,0x4F,0x6D,0x94};
+static uint8_t prefix[] = {0x4C ,0X00,0X02,0X15};
+static uint8_t UUID[]   = {0xF1 ,0xCE,0xBB,0x2A,0xB2,0xF8,0x47,0x92,0x85,0x7A,0x2D,0x26,0x8E,0x4F,0x6D,0x94};
 
 static void *bb0906_port = NULL;
 
@@ -18,8 +17,6 @@ static bleReceiveModeEnum ble_receive_mode = BLE_DATA_MODE;
 static bleModuleReceiveCmdType     bleModuleReceiveCmd;
 static bleModuleReceiveDataType    bleModuleReceiveData;
 
-static bleFrameProtocolType        bleFrameProtocol[BLE_CONNECT_MAX_NUM];
-static bleFrameProtocolType       *bleFrameProtocolPoint = NULL;
 
 static uint32_t bleTimerCnt = 0;
 static uint8_t bleTimerStart = 0;
@@ -40,10 +37,6 @@ static void pb_clear_protocol( void );
 void bb0906_resert( void );
 
 
-/****
-**
-** ble mode calc crc , onle calc data crc.
-**/
 uint8_t ble_module_check_crc( uint8_t *Data , uint8_t Length)
 {
     uint8_t i =0,ucSum = 0;
@@ -56,7 +49,7 @@ uint8_t ble_module_check_crc( uint8_t *Data , uint8_t Length)
     return ((0xFF-ucSum)+0x01);
 }
 
-void ble_cleal_timer( void )
+void ble_clear_timerflag( void )
 {
     bleTimerCnt = 0 ; 
     bleTimerStart = 0;
@@ -71,16 +64,13 @@ void ble_recvive_timer( void )
             pb_clear_protocol();
             ble_clear_buffer();
             memset(&bleModuleReceiveCmd , 0x00 , sizeof(bleModuleReceiveCmdType));
-            log(WARN,"蓝牙串口接受超时，清空BUFFER\n");
+            log(WARN,"[BLE]ble_recvive_timer\n");
         }
     }
 }
 
 
-/****
-**
-** Get ble module command message.
-**/
+
 void ble_receive_cmd_process( uint8_t usart_data)
 {
     switch(bleModuleReceiveCmd.pos)
@@ -161,7 +151,7 @@ void ble_receive_cmd_process( uint8_t usart_data)
             if( ucCheckCrc == bleModuleReceiveCmd.crc)
             {
                 bleModuleReceiveCmd.flag = TRUE;
-                ble_cleal_timer();
+                ble_clear_timerflag();
             }
             else
             {
@@ -179,101 +169,7 @@ static void pb_clear_protocol( void )
 {
     memset(&bleModuleReceiveData , 0x00 , sizeof(bleModuleReceiveDataType));
     bleModuleReceiveData.pos =BLE_MODULE_HEARD1_POS;
-
-    bleFrameProtocolPoint = NULL;
-    
-    ble_cleal_timer();
-}
-
-/****
-**
-** Get ble module data message.
-**/
-uint8_t ble_receive_farm_proto_process(bleFrameProtocolType *farm, uint8_t data)
-{
-    switch(farm->pos)
-    {
-        case BLE_PROTO_HEARDH_POS:
-        {
-            if(data == 0x43)
-            {
-                farm->pos = BLE_PROTO_HEARDL_POS;
-            }
-            
-        }break;
-        case BLE_PROTO_HEARDL_POS:
-        {
-            if(data == 0x59)
-            {
-                farm->pos = BLE_PROTO_LENGTH_POS;
-            }
-            else
-            {
-                farm->pos = BLE_PROTO_HEARDH_POS;
-            }
-        }break;
-        case BLE_PROTO_LENGTH_POS:
-        {
-            farm->length = data;
-            farm->pos = BLE_PROTO_TYPE_POS;
-
-        }break;
-        case BLE_PROTO_TYPE_POS:
-        {
-            farm->type = data;
-            farm->cnt = 0;
-            if( farm->length == 0)
-            {
-                farm->pos = BLE_PROTO_CRCH_POS;
-            }
-            else
-            {
-                farm->pos = BLE_PROTO_DATA_POS;
-            }
-            if( farm->length > BLEMODE_FARM_MAX)
-            {
-                pb_clear_protocol(  );
-                return FALSE;
-            }
-        }break;
-        case BLE_PROTO_DATA_POS:
-        {
-            farm->data[farm->cnt++] = data;
-            if( farm->cnt == farm->length)
-            {
-                farm->pos = BLE_PROTO_CRCH_POS;
-                farm->crc = 0;
-            }
-        }break;
-        case BLE_PROTO_CRCH_POS:
-        {
-            farm->crc =  data*256;
-            farm->pos = BLE_PROTO_CRCL_POS;
-        }break;
-        case BLE_PROTO_CRCL_POS:
-        {
-            farm->crc +=  data ;
-            
-            if( farm->crc  == crc16_ccitt(farm->data ,farm->length))
-            {
-                farm->finsh = TRUE;
-                //xQueueSendFromISR( xBtOperationQueue, ( void* )farm, NULL ); 
-            }
-            else
-            {
-                log(WARN,"get crc is error crc16 = %ld \r\n", farm->crc);
-            }
-            pb_clear_protocol(  );
-            
-        }break;
-        default:
-        {
-            memset(farm , 0x00  , sizeof(bleFrameProtocolType));
-        }break;
-    }
-    
-    return FALSE;
-    
+    ble_clear_timerflag();
 }
 
 
@@ -397,7 +293,7 @@ static uint8_t ble_write_data(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLe
     
     if( dLength > BLEMODE_FARM_MAX)
     {
-        log(WARN,"Send buff is too long, length = %d.\r\n" , dLength);
+        log(WARN,"[BLE]ble_write_data dLength > BLEMODE_FARM_MAX, length = %d.\r\n" , dLength);
         return BLE_SEND_LENGTH_ERR;
     }
     
@@ -417,34 +313,33 @@ static uint8_t ble_write_data(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLe
     }
     
     PackBuff[Seq++] = ble_module_check_crc(ptSenddata , dLength);
-    //ble_send_buffer(PackBuff ,Seq );
+
     serial.puts(bb0906_port , PackBuff , Seq);
 
-    return BLE_OK;
+    return 0;
 }
 
 
 uint8_t ble_sendRecv_data(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLength,uint8_t *ptReaddata , uint8_t ucReturnAck)
 {
-    uint8_t ucReptry = 2;  //Send data reptry cnt max.
+    uint8_t ucReptry = 3;  
     uint8_t ucOsCnt=30;
     uint8_t uRt = BLE_INIT_ERR;
     
-    // data must be returned
-    if( ucReturnAck )
+      if( ucReturnAck )
     {   
-        //bleModuleReceiveCmdType     bleModuleReceiveCmd;
+
         while(( ucReptry-- ) && (uRt != BLE_OK))
         {
             if(ble_receive_mode == BLE_CMD_MODE)
             {
                 memset(&bleModuleReceiveCmd , 0x00 , sizeof(bleModuleReceiveCmdType));
             }
-            //Send message.
+
             uRt = ble_write_data(dcommand ,ptSenddata , dLength );
             if( uRt != BLE_OK)      //If return is no BLE_OK, it's means send message length is too long.
             {
-                log(WARN,"Send message is too long .Err = %d . \r\n" , uRt );
+                log(ERR,"[BLE]Send message is too long .Err = %d . \r\n" , uRt );
                 return uRt;
             }
             uRt = BLE_INIT_ERR;
@@ -453,7 +348,7 @@ uint8_t ble_sendRecv_data(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLength
             //while(( SendTimeOut.Cnt < 300) && (uRt != BLE_OK))
             while(( ucOsCnt--) && (uRt != BLE_OK))   // If use os.
             {
-                uRt = ble_wait_command_data(ptReaddata);    //Get usart data handle form module.
+                uRt = ble_wait_command_data(ptReaddata);   
                 // If the return is not BLE_OK and BLE_INIT_ERR that the data received a problem
                 if((uRt != BLE_OK)&&( uRt != BLE_INIT_ERR)) 
                 {            
@@ -461,7 +356,7 @@ uint8_t ble_sendRecv_data(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLength
                 }
                 sys_delay(10); //If use OS.
             }
-			HAL_IWDG_Refresh(&hiwdg);
+            HAL_IWDG_Refresh(&hiwdg);
            
         }
         //Off time out isr/
@@ -492,10 +387,6 @@ uint8_t ble_write_command(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLength
     
     ble_receive_mode = BLE_CMD_MODE;
     uRt = ble_sendRecv_data(dcommand , ptSenddata , dLength , ptReaddata , TRUE);
-    if( uRt == BLE_RECV_TIMEOUT_ERR)
-    {
-        
-    }
     ble_receive_mode = BLE_DATA_MODE;
     return uRt;
 }
@@ -507,8 +398,8 @@ uint8_t ble_write_msg(uint8_t *ptAddr , uint8_t *ptSenddata , uint16_t uLegnth ,
     uint16_t Seq=0;
     uint8_t uRt = FALSE;
 
-	log(DEBUG,"%s\n" , ptSenddata);
-    log(DEBUG,"发送给安装工数据长度:%d\n" , uLegnth);
+    log(DEBUG,"[BLE]ble_write_msg %d %s\n" , uLegnth,ptSenddata);
+
     memcpy(PackBuff , (void const *)ptAddr , 6);
     Seq+=6;
     
@@ -539,7 +430,7 @@ uint8_t ble_read_version(uint8_t *pVersion)
     if( uRt == BLE_OK)
     {
         memcpy(pVersion ,BtVersion , BLE_VERSION_LENGTH ) ;
-        log_arry(DEBUG,"Ble version " ,pVersion , BLE_VERSION_LENGTH);
+        log_arry(DEBUG,"[BLE]Ble version" ,pVersion , BLE_VERSION_LENGTH);
     }
     else
     {
@@ -578,12 +469,12 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
     SendMsg[SendSize++]=Minor>>8;
     SendMsg[SendSize++]=Minor;
     SendMsg[SendSize++]= (uint8_t )rssi*-1;
-    log(DEBUG,"Major=%x , Minor=%x\r\n" ,Major, Minor);
+    log(DEBUG,"[BLE]Major=%x , Minor=%x\r\n" ,Major, Minor);
     
     uRt = ble_write_command(CMD_SETUP_BEACON ,SendMsg , SendSize ,  (uint8_t *)&Bledata);
     if((Bledata.response == 1)&&(uRt == BLE_OK))
     {
-        log(DEBUG,"Ble module set beacon is right.\r\n");
+        log(DEBUG,"[BLE]beacon is right.\r\n");
     }
     else
     {
@@ -595,7 +486,7 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
     uRt = ble_write_command(CMD_BEACON_ONOFF ,&BeaconFlag , 1 ,  (uint8_t *)&Bledata);
     if((Bledata.response == 1)&&(uRt == BLE_OK))
     {
-        log(DEBUG,"Ble module beacon is open.\r\n");
+        log(DEBUG,"[BLE]beacon is open.\r\n");
     }
     else
     {
@@ -609,7 +500,7 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
         uRt = ble_write_command(CMD_ADV_SWITCHTIME ,&BeaconAdvTime , 1 ,  (uint8_t *)&Bledata);
         if((Bledata.response == 1)&&(uRt == BLE_OK))
         {
-            log(DEBUG,"Ble module beacon adv hasbeen set %d:%d ms.\r\n" , BeaconAdvTime,(BeaconAdvTime*125));
+            log(DEBUG,"[BLE]beacon adv hasbeen set %d:%d ms.\r\n" , BeaconAdvTime,(BeaconAdvTime*125));
         }
          else
         {
@@ -621,7 +512,7 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
         uRt = ble_write_command(CMD_LECONPARAMS ,SetLeConnectTime , 8 ,  (uint8_t *)&Bledata);
         if((Bledata.response == 1)&&(uRt == BLE_OK))
         {
-            log(DEBUG,"Ble module set le connect time success.\r\n");
+            log(DEBUG,"[BLE]SetLeConnectTime success.\r\n");
         }
         else
         {
@@ -630,8 +521,6 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
         }
 
     }
-    
-    //ble_write_command(CMD_RESET ,NULL , 0 ,  (uint8_t *)&Bledata);
 
     return uRt;
 }
@@ -645,11 +534,11 @@ uint8_t ble_read_mac(uint8_t *pMac)
     if( uRt == BLE_OK)
     {
         memcpy(pMac ,BtMac , BLE_MAC_LENGTH ) ;
-        log_arry(DEBUG,"Get ble module mac" , pMac , BLE_MAC_LENGTH);
+        log_arry(DEBUG,"[BLE]module mac" , pMac , BLE_MAC_LENGTH);
     }
     else
     {
-        log_err("bb0906 read mac error\n");
+        log_err("[BLE]read mac error\n");
     }
     return uRt;
 }
@@ -662,60 +551,21 @@ uint8_t ble_set_name( uint8_t *pName )
     
     memset(&Bledata , 0x00 , sizeof(bleModuleReceiveCmdType));
     
-	uRt = ble_write_command(CMD_RENAME ,pName , DEVICE_NAME_LENG,  (uint8_t *)&Bledata);
+    uRt = ble_write_command(CMD_RENAME ,pName , DEVICE_NAME_LENG,  (uint8_t *)&Bledata);
     
 	if(( Bledata.data[0] == 0x00) &&( Bledata.response == 0x01))
 	{
-		log(DEBUG,"BB0906模块设置名称成功name = %s\n" ,pName);
+		log(DEBUG,"[BLE]named ok = %s\n" ,pName);
 	}
     else
     {
-        log(WARN,"BB0906设置蓝牙名称失败name =  %s\n" , pName);
+        log(WARN,"[BLE]named fail =  %s\n" , pName);
     }
 
     return uRt;
     
 }
 
-uint8_t ble_set_leAdvTime( void )
-{
-      
-    bleModuleReceiveCmdType Bledata;
-    uint8_t LeAdvTime[2]={0x00,0x30};
-    uint8_t uRt = BLE_INIT_ERR;
-    
-    uRt = ble_write_command(CMD_LEADVPARAMS ,LeAdvTime , 2 ,  (uint8_t *)&Bledata);
-    if((Bledata.response == 1)&&(uRt == BLE_OK))
-    {
-        log(DEBUG,"Ble module set le adv time success.\r\n");
-    }
-    else
-    {
-        log(WARN,"BB0906 set adv time fail\n");
-        uRt = BLE_SET_BEACON_SWITCH_TIME_ERR;
-    }
-    return uRt;
-}
-
-
-uint8_t ble_set_leConnect_time( void )
-{
-    bleModuleReceiveCmdType Bledata;
-    uint8_t LeConnectTime[8]={0x00,0x02,0x00,0x02,0x00,0x00,0x01,0x2C};
-    uint8_t uRt = BLE_INIT_ERR;
-    
-    uRt = ble_write_command(CMD_LECONPARAMS ,LeConnectTime , 8 ,  (uint8_t *)&Bledata);
-    if((Bledata.response == 1)&&(uRt == BLE_OK))
-    {
-        log(DEBUG,"Ble module set le connect time success.\r\n");
-    }
-    else
-    {
-        log(WARN,"BB0906设置iBeacon模式失败\n");
-        uRt = BLE_SET_BEACON_SWITCH_TIME_ERR;
-    }
-    return uRt;
-}
 
 uint8_t ble_set_mode( uint8_t BleMode )
 {
@@ -725,11 +575,11 @@ uint8_t ble_set_mode( uint8_t BleMode )
     uRt = ble_write_command(CMD_ATTR_INDEX ,&BleMode , 1 ,  (uint8_t *)&Bledata);
     if((Bledata.response == 1)&&(uRt == BLE_OK))
     {
-        log(DEBUG,"Ble mode set success =%d.\r\n" , BleMode);
+        log(DEBUG,"[BLE]Ble mode set ok =%d.\r\n" , BleMode);
     }
     else
     {
-        log(WARN,"BB0906设置运行模式失败 MODE=%d.\r\n" , BleMode);
+        log(WARN,"[BLE]Ble mode set fail=%d.\r\n" , BleMode);
         uRt = BLE_SET_BEACON_SWITCH_TIME_ERR;
     }
     return uRt;
@@ -743,7 +593,7 @@ uint8_t ble_set_default( void )
     ble_write_command(CMD_ORGL , NULL , 0 , (uint8_t *)&Bledata);
     if((Bledata.response == 1)&&(uRt == BLE_OK))
     {
-        log(DEBUG,"Ble module set default success.\r\n");
+        log(DEBUG,"[BLE]set default success.\r\n");
     }
     else
     {
@@ -756,34 +606,32 @@ uint8_t ble_set_default( void )
 
 void bb0906_resert( void )
 {
-    log(DEBUG,"蓝牙模块开始复位...\r\n");
-	pin_ops.pin_write(BT_RESERT_PIN , PIN_HIGH);
+    log(DEBUG,"[BLE]resert start\r\n");
+    pin_ops.pin_write(BT_RESERT_PIN , PIN_HIGH);
     HAL_Delay(50);
     pin_ops.pin_write(BT_RESERT_PIN , PIN_LOW);
     HAL_Delay(100);
     HAL_IWDG_Refresh(&hiwdg);
     pin_ops.pin_write(BT_RESERT_PIN , PIN_HIGH);
     HAL_Delay(100);
-    log(DEBUG,"蓝牙模块复位完成\n");
+    log(DEBUG,"[BLE]resert end\n");
 }
 
 uint8_t bb0906_set_default( void )
 {
-	uint8_t *deviceName ;
+    uint8_t *deviceName ;
 
-	config.read(CFG_SYS_DEVICE_NAME , (void **)&deviceName);
+    config.read(CFG_SYS_DEVICE_NAME , (void **)&deviceName);
 
-	ble_set_name(deviceName);
+    ble_set_name(deviceName);
     
-	ble_set_mode(5);
+    ble_set_mode(5);
 
-	ble_set_beacon(prefix ,UUID);
+    ble_set_beacon(prefix ,UUID);
 
-    //ble_set_leAdvTime();
+    bb0906_resert();
     
-	bb0906_resert();
-	
-	return BLE_OK;
+    return BLE_OK;
 }
 
 void bb0906_init( void )
@@ -792,31 +640,28 @@ void bb0906_init( void )
     
     if( bb0906_port == NULL)
     {
-        //beep.write(BEEP_ALARM);
+        beep.write(BEEP_ALARM);
+        log(ERR,"[BLE]]serial3 fail \r\n" );
         return ;
     }
     serial.init(bb0906_port  , 115200 ,bleDrv_receive_usart_byte);
     
     pin_ops.pin_mode(BT_RESERT_PIN , PIN_MODE_OUTPUT);
-	
-	timer.creat(1000 , TRUE ,ble_recvive_timer );
-	
-	bb0906_resert();
+    
+    timer.creat(1000 , TRUE ,ble_recvive_timer );
+    
+    bb0906_resert();
         
 }
-void bb0906_force_normal(void)
-{}
-//MODULES_INIT_EXPORT(bb0906_init , "bb0906");
 
 
-btDrvType	BB0906Drv=
+btDrvType    BB0906Drv=
 {
-	.resert = bb0906_resert,
-	.read_mac = ble_read_mac,
-	.read_ver = ble_read_version,
-	.send = ble_write_msg,
-	.set_default = bb0906_set_default,
-	.force_normal = bb0906_force_normal,
+    .resert = bb0906_resert,
+    .read_mac = ble_read_mac,
+    .read_ver = ble_read_version,
+    .send = ble_write_msg,
+    .set_default = bb0906_set_default,
+
 };
 
-//#endif

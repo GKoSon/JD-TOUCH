@@ -63,7 +63,6 @@
 #include "card.h"
 #include "open_log.h"
 #include "net.h"
-#include "ff.h"
 #include "err_log.h"
 #include "adc.h"
 #include "tempwd.h"
@@ -169,13 +168,13 @@ void MX_FREERTOS_Init(void)
     configASSERT((xChipFlashSemaphore = xSemaphoreCreateMutex()));
 
   
-    configASSERT((xConsoleSemaphore = xSemaphoreCreateBinary()));	//串口
-    configASSERT((xBtSemaphore = xSemaphoreCreateBinary()));		//蓝牙
-    configASSERT((xUsartNetSemaphore = xSemaphoreCreateBinary()));	//网络，串口
-    configASSERT((xSocketCmdSemaphore = xSemaphoreCreateBinary()));	//SIMCOM800C 发送数据，等待发送命令响应
-    configASSERT((xSocketSendSemaphore = xSemaphoreCreateBinary()));	//SOCKET SIM800C发送数据，模块返回接收成功
-    configASSERT((xSocketConnectSemaphore = xSemaphoreCreateBinary()));	//SIM800C 连接
-    configASSERT((xSocketSemaphore = xSemaphoreCreateBinary()));	//socket 资源
+    configASSERT((xConsoleSemaphore = xSemaphoreCreateBinary()));    //串口
+    configASSERT((xBtSemaphore = xSemaphoreCreateBinary()));        //蓝牙
+    configASSERT((xUsartNetSemaphore = xSemaphoreCreateBinary()));    //网络，串口
+    configASSERT((xSocketCmdSemaphore = xSemaphoreCreateBinary()));    //SIMCOM800C 发送数据，等待发送命令响应
+    configASSERT((xSocketSendSemaphore = xSemaphoreCreateBinary()));    //SOCKET SIM800C发送数据，模块返回接收成功
+    configASSERT((xSocketConnectSemaphore = xSemaphoreCreateBinary()));    //SIM800C 连接
+    configASSERT((xSocketSemaphore = xSemaphoreCreateBinary()));    //socket 资源
     configASSERT((xMqttRecvSemaphore = xSemaphoreCreateBinary()));    //mqtt 资源
     configASSERT((xMqttOtaSemaphore = xSemaphoreCreateBinary()));    //mqtt ota 资源
     xSemaphoreGive( xChipFlashSemaphore );
@@ -250,10 +249,10 @@ void show_no_feed_task( uint32_t bits )
 void device_set_default( char flag )
 {
 
-	err_log_format();
-	permi.clear();
-	journal.clear();
-	tempwd.clear();
+    err_log_format();
+    permi.clear();
+    journal.clear();
+    tempwd.clear();
     if(flag)
       config.write(CFG_SET_RESTORE , NULL , FALSE);
     else 
@@ -272,15 +271,15 @@ void main_task(void const * argument)
       EventBits_t uxBits;
 
       spi_flash_init();
-      sysCfg_init();			//系统基础信息初始化
-      bsp_gpio_map_init();		//GPIO映射表初始化
+      sysCfg_init();            //系统基础信息初始化
+      bsp_gpio_map_init();        //GPIO映射表初始化
       modules_init();             //模块初始化
       components_init();          //组件加载
       get_resert_status();        //复位原因输出
 
 
-      bluetooth_drv_init();		//初始化蓝牙模块
-      tag_component_init();		//初始化NFC芯片
+      bluetooth_drv_init();        //初始化蓝牙模块
+      tag_component_init();        //初始化NFC芯片
       socket_compon_init();       //初始化SOCKET
       //creat_console_task();       //控制台初始化
       creat_buletooth_task();     //蓝牙初始化
@@ -313,11 +312,11 @@ void main_task(void const * argument)
             HAL_IWDG_Refresh(&hiwdg);
             xEventGroupClearBits(xWatchdogEventGroup, uxBits);
         }
-		else
-		{
-			//log(INFO,"ubits = %x " , uxBits);
+        else
+        {
+            //log(INFO,"ubits = %x " , uxBits);
             //show_no_feed_task(uxBits);
-		}
+        }
         if( rtcTimerEnable)     //设备定时复位
         {
             soft_system_resert(__func__);
@@ -326,17 +325,17 @@ void main_task(void const * argument)
         {
             if( clearFlashFlag == FLASH_ALL_DATA)
             {
-				device_set_default(1);
+                device_set_default(1);
             }
             else if( clearFlashFlag == FLASH_ALL_BIT_BUT_CFG)
             {
-				device_set_default(0);
+                device_set_default(0);
             }
             else if( clearFlashFlag == FLASH_PERMI_LIST_BIT)
             {
                 permi.clear();     
             }
-			else if( clearFlashFlag== FLASH_PWD_BIT)
+            else if( clearFlashFlag== FLASH_PWD_BIT)
             {
                 tempwd.clear();
             }
@@ -359,7 +358,7 @@ void task_keep_alive( uint32_t taskBit)
 {
     /*if(TASK_SWIPE_BIT != taskBit)
     {
-		log(DEBUG , "任务喂狗:");
+        log(DEBUG , "任务喂狗:");
         if( (taskBit & TASK_CONSOLE_BIT ) )
         {
             printf("串口控制台 ");

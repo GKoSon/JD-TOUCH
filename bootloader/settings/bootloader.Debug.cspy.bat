@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\AAAA\TOUCH-BLUE\bootloader\settings\bootloader.Debug.general.xcl" --backend -f "D:\git\AAAA\TOUCH-BLUE\bootloader\settings\bootloader.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.general.xcl" --backend -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\AAAA\TOUCH-BLUE\bootloader\settings\bootloader.Debug.general.xcl" "--debug_file=%~1" --backend -f "D:\git\AAAA\TOUCH-BLUE\bootloader\settings\bootloader.Debug.driver.xcl" 
+"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.general.xcl" "--debug_file=%~1" --backend -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.driver.xcl" 
 
 @echo off 
 :end

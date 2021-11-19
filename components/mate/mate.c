@@ -12,7 +12,7 @@
 #include "unit.h"
 #include "timer.h"
 QueueHandle_t        xMateQueue;
-static xTaskHandle 	mateTask;
+static xTaskHandle     mateTask;
 SemaphoreHandle_t    xMateSendSemaphore;
 
 void *matePort = NULL;
@@ -28,22 +28,22 @@ uint8_t receiveTimeoutTimerHandle = 0xFF;
 
 void mate_set_en( uint8_t status )
 {
-	pin_ops.pin_write(RS485_EN_PIN , status);
+    pin_ops.pin_write(RS485_EN_PIN , status);
 }
 
 
 
 void mate_send_to_uart( uint8_t *pData , uint16_t len)
 {
-	mate_set_en(PIN_HIGH);
+    mate_set_en(PIN_HIGH);
 
-	//sys_delay(5);
+    //sys_delay(5);
 
-	serial.puts(matePort , pData , len);
-	
-	//sys_delay(5);
+    serial.puts(matePort , pData , len);
+    
+    //sys_delay(5);
 
-	mate_set_en(PIN_LOW);
+    mate_set_en(PIN_LOW);
 }
 
 
@@ -315,7 +315,7 @@ void creat_mate_task( void )
 
 
 void mate_init( void )
-{	
+{    
     
     matePort = serial.open("serial5");
     
@@ -325,10 +325,10 @@ void mate_init( void )
         return ;
     }
 
-	serial.init(matePort  , 115200 , mate_getchar);
+    serial.init(matePort  , 115200 , mate_getchar);
     
     pin_ops.pin_mode(RS485_EN_PIN , PIN_MODE_OUTPUT);
-	mate_set_en(PIN_LOW);
+    mate_set_en(PIN_LOW);
 }
 
 

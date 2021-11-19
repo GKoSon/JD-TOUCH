@@ -194,7 +194,7 @@ void beep_write(uint8_t mode)
             beep_write_now(beepOpenAlarmCnt,40,40,0);
         }break;
         case BEEP_DEALY:
-        {			
+        {            
             beep_write_delay(beepOpenAlarmCnt,40,40,beepOpenAlarmTime);
         }break;
         

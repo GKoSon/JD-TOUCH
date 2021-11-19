@@ -7,12 +7,12 @@
 
 /*
 typedef enum {
-	MQTT_INIT,
-	MQTT_CONNECT_TCP,
-	MQTT_CONNECT_SERVER,
-	MQTT_SUBSCRIBE,
-	MQTT_AES,
-	MQTT_OK,
+    MQTT_INIT,
+    MQTT_CONNECT_TCP,
+    MQTT_CONNECT_SERVER,
+    MQTT_SUBSCRIBE,
+    MQTT_AES,
+    MQTT_OK,
 }mqttRunEnum;
 */
 enum
@@ -28,9 +28,9 @@ GMQTT_FILTER,
 GMQTT_OK,
 };
 
-extern uint8_t			mqttreadbuf[2048];	
-extern mqttClientType 	client;
-extern uint8_t			pubTopName[64];
+extern uint8_t            mqttreadbuf[2048];    
+extern mqttClientType     client;
+extern uint8_t            pubTopName[64];
 
 extern void create_mqtt_task( void );
 extern uint8_t network_read_status( void );

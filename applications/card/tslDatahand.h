@@ -37,19 +37,11 @@ typedef struct _tagUserDataType{
     uint8_t house2[2];          //房间号2
     uint8_t house3[2];          //房间号3
     uint8_t house4[2];          //房间号4
-    uint8_t Temp[2];               // 校验    1字节
-    uint8_t fdgs1[4]; 
- //   uint16_t userFloor;    //http://101.132.33.109:9999/pages/viewpage.action?pageId=1114427 和协议一致 可能是电梯的 先放弃
+    uint8_t crc1;               // 校验    1字节
+    uint8_t fdgs1[4];           //分断      1*4
+    uint16_t userFloor;
     uint8_t crc16_1[2];         //CRC 16
-    ////////////////////////
-    uint8_t gender;
-    uint8_t xiaoqu[5];
-    uint8_t loudong[2];
-    uint8_t danyuan;
-    uint8_t userid[4];
-    uint8_t weight[2];
-    uint8_t crc8;
-}tagUserDataType;               //用户卡 共89字节+16=105个！！！！
+}tagUserDataType;               //用户卡 共89字节
 
 
 typedef struct _tagConfigDataType{
@@ -120,7 +112,48 @@ typedef struct _tagUnitAdminDataType{
 
 
 
+
+
+
+/////////////////EXCEL CARD//////////////////
+
+typedef struct 
+{  
+  uint8_t class;      
+  uint8_t type;     
+  uint8_t uid[4];       
+  uint8_t ID[9];     
+  uint8_t crc;    
+}headtype;
+
+typedef struct 
+{  
+  uint8_t group[11];    
+  uint8_t endtime[3];     
+  uint8_t crc;      
+  uint8_t power;   
+}bodytype;
+
+
+typedef union 
+{
+	uint8_t 	crc[2];
+	uint16_t 	crc16;
+}CRCtype;
+
+
+typedef struct 
+{
+   headtype  head;
+   bodytype  body[5];   
+   CRCtype   crc;    
+}shanghaicardtype;
+
+
+/////////////////////////////////////
+
 void tag_config_enable( uint8_t status);
-uint8_t tag_terminus_card_process( tagBufferType *tag);
+
+uint8_t tag_shanghai_card_process( tagBufferType *tag);
 
 #endif

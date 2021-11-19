@@ -22,22 +22,22 @@ typedef enum
 
 typedef struct
 {
-    otaStatusEnum	otaStatus;
-    uint32_t		len;
-    uint32_t		ver;
-    uint32_t		fileSize;
-    uint32_t		crc32;
+    otaStatusEnum    otaStatus;
+    uint32_t        len;
+    uint32_t        ver;
+    uint32_t        fileSize;
+    uint32_t        crc32;
 }otaRecvCmdType;
 
-otaRecvCmdType	ota;
+otaRecvCmdType    ota;
 
 typedef struct
 {
-	uint8_t cnt;
-	uint8_t	calccnt;
-	int	binlen;
-	int	L;
-	int	R;
+    uint8_t cnt;
+    uint8_t    calccnt;
+    int    binlen;
+    int    L;
+    int    R;
 }_ota;
 
 _ota otamark;
@@ -51,11 +51,11 @@ void showota(_ota *p)
     log_err("p->L       %d\n",p->L);
     log_err("p->R       %d\n",p->R);
 }
-char 			        rxOtaData[2048];
+char                     rxOtaData[2048];
 
-static xTaskHandle		otaTask;
-static runStatusEnum	        otaRunStatus = RUN_INIT;
-static int8_t			clientId =0;
+static xTaskHandle        otaTask;
+static runStatusEnum            otaRunStatus = RUN_INIT;
+static int8_t            clientId =0;
 
 
 /////////////////////////////////////////////
@@ -64,40 +64,40 @@ static int8_t			clientId =0;
 
 static uint8_t dev_ota_read_flash(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	if( flash.get_lock() == TRUE )
-	{
-		flash.read(addr , buffer , length);
+    if( flash.get_lock() == TRUE )
+    {
+        flash.read(addr , buffer , length);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	 return TRUE;
+     return TRUE;
 }
 
 static uint8_t dev_ota_write_flash(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	if( flash.get_lock() == TRUE )
-	{
-		flash.write(addr , buffer , length);
+    if( flash.get_lock() == TRUE )
+    {
+        flash.write(addr , buffer , length);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 
 
 static uint8_t dev_ota_erase_flash(uint32_t sectorAddr)
 {
-	if( flash.get_lock() == TRUE )
-	{
-		flash.earse(sectorAddr);
+    if( flash.get_lock() == TRUE )
+    {
+        flash.earse(sectorAddr);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 
@@ -120,33 +120,33 @@ uint8_t ota_write_file(uint8_t *msg , uint32_t len)
 
 uint8_t ota_ver_file( void )
 {
-	uint32_t crc32 = 0xFFFFFFFF;
-	uint32_t crcTbl;
-	uint8_t  buff[512];
-	uint32_t readAddr = OTA_START_ADDR;
-	uint16_t readSize = 512 ;
+    uint32_t crc32 = 0xFFFFFFFF;
+    uint32_t crcTbl;
+    uint8_t  buff[512];
+    uint32_t readAddr = OTA_START_ADDR;
+    uint16_t readSize = 512 ;
     __IO int32_t len =0;
 
-	while( len < ota.fileSize )
-	{
-		if( len + readSize > ota.fileSize)
-		{
-			readSize = ota.fileSize - len;
-		}
+    while( len < ota.fileSize )
+    {
+        if( len + readSize > ota.fileSize)
+        {
+            readSize = ota.fileSize - len;
+        }
 
-		memset(buff , 0x00 , 512);
-		dev_ota_read_flash(readAddr+len , buff , readSize);
+        memset(buff , 0x00 , 512);
+        dev_ota_read_flash(readAddr+len , buff , readSize);
 
-		for (uint32_t i = 0; i!= readSize; ++i)
-		{
-			crcTbl = (crc32 ^ buff[i]) & 0xFF;
-			crc32 = ((crc32 >> 8) & 0xFFFFFF) ^ gdwCrc32Table[crcTbl];
-		}
-		len += readSize;
+        for (uint32_t i = 0; i!= readSize; ++i)
+        {
+            crcTbl = (crc32 ^ buff[i]) & 0xFF;
+            crc32 = ((crc32 >> 8) & 0xFFFFFF) ^ gdwCrc32Table[crcTbl];
+        }
+        len += readSize;
 
-	}
+    }
 
-	crc32 = ~crc32;
+    crc32 = ~crc32;
 
         log(ERR,"文件校验-自己计算的CRC=%x , 平台给的crc = %x  强暴赋值\n" , crc32 , ota.crc32);
 
@@ -249,31 +249,31 @@ Content-Range: bytes 0-3/161460
 Content-Type: application/octet-stream
 */
     char *pst = NULL , lenBuff[10]={0} , i =0;
-	int len = 0;
+    int len = 0;
     
 
-	pst = strstr(msg, "Content-Range: bytes 0-3/");
-	if (pst != NULL)
-	{
-		pst += strlen("Content-Range: bytes 0-3/");
+    pst = strstr(msg, "Content-Range: bytes 0-3/");
+    if (pst != NULL)
+    {
+        pst += strlen("Content-Range: bytes 0-3/");
 
-		while (*pst != '\r')
-		{
-			lenBuff[i++] = *pst++;
+        while (*pst != '\r')
+        {
+            lenBuff[i++] = *pst++;
 
-			if(i>10) {log(WARN,"获取到长度异常\n");return len;}
+            if(i>10) {log(WARN,"获取到长度异常\n");return len;}
 
-		}
-		len = atoll(lenBuff);
-	}
-	else
-	{
-		log(WARN,"没有获取到长度\n");
-	}
+        }
+        len = atoll(lenBuff);
+    }
+    else
+    {
+        log(WARN,"没有获取到长度\n");
+    }
 
-	log(DEBUG,"read_file_length返回长度 =  %d \n", len);
+    log(DEBUG,"read_file_length返回长度 =  %d \n", len);
 
-	return len;
+    return len;
 }
 
 
@@ -374,8 +374,8 @@ int8_t ota_download_read_file(void)
 
         }  
 
-	while (1)
-	{
+    while (1)
+    {
                 if(W5500ERR)
                 {
                       log(ERR,"#####W5500ERR###### = %d######W5500ERR#######\n" , clientId);
@@ -471,14 +471,14 @@ int8_t ota_download_read_file(void)
                                                             
                                   sys_delay(100);
                                   memset(rxOtaData, 0x00, sizeof(rxOtaData));   socket_clear_buffer(clientId);
-								  sendLen = packsend((char *)request,url,(char*)addr->ip,port,otamark.L,otamark.R);
+                                  sendLen = packsend((char *)request,url,(char*)addr->ip,port,otamark.L,otamark.R);
                                   log(INFO,"【%d】[%s]",sendLen,request);
                                   memset(rxOtaData, 0x00, sizeof(rxOtaData));   socket_clear_buffer(clientId);
                                   ret = socket.send(clientId , request , sendLen , 4000);
                                 }  
                                               
                         }//else xiao
-		}//if
+        }//if
                 else
                 {
                     ++jump;
@@ -499,7 +499,7 @@ int8_t ota_download_read_file(void)
                     }
                 }
 
-	}//while
+    }//while
         
       log(ERR,"NEVER COM\n");
       return 44;
@@ -517,7 +517,7 @@ int8_t ota_download_file( void )
             sys_delay(500);
             if( socket.isOK() == TRUE)
             {
-            	otaRunStatus = RUN_CONNECTING;
+                otaRunStatus = RUN_CONNECTING;
             }
         }break;
         case RUN_CONNECTING:
@@ -548,7 +548,7 @@ int8_t ota_download_file( void )
             {
                 ota_ver_file();
                 
-            	otaType *otaCfg;
+                otaType *otaCfg;
                 int ver;
 
                 log(INFO,"文件下载成功 开始放在CFG中\n");
@@ -569,7 +569,7 @@ int8_t ota_download_file( void )
             {
                 log(INFO,"文件下载失败，再次连接\n");
 
-            	ota_repert_connect();
+                ota_repert_connect();
             }
         }break;
         default:break;
@@ -591,15 +591,15 @@ static void ota_task( void const *pvParameters)
         switch(ota.otaStatus)
         {
             case CHECH_UPG_FILE:
-        	{
-        		
+            {
+                
                     if( xSemaphoreTake( xMqttOtaSemaphore, portMAX_DELAY ) == pdTRUE )
                     {
                       printf("-----------准备启动------------\r\n"); 
 
                       ota.otaStatus = DOWMLOAD_FILE;
                     }
-        	}break;  
+            }break;  
             case DOWMLOAD_FILE:
             {
                  if( ota_download_file() == OTA_OK)

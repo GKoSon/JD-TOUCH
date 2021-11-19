@@ -8,41 +8,41 @@
 /*
 uint8_t dev_pwd_read_flash(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	if( flash.get_lock() == TRUE )
-	{
-		flash.read(addr , buffer , length);
+    if( flash.get_lock() == TRUE )
+    {
+        flash.read(addr , buffer , length);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	 return TRUE;
+     return TRUE;
 }
 
 static uint8_t dev_pwd_write_flash(uint32_t addr,uint8_t* buffer,  uint16_t length)
 {
-	if( flash.get_lock() == TRUE )
-	{
+    if( flash.get_lock() == TRUE )
+    {
 
-		flash.write(addr , buffer , length);
+        flash.write(addr , buffer , length);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 
 
 static uint8_t dev_pwd_erase_flash(uint32_t sectorAddr)
 {
-	if( flash.get_lock() == TRUE )
-	{
-		flash.earse(sectorAddr);
+    if( flash.get_lock() == TRUE )
+    {
+        flash.earse(sectorAddr);
 
-		flash.release_lock();
-	}
+        flash.release_lock();
+    }
 
-	return TRUE;
+    return TRUE;
 
 }
 */

@@ -27,22 +27,22 @@ struct pin_exit
 
 static  struct pin_exit exits[]=
 {
-	{GPIO_PIN_0 ,  EXTI0_IRQn ,   13 , NULL },
-	{GPIO_PIN_1 ,  EXTI1_IRQn ,   13 , NULL },
-	{GPIO_PIN_2 ,  EXTI2_IRQn ,   13 , NULL },
-	{GPIO_PIN_3 ,  EXTI3_IRQn ,   13 , NULL },
-	{GPIO_PIN_4 ,  EXTI4_IRQn ,   13 , NULL },
-	{GPIO_PIN_5 ,  EXTI9_5_IRQn,  13 , NULL },
-	{GPIO_PIN_6 ,  EXTI9_5_IRQn,  13 , NULL },
-	{GPIO_PIN_7 ,  EXTI9_5_IRQn,  13 , NULL },
-	{GPIO_PIN_8 ,  EXTI9_5_IRQn,  13 , NULL },
-	{GPIO_PIN_9 ,  EXTI9_5_IRQn,  13 , NULL },
-	{GPIO_PIN_10 , EXTI15_10_IRQn,13 , NULL },
-	{GPIO_PIN_11 , EXTI15_10_IRQn,13 , NULL },
-	{GPIO_PIN_12 , EXTI15_10_IRQn,13 , NULL },
-	{GPIO_PIN_13 , EXTI15_10_IRQn,13 , NULL },
-	{GPIO_PIN_14 , EXTI15_10_IRQn,13 , NULL },
-	{GPIO_PIN_15 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_0 ,  EXTI0_IRQn ,   13 , NULL },
+    {GPIO_PIN_1 ,  EXTI1_IRQn ,   13 , NULL },
+    {GPIO_PIN_2 ,  EXTI2_IRQn ,   13 , NULL },
+    {GPIO_PIN_3 ,  EXTI3_IRQn ,   13 , NULL },
+    {GPIO_PIN_4 ,  EXTI4_IRQn ,   13 , NULL },
+    {GPIO_PIN_5 ,  EXTI9_5_IRQn,  13 , NULL },
+    {GPIO_PIN_6 ,  EXTI9_5_IRQn,  13 , NULL },
+    {GPIO_PIN_7 ,  EXTI9_5_IRQn,  13 , NULL },
+    {GPIO_PIN_8 ,  EXTI9_5_IRQn,  13 , NULL },
+    {GPIO_PIN_9 ,  EXTI9_5_IRQn,  13 , NULL },
+    {GPIO_PIN_10 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_11 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_12 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_13 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_14 , EXTI15_10_IRQn,13 , NULL },
+    {GPIO_PIN_15 , EXTI15_10_IRQn,13 , NULL },
     
 };
 
@@ -50,26 +50,26 @@ static  struct pin_exit exits[]=
 
 static const struct pin_index pins[] =
 {
-    { 0 , GPIOC , GPIO_PIN_8	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-    { 1 , GPIOC , GPIO_PIN_6	, GPIO_MODE_OUTPUT_OD	, GPIO_PULLUP},
-    { 2 , GPIOA , GPIO_PIN_12	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-    { 3 , GPIOB , GPIO_PIN_2	, GPIO_MODE_OUTPUT_PP	, GPIO_PULLUP},
-    { 4 , GPIOB , GPIO_PIN_0	, GPIO_MODE_OUTPUT_PP	, GPIO_PULLUP},
-    { 5 , GPIOC , GPIO_PIN_9	, GPIO_MODE_IT_FALLING	, GPIO_PULLUP},
-    { 6 , GPIOB , GPIO_PIN_7	, GPIO_MODE_IT_FALLING	, GPIO_PULLUP},
-    { 7 , GPIOA , GPIO_PIN_11	, GPIO_MODE_IT_FALLING	, GPIO_PULLUP},
-	{ 8 , GPIOB , GPIO_PIN_8 	, GPIO_MODE_OUTPUT_PP , GPIO_PULLUP},
-    { 9 , GPIOB , GPIO_PIN_9 	, GPIO_MODE_OUTPUT_PP , GPIO_PULLUP},
-    { 10 , GPIOA , GPIO_PIN_8	, GPIO_MODE_INPUT		, GPIO_NOPULL},
-    { 11 , GPIOC , GPIO_PIN_13	, GPIO_MODE_INPUT		, GPIO_NOPULL},
-    { 12 , GPIOC , GPIO_PIN_3	, GPIO_MODE_INPUT		, GPIO_NOPULL},
-	{ 13 , GPIOC , GPIO_PIN_11	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-    { 14 , GPIOC , GPIO_PIN_2	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-    { 15 , GPIOC , GPIO_PIN_10	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-	{ 16 , GPIOB , GPIO_PIN_1	, GPIO_MODE_IT_RISING	, GPIO_NOPULL},
-	{ 17 , GPIOB , GPIO_PIN_12	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-	{ 18 , GPIOC , GPIO_PIN_7	, GPIO_MODE_OUTPUT_PP	, GPIO_NOPULL},
-	{ 19 , GPIOB , GPIO_PIN_10	, GPIO_MODE_OUTPUT_PP		, GPIO_NOPULL},
+    { 0 , GPIOC , GPIO_PIN_8    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 1 , GPIOC , GPIO_PIN_6    , GPIO_MODE_OUTPUT_OD    , GPIO_PULLUP},
+    { 2 , GPIOA , GPIO_PIN_12    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 3 , GPIOB , GPIO_PIN_2    , GPIO_MODE_OUTPUT_PP    , GPIO_PULLUP},
+    { 4 , GPIOB , GPIO_PIN_0    , GPIO_MODE_OUTPUT_PP    , GPIO_PULLUP},
+    { 5 , GPIOC , GPIO_PIN_9    , GPIO_MODE_IT_FALLING    , GPIO_PULLUP},
+    { 6 , GPIOB , GPIO_PIN_7    , GPIO_MODE_IT_FALLING    , GPIO_PULLUP},
+    { 7 , GPIOA , GPIO_PIN_11    , GPIO_MODE_IT_FALLING    , GPIO_PULLUP},
+    { 8 , GPIOB , GPIO_PIN_8     , GPIO_MODE_OUTPUT_PP , GPIO_PULLUP},
+    { 9 , GPIOB , GPIO_PIN_9     , GPIO_MODE_OUTPUT_PP , GPIO_PULLUP},
+    { 10 , GPIOA , GPIO_PIN_8    , GPIO_MODE_INPUT        , GPIO_NOPULL},
+    { 11 , GPIOC , GPIO_PIN_13    , GPIO_MODE_INPUT        , GPIO_NOPULL},
+    { 12 , GPIOC , GPIO_PIN_3    , GPIO_MODE_INPUT        , GPIO_NOPULL},
+    { 13 , GPIOC , GPIO_PIN_11    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 14 , GPIOC , GPIO_PIN_2    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 15 , GPIOC , GPIO_PIN_10    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 16 , GPIOB , GPIO_PIN_1    , GPIO_MODE_IT_RISING    , GPIO_NOPULL},
+    { 17 , GPIOB , GPIO_PIN_12    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 18 , GPIOC , GPIO_PIN_7    , GPIO_MODE_OUTPUT_PP    , GPIO_NOPULL},
+    { 19 , GPIOB , GPIO_PIN_10    , GPIO_MODE_OUTPUT_PP        , GPIO_NOPULL},
 };
 
 
@@ -95,7 +95,7 @@ void stm32_pin_write(uint8_t pin, uint8_t value)
 
     index = get_pin(pin);
     if (index == GPIO_NULL)
-    {		
+    {        
         return;
     }
 
@@ -143,7 +143,7 @@ void stm32_pin_mode(uint8_t pin, uint8_t mode)
     index = get_pin(pin);
     if (index == GPIO_NULL)
     {
-		log(WARN,"映射序号%d , 没有对应的映射表\n" , pin);
+        log(WARN,"映射序号%d , 没有对应的映射表\n" , pin);
         return;
     }
     
@@ -247,53 +247,53 @@ void EXTI0_IRQHandler(void)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_0);
         if(exits[0].fun != NULL)
-		{
-			exits[0].fun();
-		}
+        {
+            exits[0].fun();
+        }
     }    
 }
 void EXTI1_IRQHandler(void)
 {
-	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
+    if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
         if(exits[1].fun != NULL)
-		{
-			exits[1].fun();
-		}
+        {
+            exits[1].fun();
+        }
     } 
 }
 void EXTI2_IRQHandler(void)
 {
-	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_2) != RESET)
+    if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_2) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_2);
         if(exits[2].fun != NULL)
-		{
-			exits[2].fun();
-		}
+        {
+            exits[2].fun();
+        }
     } 
 }
 void EXTI3_IRQHandler(void)
 {
-	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_3) != RESET)
+    if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_3) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_3);
         if(exits[3].fun != NULL)
-		{
-			exits[3].fun();
-		}
+        {
+            exits[3].fun();
+        }
     } 
 }
 void EXTI4_IRQHandler(void)
 {
-	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4) != RESET)
+    if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_4) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_4);
         if(exits[4].fun != NULL)
-		{
-			exits[4].fun();
-		}
+        {
+            exits[4].fun();
+        }
     } 
 }
 void EXTI9_5_IRQHandler(void)
@@ -302,41 +302,41 @@ void EXTI9_5_IRQHandler(void)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_5);
         if(exits[5].fun != NULL)
-		{
-			exits[5].fun();
-		}
+        {
+            exits[5].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_6) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
         if(exits[6].fun != NULL)
-		{
-			exits[6].fun();
-		}
+        {
+            exits[6].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_7) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
         if(exits[7].fun != NULL)
-		{
-			exits[7].fun();
-		}
+        {
+            exits[7].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_8) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
         if(exits[8].fun != NULL)
-		{
-			exits[8].fun();
-		}
+        {
+            exits[8].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_9) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
         if(exits[9].fun != NULL)
-		{
-			exits[9].fun();
-		}
+        {
+            exits[9].fun();
+        }
     } 
 }
 
@@ -347,49 +347,49 @@ void EXTI15_10_IRQHandler(void)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_10);
         if(exits[10].fun != NULL)
-		{
-			exits[10].fun();
-		}
+        {
+            exits[10].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_11) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
         if(exits[11].fun != NULL)
-		{
-			exits[11].fun();
-		}
+        {
+            exits[11].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_12) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_12);
         if(exits[12].fun != NULL)
-		{
-			exits[12].fun();
-		}
+        {
+            exits[12].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_13) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_13);
         if(exits[13].fun != NULL)
-		{
-			exits[13].fun();
-		}
+        {
+            exits[13].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_14) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_14);
         if(exits[14].fun != NULL)
-		{
-			exits[14].fun();
-		}
+        {
+            exits[14].fun();
+        }
     } 
     if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_15) != RESET)
     {
         __HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_15);
         if(exits[15].fun != NULL)
-		{
-			exits[15].fun();
-		}
+        {
+            exits[15].fun();
+        }
     } 
     
 }
@@ -399,5 +399,5 @@ void EXTI15_10_IRQHandler(void)
 
 void bsp_gpio_map_init( void )
 {
-	
+    
 }

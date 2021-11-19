@@ -20,21 +20,21 @@ ReturnCode err = ERR_NONE;
 
 void st25ResetMifareCard(tagBufferType *tag)
 {
-    iso14443ACommand_t cmd =ISO14443A_CMD_REQA;		
+    iso14443ACommand_t cmd =ISO14443A_CMD_REQA;        
     
     err = iso14443AInitialize();
     
     err = iso14443ASelect(cmd, &card, perform_ac);
     
     if(err == ERR_NONE)
-	{	
-		if (perform_ac)
-		{
-			tag->sak = card.sak[0];
-			memcpy(tag->UID , card.uid , card.actlength);
-			tag->UIDLength = card.actlength;
-		}
-	}
+    {    
+        if (perform_ac)
+        {
+            tag->sak = card.sak[0];
+            memcpy(tag->UID , card.uid , card.actlength);
+            tag->UIDLength = card.actlength;
+        }
+    }
     
     err = mccInitialize();
 
@@ -49,14 +49,14 @@ void st25ResetMifareCard(tagBufferType *tag)
 
  *****************************************************************************
  */
-ReturnCode MifareAuthenticationkey11(tagBufferType *tag,uint8_t blockNum)	
-{	
+ReturnCode MifareAuthenticationkey11(tagBufferType *tag,uint8_t blockNum)    
+{    
     uint8_t block;
     uint8_t uidLength;
     uint8_t key_A[6] = {0x11,0x11,0x11,0x11,0x11,0x11};
    
     authentication_key = MCC_AUTH_KEY_A;
-    uidLength = tag->UIDLength;	
+    uidLength = tag->UIDLength;    
     block = blockNum;
     
     if(authentication_key == MCC_AUTH_KEY_A)
@@ -84,14 +84,14 @@ ReturnCode MifareAuthenticationkey11(tagBufferType *tag,uint8_t blockNum)
 
  *****************************************************************************
  */
-ReturnCode MifareAuthenticationkeyFF(tagBufferType *tag,uint8_t blockNum)	
-{	
+ReturnCode MifareAuthenticationkeyFF(tagBufferType *tag,uint8_t blockNum)    
+{    
     uint8_t block;
     uint8_t uidLength;
     uint8_t key_A[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
    
     authentication_key = MCC_AUTH_KEY_A;
-    uidLength = tag->UIDLength;	
+    uidLength = tag->UIDLength;    
     block = blockNum;
     
     if(authentication_key == MCC_AUTH_KEY_A)
@@ -110,10 +110,10 @@ ReturnCode MifareAuthenticationkeyFF(tagBufferType *tag,uint8_t blockNum)
     
     return err;
 }
-	
+    
 uint8_t st25ReadFkCardBlock(uint8_t blockNum,uint8_t* ubuff,tagBufferType *tag)
 {
-	/* MiFare read block command. */
+    /* MiFare read block command. */
     if (err ==0)
     {
         mifare_request[0] = MCC_READ_BLOCK;
@@ -129,19 +129,21 @@ uint8_t st25ReadFkCardBlock(uint8_t blockNum,uint8_t* ubuff,tagBufferType *tag)
             
         *responseLength = numBytesReceived;
      }
-	return err;
+    return err;
 }
 
 uint8_t  st25ReadFkCard( tagBufferType *tag )
 {
     uint8_t udata[32];
-	
-	/* Mifaire read block trial.*/
+    
+    /* Mifaire read block trial.*/
     *responseLength = 0;
     
     /* Configure demoboard for MiFare. */
     err = mccInitialize();
-	sys_delay(10);
+    sys_delay(10);
+    
+    
     
     if(MifareAuthenticationkey11(tag,0))            //认证第0~3块
     { 
@@ -157,6 +159,10 @@ uint8_t  st25ReadFkCard( tagBufferType *tag )
     return false;    
     memcpy(&tag->buffer[16], udata, 16);    
     
+    
+    
+    
+    
     if(MifareAuthenticationkey11(tag,4))            //认证第4~7块    
     { 
       st25ResetMifareCard(tag);
@@ -166,6 +172,11 @@ uint8_t  st25ReadFkCard( tagBufferType *tag )
     if(st25ReadFkCardBlock(4,udata,tag))    //读取第4块数据
     return FALSE;                           
     memcpy(&tag->buffer[32], udata, 9);
+    
+    
+    
+    
+    
     
     if(MifareAuthenticationkey11(tag,8))            //认证第8~11块
     { 
@@ -185,5 +196,5 @@ uint8_t  st25ReadFkCard( tagBufferType *tag )
     return false;   
     memcpy(&tag->buffer[73], udata, 16);
     
-	return true;
+    return true;
 }

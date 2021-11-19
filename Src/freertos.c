@@ -65,7 +65,6 @@
 #include "net.h"
 #include "err_log.h"
 #include "adc.h"
-#include "tempwd.h"
 #include "socket.h"
 #include "rs485.h"
 #include "permi_list.h"
@@ -252,7 +251,7 @@ void device_set_default( char flag )
     err_log_format();
     permi.clear();
     journal.clear();
-    tempwd.clear();
+
     if(flag)
       config.write(CFG_SET_RESTORE , NULL , FALSE);
     else 
@@ -335,10 +334,7 @@ void main_task(void const * argument)
             {
                 permi.clear();     
             }
-            else if( clearFlashFlag== FLASH_PWD_BIT)
-            {
-                tempwd.clear();
-            }
+
             clearFlashFlag = 0;
 
         }

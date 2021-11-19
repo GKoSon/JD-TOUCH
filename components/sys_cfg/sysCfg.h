@@ -9,27 +9,6 @@
 
 /*
 
-解决撞车：
-for(i = 0 ; i < 6 ; i++ ) sprintf((char *)cfg.mqtt.mac+i*2 , "%02X" ,  cfg.ble.ble_mac[i]);
-这里是MQTTMAC
-
-sprintf((char *)cfg.parm.deviceName , "%.4s%02X%02X%02X%02X%02X%02X", DEVICE_NAME ,
-cfg.ble.ble_mac[0],cfg.ble.ble_mac[1],cfg.ble.ble_mac[2],
-cfg.ble.ble_mac[3],cfg.ble.ble_mac[4],cfg.ble.ble_mac[5]);
-这里是MQTTMAC
-可以放弃MQTTMAC 它是别人的子集！
-开始：
-del        for(i = 0 ; i < 6 ; i++ ) sprintf((char *)cfg.mqtt.mac+i*2 , "%02X" ,  cfg.ble.ble_mac[i]);
-该       sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
-strcat(topicPath[i],(char *)&cfg.parm.deviceName[4]);
-case CFG_MQTT_MAC:
-{      
-*parma = &cfg.parm.deviceName[4];
-}break;
-
-
-*/
-
 
 
 /* 

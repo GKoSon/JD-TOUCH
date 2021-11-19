@@ -86,7 +86,7 @@ typedef struct _BleUserMsgType
 typedef struct
 {
 
-    void        (*resert)             (void);
+    void        (*resert)              (void);
     uint8_t     (*read_mac)            (uint8_t *mac);
     uint8_t     (*read_ver)            (uint8_t *version);
     uint8_t     (*send)                (uint8_t *ptAddr , uint8_t *ptSenddata , uint16_t uLegnth , uint16_t dHandle);
@@ -98,8 +98,8 @@ typedef struct
 {
     void        (*init)                (void);
     void        (*send)                (BleAppMsgType *nanopb , uint8_t *data , uint16_t length  );
-    uint8_t      (*read_mac)            (uint8_t *mac);
-    uint32_t     (*read_version)        (void);
+    uint8_t     (*read_mac)            (uint8_t *mac);
+    uint32_t    (*read_version)        (void);
     void        (*set_default)         (void);
     void        (*resert)              (void);
     void        (*timer_isr)           (void);

@@ -13,7 +13,6 @@
 #include "beep.h"
 #include "sysCfg.h"
 #include "cJSON.h"
-#include "tempwd.h"
 #include "permi_list.h"
 #include "open_door.h"
 #include "open_log.h"

@@ -5,26 +5,15 @@
 #include "timer.h"
 #include "open_door.h"
 #include "config.h"
-#include "tempwd.h"
 #include "bsp_rtc.h"
 #include "open_log.h"
 #include "permi_list.h"
 #include "err_log.h"
 #include "backlight.h"
 #include "open_log.h"
-#include "tslDataHand.h"
+
 
 static xTaskHandle     keyTask;
-
-
-blinkParmType beepLengthErr=
-{
-    .mode = BLINK_OPEN_NOW,
-    .openCnt = 4,
-    .openTime = 50,
-    .closeTime = 50,
-    .delayTime = 0,
-};
 
 
 static void system_key_handle(keyTaskType *key)
@@ -33,13 +22,11 @@ static void system_key_handle(keyTaskType *key)
     {
     case KEY_1_SEC:
     {
-         tag_config_enable(TRUE);
          beep.write(BEEP_NORMAL);      
          log(DEBUG,"使能安装工刷卡\n");
     }break;
     case KEY_8_SEC:
     {
-        tag_config_enable(FALSE);
         beep.write_base(&beepRestore);
         set_clear_flash(FLASH_ALL_DATA);
     }break;
@@ -55,8 +42,7 @@ static void fun_key_handle(keyTaskType *key)
     {
     case OPEN_DOOR_KEY:
     {
-        openlogDataType    logData;
-        
+        openlogDataType    logData;      
         memset(&logData , 0x00 , sizeof(openlogDataType));
         open_door();
         beep.write(BEEP_NORMAL);
@@ -73,8 +59,6 @@ static void fun_key_handle(keyTaskType *key)
 
 
 }
-
-
 
 
 static void key_handle(keyTaskType *key)
@@ -119,11 +103,7 @@ static void key_task( void const *pvParameters)
 
 void creat_key_task( void )
 {
-
     osThreadDef( key, key_task , osPriorityHigh, 0, configMINIMAL_STACK_SIZE);
     keyTask = osThreadCreate(osThread(key), NULL);
     configASSERT(keyTask);
 }
-
-
-

@@ -123,7 +123,7 @@ uint8_t tag_is_null( uint8_t *buffer , uint8_t length)
     return FALSE;
 }
 
-//CRC8 ??
+
 uint8_t tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
 {
   uint8_t i_crc=0,i;
@@ -135,8 +135,6 @@ uint8_t tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
   printf("tag_calc_crc8=%02X\r\n",i_crc);
   return i_crc;
 }
-
-
 
 
 void tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
@@ -178,77 +176,6 @@ bool tag_check_crc(uint8_t u1,uint8_t *crc2 , uint8_t *uRd)
     return TRUE;
 
 }
-
-uint8_t tag_check_data_crc(tagBufferType *tag)
-{
-    if((tag->buffer[28]==0x12)||(0x80==tag->buffer[16]))
-    {
-        if(tag_check_crc((0x80==tag->buffer[16])?1:0, &tag->allDataCrc , tag->buffer))
-        {
-            log_err("user data crc check is error.\n");                        
-            return TAG_CRC_ERR;
-        }
-        if((0x80==tag->buffer[16])&&(tag->allDataCrc == FALSE))
-        {
-            log_err("all data crc check is error.\n");                        
-            return TAG_CRC_ERR; 
-        }
-        
-        return TAG_SUCESS;
-    } 
-    
-    return TAG_SUCESS;
-}
-
-
-tagPowerEnum YulitagAnalyticalClass(tagBufferType *tag)
-{
-    tagPowerEnum tagPwoer = INIT_TAG;
-    switch(tag->buffer[13])
-    {
-        case 1:tagPwoer = USER_TAG;break;
-        case 2:tagPwoer = MANAGENT_TAG;break;
-        case 3:tagPwoer = TEMP_TAG;break;
-        case 4:tagPwoer = CONFIG_TAG;break;
-          default :break;
-    }
-    tag->tagPower = tagPwoer;
-        return tagPwoer;
-
-}
-tagPowerEnum tagAnalyticalClass(tagBufferType *tag)
-{
-    tagPowerEnum tagPwoer = INIT_TAG;
-    
-    if(0x81==(tag->buffer[16]&0x81))
-    {
-        tagPwoer = UINT_ADMIN_TAG;
-    }
-    else if(0x80==tag->buffer[16])
-    {
-        tagPwoer = CONFIG_TAG;
-    }
-    else
-    {
-        uint8_t m_temp = 0;
-        m_temp=(tag->buffer[16]>>2)&0x03;
-        if(2>m_temp)
-        {
-            tagPwoer = USER_TAG;
-        }
-        else if(m_temp==0x02)
-        {
-            tagPwoer = MANAGENT_TAG;
-        }
-        else if(m_temp==0x03)
-        {
-            tagPwoer = UINT_MANAGENT_TAG;
-        }
-    }
-    
-    return tagPwoer;
-}
-
 
 uint8_t GetReadCardType( void )
 {
@@ -319,7 +246,7 @@ uint8_t tag_find_class( tagBufferType *tag)
                 tag_clear_beforeUid();
                 beep.write(BEEP_CLEAR);
                 readType = TRACK_NONE;
-                log(DEBUG, "[CARD]¼ì²âµ½¿¨Æ¬ÒÑ¾­Àë¿ª\n");
+                log(DEBUG, "[CARD]card leaved away\n");
             }
         }
         else
@@ -334,7 +261,6 @@ uint8_t tag_find_class( tagBufferType *tag)
     return TAG_SUCESS;
 }
 
-
 void NO_tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
 {
     uint16_t x=*pwcrc;
@@ -345,8 +271,6 @@ void NO_tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
     x^=((x&0xff)<<4)<<1;
     *pwcrc=x;
 }
-
-
 
 uint8_t NO_tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
 {
@@ -393,7 +317,6 @@ void SHANGHAISHOW(shanghaicardtype *p)
 
 uint8_t checkpowerinfo(shanghaicardtype *p)
 {
-
     switch(p->head.type)
     {
         case 0X00:return TEMP_TAG;
@@ -402,6 +325,7 @@ uint8_t checkpowerinfo(shanghaicardtype *p)
     }
     return INIT_TAG;
 }
+
 uint8_t checkcrcerr(shanghaicardtype *p)
 {
     uint8_t *data = (uint8_t *)p;
@@ -422,12 +346,13 @@ uint8_t checkcrcerr(shanghaicardtype *p)
     printf("[CARD]CRC8 OK\r\n");
     for(char i=0; i<96; i++)
           tag_calc_crc16(data[i],&crc16);
-        printf("CARDCRC16=%02X  --MYCRC16=%02X\r\n",p->crc.crc16,crc16);     
+        printf("[CARD]CARDCRC16=%02X  MYCRC16=%02X\r\n",p->crc.crc16,crc16);     
         if(crc16 != p->crc.crc16)
         return 1;
     printf("[CARD]CRC16 OK\r\n");
     return 0;    
 }
+
 uint8_t checkuiderr(shanghaicardtype *p,tagBufferType *tag )
 {
     log_arry(DEBUG,"[CARD]p->head.uid" ,p->head.uid , 4 );    
@@ -442,6 +367,7 @@ uint8_t checkuiderr(shanghaicardtype *p,tagBufferType *tag )
             return 1;
     return 0;        
 }
+
 uint8_t checkzeroerr(shanghaicardtype *p)
 {
     uint8_t *data = (uint8_t *)p;
@@ -450,8 +376,6 @@ uint8_t checkzeroerr(shanghaicardtype *p)
             return 0;
     return 1;
 }
-
-
 
 uint8_t checkclasserr(shanghaicardtype *p)
 {
@@ -535,7 +459,7 @@ uint8_t tag_read_15693_data( tagBufferType *tag )
 		
 		if( tag_is_null(tag_buffer,110))
 		{
-			log(INFO,"¿¨Æ¬Êý¾ÝÎª¿Õ\n");
+			log(INFO,"ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½\n");
 			return TAG_NULL;
 		}               
 		log_arry(DEBUG,"Read data:" ,tag->buffer , 110);
@@ -543,15 +467,11 @@ uint8_t tag_read_15693_data( tagBufferType *tag )
 		log_arry(DEBUG,"Decryptionr data:" ,tag->buffer , 110 );
 		if( tag_calc_crc8(tag->buffer , 24) !=  0)
 		{                    
-			log_err("24×Ö½ÚµÄCRCÐ£Ñé´íÎó£¬¿¨Æ¬Êý¾Ý¶ÁÈ¡Ê§°Ü.\n");
+			log_err("24ï¿½Ö½Úµï¿½CRCÐ£ï¿½ï¿½ï¿½ï¿½ó£¬¿ï¿½Æ¬ï¿½ï¿½ï¿½Ý¶ï¿½È¡Ê§ï¿½ï¿½.\n");
 			return TAG_CRC_ERR;
 		}
 		
-		if( tag_check_data_crc(tag) != TAG_SUCESS)
-		{
-			log_err("ËùÓÐ×Ö½ÚµÄCRCÐ£Ñé´íÎó£¬Ö»ÄÜ×öµ¥Ð¡ÇøÈ¨ÏÞÅÐ¶Ï.\n");
-			return TAG_CRC_ERR;
-		}
+
 
 		return TAG_NONE;
 	}
@@ -688,8 +608,6 @@ uint8_t read_list_name(tagBufferType *tag)
     return TAG_LIST_NULL;
 }
 
-
-
 uint8_t tag_data_process( tagBufferType *tag)
 {
  
@@ -724,19 +642,18 @@ void tag_interaction_buzzer( tagBufferType *tag , uint8_t *result)
     if(*result== TAG_NONE)
       return;
     
-    
     log(WARN,"[CARD-RET]result=%d\n" ,*result);
     
     switch(*result)
     {
-        case TAG_NULL://??
+        case TAG_NULL:
         {
             beep.write_base(&beepTagNullErr);
             tag_updata_beforeUid(tag);
         }break;
         
-    case TAG_WRITE_LIST:
-        case TAG_SUCESS://??
+        case TAG_WRITE_LIST:
+        case TAG_SUCESS:
         {
             beep.write(BEEP_NORMAL);
             open_door();
@@ -745,68 +662,58 @@ void tag_interaction_buzzer( tagBufferType *tag , uint8_t *result)
             openResult = TRUE;
         }break;
        
-        case TAG_CRC_ERR://CRC????,??????,??2???
+        case TAG_CRC_ERR:
         {
             beep.write(BEEP_DEALY);
         }break;
         
-        case TAG_SAME_ID_ERR://????????,??2???
+        case TAG_SAME_ID_ERR:
         {
             tag_updata_beforeUid(tag);
         }break;
         
-        case TAG_TYPE4A_ERR://
+        case TAG_TYPE4A_ERR:
         {
             beep.write(BEEP_DEALY);
         }break;
         
-        case TAG_BALCK_LIST_ERR://
+        case TAG_BALCK_LIST_ERR:
         {
           beep.write_base(&beepBlackListErr);
           tag_updata_beforeUid(tag);
           sendLogFlag = TRUE;
-
         }break;
 
-        case TAG_TYPE4B_ERR:    //?????,????????,?????
-          log(WARN,"[CARD-RET]TAG_TYPE4B_ERR A STRANGER ID CARD \n");
+        case TAG_TYPE4B_ERR:log(WARN,"[CARD-RET]TAG_TYPE4B_ERR A STRANGER ID CARD \n");
         case TAG_NO_SUPPORT:    //????????
         case TAG_ERR:            //??????
         case TAG_COMM_ERR:        //???????
         {
           beep.write(BEEP_ALARM);
           tag_updata_beforeUid(tag);
-
           sendLogFlag = TRUE;
-
         }break;
-        case TAG_TIME_ERR:    //???????
+        case TAG_TIME_ERR: 
         {
           beep.write_base(&beepTagTimeErr);
           tag_updata_beforeUid(tag);
           sendLogFlag = TRUE;
-
         }break;
-        
-
         
         default :
         {
-            log(WARN,"[%s]No this mode = %d\n" , __func__, *result);
+            log(WARN,"[CARD-RET]No this mode = %d\n" , *result);
         }break;
     }
 
     
     if( sendLogFlag == TRUE )
         {    
-        //sys_delay(300);
             memset(&logData , 0x00 , sizeof(openlogDataType));
             logData.type = OPENLOG_FORM_CARD;
             logData.length = openResult;
             memcpy(logData.data , (uint8_t *)tag , sizeof(tagBufferType));
             journal.save_log(&logData);
     }
-    
- 
 }
 

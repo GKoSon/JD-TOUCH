@@ -150,9 +150,7 @@ typedef struct
 }shanghaicardtype;
 
 
-/////////////////////////////////////
 
-void tag_config_enable( uint8_t status);
 
 uint8_t tag_shanghai_card_process( tagBufferType *tag);
 

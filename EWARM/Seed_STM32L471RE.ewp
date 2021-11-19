@@ -2749,15 +2749,6 @@
             </file>
         </group>
         <group>
-            <name>tempwd</name>
-            <file>
-                <name>$PROJ_DIR$\..\components\tempwd\tempwd.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\components\tempwd\tempwd.h</name>
-            </file>
-        </group>
-        <group>
             <name>timer</name>
             <file>
                 <name>$PROJ_DIR$\..\components\timer\timer.c</name>

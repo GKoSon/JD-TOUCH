@@ -9,16 +9,6 @@
 #include "beep.h"
 
 
-volatile uint8_t configTagEnableFlag = FALSE;
-
-void tag_config_enable( uint8_t status)
-{
-    configTagEnableFlag = status;
-}
-
-
-
-
 ////////////////GGGGG////////////////////
 
 #include "BleDataHandle.h"

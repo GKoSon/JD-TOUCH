@@ -9,7 +9,6 @@
 #include "open_log.h"
 #include "permi_list.h"
 #include "err_log.h"
-#include "tempwd.h"
 #include "iwdg.h"
 #include "chipFlash.h"
 #include "adc.h"

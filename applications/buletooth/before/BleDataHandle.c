@@ -5,7 +5,6 @@
 #include "buletooth.h"
 #include "beep.h"
 #include "open_door.h"
-#include "tempwd.h"
 #include "permi_list.h"
 #include "open_log.h"
 #include "magnet.h"

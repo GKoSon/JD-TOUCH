@@ -263,6 +263,7 @@ int mqtt_network_connect(Network* n, uint8_t* addr, int port)
     while( socket.isOK() != TRUE )
     {
         sys_delay(500);
+        //log(DEBUG,"[MQTT]底层socket等待socket.isOK()\n");
     }
     log(DEBUG,"[MQTT]底层socket驱动已经加载成功，开始连接MQTT服务器\n");
     

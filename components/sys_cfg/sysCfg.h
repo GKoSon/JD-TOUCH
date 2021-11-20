@@ -52,11 +52,11 @@
 
    
 //平台地址
-#define        NET_IP                  "192.168.66.34"
-#define        MQTT_PORT                3001
-#define        HTTP_PORT                0//8211
-#define        OTA_PORT                0
-
+#define        NET_IP                  "139.9.66.72"
+#define        MQTT_PORT                1883
+#define        HTTP_PORT                0
+#define        OTA_PORT                 0
+#define     DSYS_DIANMA_ADDR        0x0807E000
 
 
 
@@ -89,15 +89,15 @@
 typedef enum
 {
     CFG_DEV_USED,
-    CFG_DEV_LEVEL,
+    CFG_DEV_LEVEL,//NO
     CFG_HTTP_ADDR,
     CFG_PAIR_PWD,
     CFG_USER_PWD,
-    CFG_BLE_ADMIN,
-    CFG_BLE_RSSI,
+    CFG_BLE_ADMIN,//NO
+    CFG_BLE_RSSI,//NO
     CFG_BLE_MAC,
     CFG_BLE_VERSION,
-    CFG_SYS_BULID_DATA,
+
     CFG_SYS_OPEN_TIME,
     CFG_SYS_CHIP_ID,
     CFG_SYS_HW_VERSION,  
@@ -111,9 +111,8 @@ typedef enum
     CFG_SYS_DEVICE_FUN,
     CFG_SYS_ALARM_TIME,
     CFG_SYS_LOCK_MODE,
-    CFG_SYS_COMMUN_CODE,
-    CFG_SYS_COMMUN_ONE_CODE,
-    CFG_SYS_SUPER_CODE,
+
+
     CFG_SYS_MAGNET_STATUS,
     CFG_NET_ADDR,
     CFG_OTA_URL,
@@ -126,12 +125,12 @@ typedef enum
     CFG_MQTT_USERPWD,
     CFG_MQTT_MAC,
     CFG_PRO_PWD,
-    CFG_IP_INFO,
+
     CFG_SET_RESTORE,
     CFG_SYS_UPDATA_TIME,
     CFG_SET_RESTORE_FLAG,
     CFG_CLEAR_RESTORE_FLAG,
-    CFG_SYS_BUILDING_INFO_UPDATA_FLAG,
+    CFG_SYS_SHANGHAI,
     CFG_NOTHING,
 }systemConfigEnum;
 
@@ -147,18 +146,6 @@ typedef struct
 }SystemBleInfoType;
 
 
-typedef struct _TSLCommunityModel {
-    int32_t village_id;
-    int32_t building_id;
-    int32_t floor_id;
-    int32_t house_id;
-} TSLCommunityModel;
-
-typedef struct
-{
-    TSLCommunityModel       communities[5];
-    uint32_t                super_code;
-}SystemCommunitiesType;
 
 
 
@@ -208,14 +195,6 @@ typedef struct
     uint8_t pwd[32];
 }wifiApInfoType;
 
-typedef struct
-{
-    uint8_t dhcpFlag;
-    uint8_t    ip[4];
-    uint8_t    gateway[4];
-    uint8_t    mark[4];
-    uint8_t    dns[4];
-}DeviceIpType;
 
 typedef struct
 {
@@ -224,20 +203,6 @@ typedef struct
     char mqttUserPwd[32+1];
 }MqttLoginInfoType;
 
-typedef struct _ble2http_
-{
-      char NAME[21];
-    char streetID[33];
-    char committeeID[33];
-    char villageID[33];
-    char buildingID[33];
-    char productName_productModel[10];
-    char type;
-    float    longitude;
-    float    latitude;
-} _ble2http;
-
-extern _ble2http *bh ;
 
 typedef struct
 {
@@ -249,12 +214,10 @@ typedef struct
   netAttriType              server;
   wifiApInfoType          wifi;
   MqttLoginInfoType       mqtt;
-  _ble2http               ble2http;
-  DeviceIpType              devIp;
   uint32_t                sysRestoreFlag; 
   uint8_t                 pair_pwd[BLE_PASSWORD_LENGTH];
   uint8_t                 user_pwd[BLE_PASSWORD_LENGTH];
-  SystemCommunitiesType   commun; 
+
   uint16_t                crc16;   
 }SystemConfigType;
 
@@ -264,7 +227,7 @@ typedef struct
 {
     uint8_t                 pair_pwd[BLE_PASSWORD_LENGTH];
     uint8_t                 user_pwd[BLE_PASSWORD_LENGTH];
-    SystemCommunitiesType   commun;  
+
     uint16_t                crc;
 }SystemInfoType;//已经放弃
 
@@ -281,5 +244,20 @@ typedef struct _cfgTask
 void sysCfg_init( void );
 void sysCfg_print( void );
 extern cfgTaskType    config;
+#define GUPMAX 10
+typedef struct
+{
+    uint64_t     ver;
+    uint8_t      cnt;
+    uint8_t      code[GUPMAX][11];
+}GupType;
+
+typedef struct
+{
+    uint8_t      codedev[11];
+    uint8_t      codelocation[11];
+
+    GupType gup;
+}_SHType;
 #endif
 

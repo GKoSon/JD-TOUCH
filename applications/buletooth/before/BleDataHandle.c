@@ -326,23 +326,7 @@ uint8_t FTSLBLEDeviceSetMQTTNETRequest (ProtData_T *pag,uint16_t id)
 
 void dev_net_handle(uint8_t (*a)[16],uint8_t isdhcp)
 {
-  DeviceIpType dnet;
-  memset(&dnet,0,sizeof(DeviceIpType));
-  if(isdhcp)
-  {
-    dnet.dhcpFlag=1;
-  }
 
-  else
-  {
-    GIPStringtoarry(a[0],dnet.ip);
-    GIPStringtoarry(a[1],dnet.mark);
-    GIPStringtoarry(a[2],dnet.gateway);
-    GIPStringtoarry(a[3],dnet.dns);
-  }
-  
-  //show_DeviceIpType(&dnet);
-  //config.write(CFG_SYS_DEVIP ,&dnet,1);
 
 }
 

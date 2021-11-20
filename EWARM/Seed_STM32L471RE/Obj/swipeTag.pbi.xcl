@@ -179,10 +179,6 @@ D:\git\JD-TOUCH-OLD\EWARM\..\Middlewares\Third_Party\STM32_Cryptographic_Library
 -I
 D:\git\JD-TOUCH-OLD\EWARM\..\components\sys_led
 -I
-D:\git\JD-TOUCH-OLD\EWARM\..\applications\QRCode
--I
-D:\git\JD-TOUCH-OLD\EWARM\..\components\mate
--I
 D:\git\JD-TOUCH-OLD\EWARM\..\components\sysCntSave
 -I
 D:\git\JD-TOUCH-OLD\EWARM\..\Middlewares\Third_Party\cjson
@@ -368,10 +364,6 @@ D:\git\JD-TOUCH-OLD\Middlewares\Third_Party\STM32_Cryptographic_Library\inc
 D:\git\JD-TOUCH-OLD\Middlewares\Third_Party\STM32_Cryptographic_Library\inc\RSA
 -I
 D:\git\JD-TOUCH-OLD\components\sys_led
--I
-D:\git\JD-TOUCH-OLD\applications\QRCode
--I
-D:\git\JD-TOUCH-OLD\components\mate
 -I
 D:\git\JD-TOUCH-OLD\components\sysCntSave
 -I

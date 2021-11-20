@@ -60,13 +60,7 @@ char *getselfIP() {
   
     static char ip[16];
 
-    DeviceIpType    *devIp;
-    
-    memset(ip,0,16);
 
-    config.read(CFG_IP_INFO , (void **)&devIp);
-    
-    sprintf(ip,"%d.%d.%d.%d",devIp->ip[0],devIp->ip[1],devIp->ip[2],devIp->ip[3]);
     
     return ip;
 
@@ -1117,7 +1111,7 @@ uint16_t cj_create_httpreg0update1(char id,char *out)
       char *outStr;uint16_t bodylen=0;
 
       char *pd;
-
+#if 0
       config.read(CFG_PRO_PWD , (void **)&pd);
       root =  cJSON_CreateObject();
       cJSON_AddStringToObject(root,"deviceName",         bh->NAME);
@@ -1152,10 +1146,11 @@ uint16_t cj_create_httpreg0update1(char id,char *out)
       IP4ARRToStr(devIp->dns,temp) ;
       cJSON_AddStringToObject(son,"dnsServer",         temp);
       cJSON_AddItemToObject(root, "network", son);
+#endif
 
 /*冲突 seriesType 12围墙机  10门口机*/
 
-      cJSON_AddNumberToObject(root,"seriesType", bh->type);/*【5】12围墙机(小区)      10门口机*/
+    //  cJSON_AddNumberToObject(root,"seriesType", bh->type);/*【5】12围墙机(小区)      10门口机*/
       
       outStr = cJSON_Print(root);
       cJSON_Delete(root);

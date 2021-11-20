@@ -21,3 +21,4 @@ SystemConfigType        cfg@(0x10003000);
 char 			        rxOtaData[2048]@(0x10003800);
 char	                mqttSocketBuffer[2048]@(0x10004000);
 ProtData_T                                 pag[2]@0x10004800;
+_SHType SHType@(0x10000000);

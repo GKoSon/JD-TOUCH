@@ -49,7 +49,7 @@ extern QueueHandle_t        xKeyQueue;
 extern QueueHandle_t        xLogQueue;
 extern QueueHandle_t        xMqttSendQueue;
 extern QueueHandle_t        xMqttRecvQueue;
-extern QueueHandle_t        xHttpRecvQueue;
+
 
 extern xTaskHandle                mqttTask;
 

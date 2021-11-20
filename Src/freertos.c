@@ -286,10 +286,7 @@ void main_task(void const * argument)
       creat_swipe_task();         //刷卡初始化
       creat_open_log_task();      //开门日志初始化
       creat_mqtt_ota_task();           //ota任务
-
-
       create_mqtt_task();
-
       
       printf("<<<<<<<<<--------开机成功-------->>>>>>>>>>>\r\n");
 

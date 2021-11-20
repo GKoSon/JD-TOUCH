@@ -966,7 +966,8 @@ int8_t gsm_connect_server ( int8_t id , uint8_t *ip , uint16_t port)
     }
      else if((strstr((char *)ip,".")!=NULL))
     {
-       log(INFO,"地址是string 192.168.1.2这样 ：%s：\n",ip);memcpy(connectip , ip , strlen((char *)ip));
+       log(INFO,"[SIM]地址类型类似string 192.168.1.2这样 【%s】\n",ip);
+       memcpy(connectip , ip , strlen((char *)ip));
     }
     else
     {

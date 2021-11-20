@@ -9,3 +9,32 @@
 注意：需要del的函数 ble_set_mac它是写MAC是123456的
 
 2021/11/20 准备引入通讯组的修改cfg有问题/同时WIFI不能上网 暂存一次
+
+2021/11/21暂时放弃通讯组修改sys部分 测试ESP32
+
+注意：ESP32上网需要修改如下
+
+`memset(cfg.wifi.ssid , 0x00 , 50);`
+`memcpy(cfg.wifi.ssid , "mCube-Xsens-Employee" , strlen("mCube-Xsens-Employee"));`
+
+`memset(cfg.wifi.pwd , 0x00 , 32);`
+`memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));`
+`uint32_t restoreBit = SYS_NET_RESTORE_BIT;`
+`config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);`
+
+继续MQTT
+
+**MQTT_CLIENT_URL=139.9.66.72:1883**
+**MQTT_USER=dark**
+**MQTT_PWD=48e8a059e523b9550ac37665ea088cdb**
+
+那么三元组信息还差一个mqttClientId 其实测试已经可以接进去了
+
+void mqtt_set_default( void )
+{
+      memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
+
+      memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
+      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
+      sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
+}

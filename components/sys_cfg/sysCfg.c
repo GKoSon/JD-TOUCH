@@ -20,8 +20,8 @@
 #include "mqtt_client.h"
 extern SystemConfigType   cfg;
 extern char topicPath[GMAX_MESSAGE_HANDLERS][52];
+extern _SHType SHType;
 
-_ble2http *bh = &cfg.ble2http;
 
 void hal_read_chipId(unsigned char *p)
 {
@@ -35,8 +35,6 @@ void hal_read_chipId(unsigned char *p)
     }
 
 }
-
-
 
 
 uint8_t sys_cfg_read(SystemConfigType *data)
@@ -253,22 +251,14 @@ void sysCfg_set_ble_default( void )
 
 
 
-void devip_set_default(void)
-{
-      cfg.devIp.dhcpFlag = TRUE;
-}
-
-
 
 void mqtt_set_default( void )
 {
-
       memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
 
-      memcpy(cfg.mqtt.mqttUserName , "shhx" ,strlen("shhx"));
-      memcpy(cfg.mqtt.mqttUserPwd  , "7ed98d7018caf009c60008521274ceb4" ,strlen("7ed98d7018caf009c60008521274ceb4"));
+      memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
+      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
       sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
-
 }
 
 
@@ -289,7 +279,7 @@ void sysCfg_set_default( void )
       config.write(CFG_USER_PWD ,DeafultPwd ,FALSE);
       config.write(CFG_PAIR_PWD ,DeafultPwd ,FALSE);
 
-      memset(&cfg.commun , 0x00 , sizeof(SystemCommunitiesType));
+
       sys_info_read_device_module();  //获得参数 一个 三个
 
       bluetooth_drv_init();        //初始化蓝牙模块  一个参数
@@ -308,12 +298,14 @@ void sysCfg_set_default( void )
       cfg.parm.updataTime = FALSE;
       hal_read_chipId(cfg.parm.chipId);
 
+      //ESP32
 memset(cfg.wifi.ssid , 0x00 , 50);
 memcpy(cfg.wifi.ssid , "mCube-Xsens-Employee" , strlen("mCube-Xsens-Employee"));
 
 memset(cfg.wifi.pwd , 0x00 , 32);
 memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));
-
+uint32_t restoreBit = SYS_NET_RESTORE_BIT;
+config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
 
       //OTA    全0
       cfg.parm.soft_version = DEVICE_SW_VERSION;
@@ -325,8 +317,6 @@ memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));
       cfg.server.httpport = HTTP_PORT;
       cfg.server.otaport =  OTA_PORT;
       
-      //本地网诺
-//devip_set_default();
 
       //基于MAC的标识
       sprintf((char *)cfg.parm.deviceName , "%.4s%02X%02X%02X%02X%02X%02X", DEVICE_NAME ,
@@ -348,19 +338,31 @@ memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));
     
       SHOWME  SHOWME  SHOWME
 }
-void showsyslocation(SystemCommunitiesType *p)
-{
-    log(ERR,"super_code = %d\n" ,  p->super_code);
-    for(char i=0;i<5;i++)
-    {
-         printf("[%d]village_id  = %08X\t" ,  i,p->communities[i].village_id);
-         printf("[%d]building_id = %08X\t" ,  i,p->communities[i].building_id);
-         printf("[%d]floor_id    = %08X\t" ,  i,p->communities[i].floor_id);
-         printf("[%d]house_id    = %08X\t" ,  i,p->communities[i].house_id);
-         printf("\r\n");
-    }
-}
 
+
+void show_SH(_SHType *p)
+{
+    
+    char num=0;
+
+    log(INFO,"\n********************* ************  ********************* \n");
+    SHOWME
+    log_arry(ERR,"devcode  "  ,p->codedev,11);
+    log_arry(ERR,"locatcode"  ,p->codelocation,11);
+
+    printf("gup.ver:%llx\n",p->gup.ver);
+    printf("gup.cnt:%d\n",p->gup.cnt);
+    printf("gup.code\n");
+    num = GGMIN(GUPMAX,p->gup.cnt);
+    for(char i=0;i<num;i++)
+    for(char j=0;j<11;j++)
+    {
+        printf("%02X ",p->gup.code[i][j]);
+        if(j==10) printf("\n");
+    }
+   log(INFO,"\n********************* ************  ********************* \n");
+
+}
 void sysCfg_print( void )
 {
       log(DEBUG,"\n");
@@ -383,18 +385,14 @@ void sysCfg_print( void )
       log(DEBUG,"蓝牙模块版本号 [%d] \n" , cfg.ble.ble_version );
       log_arry(DEBUG,"蓝牙模块的MAC地址 "  ,cfg.ble.ble_mac ,BLE_MAC_LENGTH);
       log(DEBUG,"设备网络类型 = [%d] [1:GPRS,2:WFI,4ETH]\n" ,cfg.parm.support_net_types);
-      log(ERR,"是否DHCP = [%d] \n" ,cfg.devIp.dhcpFlag);
-      printf("SIP: %d.%d.%d.%d\n", cfg.devIp.ip[0],cfg.devIp.ip[1],cfg.devIp.ip[2],cfg.devIp.ip[3]);
-      printf("GAR: %d.%d.%d.%d\n", cfg.devIp.gateway[0],cfg.devIp.gateway[1],cfg.devIp.gateway[2],cfg.devIp.gateway[3]);
-      printf("SUB: %d.%d.%d.%d\n", cfg.devIp.mark[0],cfg.devIp.mark[1],cfg.devIp.mark[2],cfg.devIp.mark[3]);
-      printf("DNS: %d.%d.%d.%d\n", cfg.devIp.dns[0],cfg.devIp.dns[1],cfg.devIp.dns[2],cfg.devIp.dns[3]);
+
       log(DEBUG,"MQTT业务服务器IP地址: %s:%d\n" , cfg.server.net.ip , cfg.server.net.port);
       log(DEBUG,"HTTP业务服务器IP地址: %s:%d\n" , cfg.server.net.ip , cfg.server.httpport);
       log(DEBUG,"OTA 业务服务器IP地址: %s:%d\n" , cfg.server.net.ip,  cfg.server.otaport);
       log(DEBUG,"mqtt client    = %s\n" ,    cfg.mqtt.mqttClientId);
       log(DEBUG,"mqtt user name = %s\n" ,    cfg.mqtt.mqttUserName);
       log(DEBUG,"mqtt user pwd  = %s\n" ,    cfg.mqtt.mqttUserPwd);
-      showsyslocation(&cfg.commun);
+
       permi.show();//展示一下黑白名单
  permi_list_init();
       permi.show();//展示一下黑白名单
@@ -468,22 +466,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             cfg.parm.lock_mode = *(uint8_t *)(parma);
             log(DEBUG,"设置设备类型 = %d \n" , cfg.parm.lock_mode);
         }break;
-        case CFG_SYS_COMMUN_CODE:
-        {
-            memcpy(&cfg.commun , parma , sizeof(SystemCommunitiesType));
-            
-        }break;   
-        case CFG_SYS_COMMUN_ONE_CODE:
-        {
-            memcpy(&cfg.commun.communities[0] , parma , sizeof(TSLCommunityModel));
-           
-        }break;
-        
-        case CFG_SYS_SUPER_CODE:
-        {
-            cfg.commun.super_code = *(uint32_t *)(parma);
-            
-        }break;
+
         case CFG_OTA_PORT:
         {
              cfg.server.otaport = *(uint16_t *)(parma);
@@ -522,10 +505,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         {
             memcpy(&cfg.wifi , parma , sizeof(wifiApInfoType));
         }break;
-        case CFG_IP_INFO:
-        {
-            memcpy(&cfg.devIp , parma , sizeof(DeviceIpType));
-        }break;
+
         case CFG_SYS_UPDATA_TIME:
         {
             cfg.parm.updataTime = *(uint8_t *)(parma);
@@ -545,6 +525,26 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         {
             cfg.level = *(uint8_t *)(parma);
         }break;
+        
+        
+case CFG_SYS_SHANGHAI:
+{
+chip_flash_earse(DSYS_DIANMA_ADDR);
+if(parma==NULL)
+{
+printf("clean\n\n");
+return true;
+}
+if(true==chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
+{
+return true;
+}
+else
+{
+printf("\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
+return false;
+}
+}break;  
         case CFG_NOTHING:
         default:
         {
@@ -643,15 +643,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.parm.support_ble_types;
         }break;
-        case CFG_SYS_COMMUN_CODE:
-        {
-            *parma = &cfg.commun;
-        }break;
 
-        case CFG_SYS_COMMUN_ONE_CODE:
-        {
-            *parma = &cfg.commun.communities[0];
-        }break;
         case CFG_SYS_ALARM_TIME:
         {
             data = cfg.parm.alarm_time;
@@ -660,10 +652,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.parm.lock_mode;
         }break;
-        case CFG_SYS_SUPER_CODE:
-        {
-            *parma = &cfg.commun.super_code;
-        }break;
+
  
         case CFG_SYS_MAGNET_STATUS:
         {
@@ -727,11 +716,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             *parma = proj_pwd;
         }break;
         
-        case CFG_IP_INFO:
-        {
-            *parma = &cfg.devIp;
-        }break;
-        
+
              
         case CFG_SET_RESTORE_FLAG:
         {
@@ -745,6 +730,23 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.level;
         }break;
+        
+        
+case CFG_SYS_SHANGHAI:
+{
+if(true==chip_flash_read( DSYS_DIANMA_ADDR ,(uint8_t *)&SHType ,sizeof(_SHType)))
+{       
+printf("\r\n*******CFG_SYS_SHANGHAI READ ok %d********\r\n",sizeof(_SHType));
+return true;
+}
+else
+{
+printf("\r\n*******CFG_SYS_SHANGHAI READ fail********\r\n");
+return false;
+}
+}break; 
+        
+        
         default:
         {
             log_err("Get message is no choose mode:%d\r\n",mode);
@@ -785,7 +787,21 @@ void sysCfg_init( void )
         strcat(topicPath[i],(char *)&(cfg.parm.deviceName[4]));
         log(INFO,"topicPath[%d] %s\r\n",i,topicPath[i]);
       }
+    memset(&SHType,0x00,sizeof(_SHType));
+    
+    config.read(CFG_SYS_SHANGHAI , (void **)&SHType );
+
+    if(SHType.gup.cnt==0XFF || SHType.gup.cnt==0)
+    {
+      log_err("\n************sysCfg_init************n");
+
+    }
+    else
+    {
+      log_err("\n************旧设备*****无操作*****\n");
+    }
       
+show_SH(&SHType);
 
     sysCfg_print();
 

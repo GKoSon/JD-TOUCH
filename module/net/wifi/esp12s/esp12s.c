@@ -241,7 +241,7 @@ uint8_t wifi_set_connect_ap( )
     memset(connectAp , 0x00  , 100 );
     len = sprintf( (char *)connectAp , "AT+CWJAP_DEF=\"%s\",\"%s\"\r\n" , wifiInfo->ssid , wifiInfo->pwd);
 
-    log(DEBUG,"WIFI set connect ap = %s \n" , connectAp);
+    log(DEBUG,"[ESP32]WIFI set connect ap = %s \n" , connectAp);
     
     wifi_send_data(connectAp , len);
 
@@ -741,7 +741,7 @@ int8_t esp12s_connect( int8_t id , uint8_t *ip , uint16_t port)
     uint8_t sendBuff[256] ,sendSize =0 , connectip[100];
     int8_t rId = 0;
 
-    //log(DEBUG,"esp12s 连接服务器, id =%d , ip = %s, port =%d\n" , id , ip , port);
+    log(DEBUG,"[ESP32]连接服务器, id =%d , ip = %s, port =%d\n" , id , ip , port);
 
     memset(sendBuff , 0x00 , 256);
     memset(connectip , 0x00 , 100);
@@ -749,18 +749,17 @@ int8_t esp12s_connect( int8_t id , uint8_t *ip , uint16_t port)
 
     if((strstr((char *)ip,"com")!=NULL)||(strstr((char *)ip,"cn")!=NULL))
     {
+        log(INFO,"[ESP32]地址类型类似string www.baidu.com这样 【%s】\n",ip); 
         memcpy(connectip , ip , strlen((char *)ip));
     }
     else if((strstr((char *)ip,".")!=NULL))
     {
-       log(INFO,"地址是string 192.168.1.2这样 【%s】\n",ip); 
+       log(INFO,"[ESP32]地址类型类似string 192.168.1.2这样 【%s】\n",ip); 
        memcpy(connectip , ip , strlen((char *)ip));
     }
-    
-    
     else
     {
-        log(INFO,"地址是数字\r\n"); 
+        log(INFO,"[ESP32]地址类型类似数字192.168.1.2\r\n"); 
         sprintf( (char *)connectip , "%d.%d.%d.%d" , ip[0],ip[1],ip[2],ip[3]);
     }
 
@@ -774,12 +773,12 @@ int8_t esp12s_connect( int8_t id , uint8_t *ip , uint16_t port)
         {
             if( strstr(respone.rxBuff , "ALREADY CONNECT") != NULL)
             {
-                log(INFO,"已经与服务器建立连接 , socket id = %d\n" , id);
+                log(INFO,"[ESP32]已经与服务器建立连接 , socket id = %d\n" , id);
                 return SOCKET_OK;
             }
             else
             {
-                log(WARN,"1模块返回连接服务器失败 , socket id = %d\n" , id);
+                log(WARN,"[ESP32]模块返回连接服务器失败 , socket id = %d\n" , id);
                 return SOCKET_CONNECT_FAIL;
             }
         }
@@ -789,7 +788,7 @@ int8_t esp12s_connect( int8_t id , uint8_t *ip , uint16_t port)
 
             if( rId == id )
             {
-                log(INFO,"连接服务器成功 , socket id = %d\n" , id);
+                log(INFO,"[ESP32]连接服务器成功 , socket id = %d\n" , id);
                 return SOCKET_OK;
             }
         }
@@ -797,7 +796,7 @@ int8_t esp12s_connect( int8_t id , uint8_t *ip , uint16_t port)
         {
             if ( receiveSocketConnectStatus == TRUE)
             {
-                log(INFO,"连接服务器成功 , socket id = %d\n" , id);
+                log(INFO,"[ESP32]连接服务器成功 , socket id = %d\n" , id);
                 return SOCKET_OK;
             }
             else

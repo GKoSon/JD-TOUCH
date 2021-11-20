@@ -38,3 +38,5 @@ void mqtt_set_default( void )
       memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
       sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
 }
+
+2021/11/21 简化del关于info的部分 只需要cfg文件/ESP32工作还有relay工作必须12V上电

@@ -7,23 +7,13 @@
 #include <stdint.h>
 
 
-/*
 
-
-
-/* 
- *  软件版本号，APP需要显示104，Server需要显示1.0.4
- */
 #define     DEVICE_SW_VERSION         100
 
-/* 
- *  设备类型  ， 用于识别设备大类：具体见excel , TYPE=6为门禁设备
- */
+
 #define    DEVICE_TYPE                0x06
 
-/* 
- *  设备编号， 具体设备的详细编号 
- */
+
 #define DEVICE_NUM                      217  
 
 /* 
@@ -56,7 +46,7 @@
 #define        MQTT_PORT                1883
 #define        HTTP_PORT                0
 #define        OTA_PORT                 0
-#define     DSYS_DIANMA_ADDR        0x0807E000
+#define        DSYS_DIANMA_ADDR        0x0807E000
 
 
 
@@ -64,7 +54,7 @@
 #define     BLE_RUN_MODE            NORMAL_WECAT_MODE
 
 
-#define     BLE_ADMIN_LENGTH        (24)
+
 #define     BLE_PASSWORD_LENGTH     (3)
 #define     BLE_NAME_LENGTH         (10)
 #define     BLE_VERSION_LENGTH      (3)
@@ -89,12 +79,12 @@
 typedef enum
 {
     CFG_DEV_USED,
-    CFG_DEV_LEVEL,//NO
+
     CFG_HTTP_ADDR,
     CFG_PAIR_PWD,
     CFG_USER_PWD,
-    CFG_BLE_ADMIN,//NO
-    CFG_BLE_RSSI,//NO
+
+
     CFG_BLE_MAC,
     CFG_BLE_VERSION,
 
@@ -138,11 +128,8 @@ typedef enum
 typedef struct
 {
     uint8_t     name[BLE_NAME_LENGTH];
-    uint8_t     iBeacon_rssi;
     uint8_t     ble_mac[BLE_MAC_LENGTH];
-    uint32_t    ble_version;
-    uint8_t     ble_admin_num[BLE_ADMIN_LENGTH];
-  
+    uint32_t    ble_version;  
 }SystemBleInfoType;
 
 
@@ -207,7 +194,6 @@ typedef struct
 typedef struct
 {
   uint32_t                mark;
-  uint8_t                 level;
   SystemBleInfoType       ble;
   SystemParmType          parm;
   otaType                  otaVar;
@@ -217,20 +203,8 @@ typedef struct
   uint32_t                sysRestoreFlag; 
   uint8_t                 pair_pwd[BLE_PASSWORD_LENGTH];
   uint8_t                 user_pwd[BLE_PASSWORD_LENGTH];
-
   uint16_t                crc16;   
 }SystemConfigType;
-
-
-
-typedef struct
-{
-    uint8_t                 pair_pwd[BLE_PASSWORD_LENGTH];
-    uint8_t                 user_pwd[BLE_PASSWORD_LENGTH];
-
-    uint16_t                crc;
-}SystemInfoType;//已经放弃
-
 
 
 
@@ -244,7 +218,7 @@ typedef struct _cfgTask
 void sysCfg_init( void );
 void sysCfg_print( void );
 extern cfgTaskType    config;
-#define GUPMAX 10
+#define GUPMAX 20
 typedef struct
 {
     uint64_t     ver;

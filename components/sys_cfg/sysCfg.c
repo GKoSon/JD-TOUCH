@@ -222,9 +222,7 @@ void sys_info_read_device_module( void )
       
 void sysCfg_set_ble_default( void )
 {
-    cfg.ble.iBeacon_rssi = 0x28;
 
-    memset(cfg.ble.ble_admin_num , 0x00 , BLE_ADMIN_LENGTH);
     
     memset(cfg.ble.ble_mac , 0xFE , BLE_MAC_LENGTH);
 
@@ -366,12 +364,12 @@ void show_SH(_SHType *p)
 void sysCfg_print( void )
 {
       log(DEBUG,"\n");
-      log(INFO,"********************* 20190810 Copyright by terminus hw team ********************* \n");
+      log(INFO,"********************* 2021 Copyright by mcube team ********************* \n");
       log(DEBUG,"系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
-      log(DEBUG,"蓝加门禁CRC16 = %X cfgsize=%d\n",cfg.crc16,sizeof(SystemConfigType));
+      log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));
       log(DEBUG,"设备编号 = [%d]\n",cfg.parm.deviceNum);
       log(DEBUG,"设备类型 = [%d]\n",cfg.parm.device_type);
-      log(DEBUG,"设备水平 = [%d]\n",cfg.level);
+
       log(ERR,"MQTTDONE = [%d]\n",cfg.parm.mqttdone);
       log(ERR,"设备模式 =[%d][安装位置 0:门口机单元门禁 ,1:楼栋门禁 ,2: 围墙机小区门禁]\n" ,cfg.parm.lock_mode);
       log(DEBUG,"软件版本: [%d]\n" , cfg.parm.soft_version);
@@ -432,10 +430,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             
         }break;
 
-        case CFG_BLE_ADMIN:
-        {
-            memcpy(cfg.ble.ble_admin_num , parma , BLE_ADMIN_LENGTH);
-        }break;
+
 
         case CFG_BLE_MAC:
         {
@@ -445,10 +440,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         {
             cfg.ble.ble_version = *(uint32_t *)(parma);
         }break;
-        case CFG_BLE_RSSI:
-        {
-            cfg.ble.iBeacon_rssi = *(uint8_t *)(parma);
-        }break;
+
 
         case CFG_SYS_OPEN_TIME:
         {
@@ -521,10 +513,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             uint32_t bit = *(uint32_t *)(parma);
             cfg.sysRestoreFlag |= bit;
         }break;  
-        case CFG_DEV_LEVEL:
-        {
-            cfg.level = *(uint8_t *)(parma);
-        }break;
+
         
         
 case CFG_SYS_SHANGHAI:
@@ -587,19 +576,13 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
            *parma = cfg.user_pwd;
             data = BLE_PASSWORD_LENGTH;
         }break;
-        case CFG_BLE_ADMIN:
-        {
-            *parma = cfg.ble.ble_admin_num;
-        }break;
+
         case CFG_BLE_MAC:
         {
             *parma = cfg.ble.ble_mac;
         }break;
               
-        case CFG_BLE_RSSI:
-        {
-            data = cfg.ble.iBeacon_rssi;
-        }break;
+
 
         case CFG_BLE_VERSION:
         {
@@ -726,11 +709,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.sysRestoreFlag;
         }break;
-        case CFG_DEV_LEVEL:
-        {
-            data = cfg.level;
-        }break;
-        
+
         
 case CFG_SYS_SHANGHAI:
 {

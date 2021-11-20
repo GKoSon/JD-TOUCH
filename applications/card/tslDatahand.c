@@ -5,11 +5,10 @@
 #include "magnet.h"
 #include "bsp_rtc.h"
 #include "unit.h"
-#include "ladder.h"
+
 #include "beep.h"
 
 
-////////////////GGGGG////////////////////
 
 #include "BleDataHandle.h"
 
@@ -18,6 +17,17 @@
 uint8_t tag_verify_group(shanghaicardtype *p)
 {
 #if 0
+  
+  
+  
+  
+  uint16_t cardshort[5];
+  memset(cardshort,0,5);
+  for(i=0;i<5;i++)
+    cardshort = CRC16_CCITT(p->body[i].group,11);
+  
+  
+  
     uint8_t i,j,level=0;
     uint8_t *defgup=NULL;
 
@@ -80,7 +90,7 @@ uint8_t Gtag_verify_time(shanghaicardtype *p)
       {
 	  memcpy(t,p->body[i].endtime,3);
 
-	  DateInCard=( comm_bcd_to_bin(t[0])<<16 | comm_bcd_to_bin(t[1])<<8 | comm_bcd_to_bin(t[2]));
+	  DateInCard=( bcd_to_bin(t[0])<<16 | bcd_to_bin(t[1])<<8 | bcd_to_bin(t[2]));
 
 	  p->body[i].crc = (DateInCard >= DateInSys )?1:0;
 	  
@@ -119,15 +129,6 @@ uint8_t tag_shanghai_user_process( tagBufferType *tag)
 
 }
 
-uint8_t tag_shanghai_cfg_process( tagBufferType *tag)
-{
-
-    uint8_t   defgup[11];
-    shanghaicardtype *p = (shanghaicardtype *)tag->buffer;
-    memcpy(defgup,p->body[0].group,11);
-    //config.write(CFG_SYS_DEFGUP_CODE , defgup,1);
-    return TAG_SUCESS;  
-}
 
 
 uint8_t tag_shanghai_card_process( tagBufferType *tag)
@@ -140,7 +141,7 @@ uint8_t tag_shanghai_card_process( tagBufferType *tag)
         case TEMP_TAG:      return (tag_shanghai_user_process(tag));//2?¨°a return 0;?¨¹?¡À?¨®?a??¨¤2¡ê?
         case USER_TAG:      return (tag_shanghai_user_process(tag));
         case MANAGENT_TAG:  return (tag_shanghai_user_process(tag));//2?¨°a return 0;?¨¹?¡À?¨®?a??¨¤2¡ê?
-        case CONFIG_TAG:    return (tag_shanghai_cfg_process(tag));
+
         default:            printf("tag->tagPower ERR\r\n");return TAG_NO_SUPPORT;
     }
 }

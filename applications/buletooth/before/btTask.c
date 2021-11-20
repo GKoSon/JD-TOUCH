@@ -6,7 +6,6 @@
 #include "permi_list.h"
 #include "open_log.h"
 #include "magnet.h"
-#include "ladder.h"
 #include "buletooth.h"
 #include "timer.h"
 
@@ -18,7 +17,7 @@ void bt_check_work( void )
     
     if( ( ver = btModule.read_version()) != 140)
     {
-        beep.write_base(&checkErr);
+        beep.write(BEEP_ALARM);
         log_err("[BLE]蓝牙模块工作不正常\n");
     }
     log(DEBUG,"[BLE]module version:%d\n" , ver );
@@ -39,10 +38,10 @@ void ble_data_process( void const *pvParameters)
         {
             for(uint8_t i = 0 ; i < BLE_CONNECT_MAX_NUM ; i++)
             {
-                if(BleUserMsg.Msg[i].Flag == TRUE)
-                {
-                    BleDataProcess(&BleUserMsg.Msg[i]);
-                    memset(&BleUserMsg.Msg[i] , 0x00 , sizeof(BleAppMsgType));
+                if(pag[i].hdr.WriteType == 0xFF)
+                {  
+                    BleDataProcess(&pag[i]);
+                    ble_easyclear_buffer(i);
                     task_keep_alive(TASK_BT_BIT); 
                 }
             }
@@ -55,7 +54,7 @@ void ble_data_process( void const *pvParameters)
 
 void creat_buletooth_task( void )
 {
-    osThreadDef( bt, ble_data_process , osPriorityHigh, 0, configMINIMAL_STACK_SIZE*10);
+    osThreadDef( bt, ble_data_process , osPriorityHigh, 0, configMINIMAL_STACK_SIZE*7);
     BtHandle = osThreadCreate(osThread(bt), NULL);
     configASSERT(BtHandle);  
 }

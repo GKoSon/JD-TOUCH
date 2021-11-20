@@ -165,14 +165,19 @@ uint64_t atol64( char *str);
 
 void log_arry(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigned int leng);
 
+void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigned int leng);
+
 unsigned char aiot_strcmp( unsigned char *pst , unsigned char *str , unsigned char len);
 
 void soft_system_resert( const char *funs );
 
 #define GMIN(a,b)  ((a)<(b))?(a):(b) 
+char G_strsTobytes(void* Strings,void* Bytes,char len);
 
+uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len);
 
-#define SHOWME log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
+#define SHOWME       log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
+#define NEVERSHOW    log(ERR,"\r\n【%d】----*********-----*********-----*********------【%s】\r\n",__LINE__,__func__);
 
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
 
@@ -182,9 +187,16 @@ void IP4ARRToStr(unsigned char *arr, char *str);
 
 void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len);
 
-extern char W5500ERR;
+void GIPStringtoarry(unsigned char *sor,unsigned char *arr);
+
+uint16_t  exchangeBytes(uint16_t value);
+
+unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen) ;
+
+uint32_t Beint(uint8_t *arry,uint8_t Len);
+char G_strsTobytes(void* Strings,void* Bytes,char len);
 
 extern char otasee;
 
-
+uint8_t bcd_to_bin(uint8_t bcd);
 #endif

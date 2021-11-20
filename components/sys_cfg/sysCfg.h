@@ -32,7 +32,7 @@
  *  会造成读取越界
  */
 
-#define    DEVICE_NAME            "CCYA" //"CCYA"   
+#define    DEVICE_NAME            "CCYA" 
 
 
 //0----门口机   1----围墙机

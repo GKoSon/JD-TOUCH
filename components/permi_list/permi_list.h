@@ -10,8 +10,8 @@
 #define LIST_FULL           (-2)
 
 #define    PERMI_LIST_MAX            (20000)
-#define    PERMI_LISD_INDEX_SIZE    (sizeof(int))
-#define PERMI_LIST_SIZE         (sizeof(permiListType))
+#define    PERMI_LISD_INDEX_SIZE     (sizeof(int))
+#define    PERMI_LIST_SIZE           (sizeof(permiListType))
 
 typedef enum
 {
@@ -41,12 +41,10 @@ typedef struct _permi_list
 extern permi_list_type permi;
 
 
-uint32_t permiList_read_id( uint32_t index);
-void permiList_read_data(uint32_t index, permiListType *list);
-void permiList_del_index( uint32_t index);
-int32_t periList_add(permiListType *list);
-int32_t permiList_del( uint64_t cardNumber);
-void permi_list_clear_all( void );
+
+
+
 void permiList_clear_overdue( void );
+void permi_list_init( void );
 #endif
 

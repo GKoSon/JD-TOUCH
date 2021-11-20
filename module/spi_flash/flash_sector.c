@@ -24,8 +24,10 @@ void flash_sector_init( void )
 
     log(DEBUG,"[FLASH]系统配置起始地址 ,           ADDR = 0X%X ,PAGE = %d \n" ,sysCfgAddr ,  sysCfgAddr/FLASH_SPI_BLOCKSIZE );
     log(DEBUG,"[FLASH]系统信息起始地址 ,           ADDR = 0X%X ,PAGE = %d \n" ,sysInfoAddr , sysInfoAddr/FLASH_SPI_BLOCKSIZE );
+    
     log(DEBUG,"[FLASH]黑白名单索引区存储起始地址 , ADDR = 0X%X ,PAGE = %d \n" ,permiListBootAddr , permiListBootAddr/FLASH_SPI_BLOCKSIZE );
     log(DEBUG,"[FLASH]黑白名单数据区存储起始地址 , ADDR = 0X%X ,PAGE = %d \n" ,permiListDataAddr , permiListDataAddr/FLASH_SPI_BLOCKSIZE );
+    
     log(DEBUG,"[FLASH]开门日志存储起始地址 ,       ADDR = 0X%X ,PAGE = %d \n" ,openLogDataAddr , openLogDataAddr/FLASH_SPI_BLOCKSIZE );
     log(DEBUG,"[FLASH]FLASH使用完毕后续空闲地址,   ADDR = 0X%X ,PAGE = %d \n" ,endFlashAddr , endFlashAddr/FLASH_SPI_BLOCKSIZE );
     if( endFlashAddr >= OTA_START_ADDR)

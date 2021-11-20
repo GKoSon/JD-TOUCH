@@ -1,46 +1,27 @@
 #include "bb0906_protocol.h"
 #include "config.h"
 
-//Usart accept data buffer
-static BleModuleAppDateType     BleModuleAppData;
-//Accept app data buff
-extern BleUserMsgType           BleUserMsg;
+
+BleModuleAppDateType     BleModuleAppData;
 
 
-static uint8_t BleModuleCheckSum( uint8_t *Data , uint8_t Length)
-{
-    uint8_t i =0,ucSum = 0;
-    
-    for( i = 0;i < Length; i++)
-    {
-        ucSum +=  Data[i];
-    }
-    
-    return ((0xFF-ucSum)+0x01);
-}
+
 
 void ble_clear_buffer( void )
 {
     memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
-    memset(&BleUserMsg ,0x00 , sizeof(BleUserMsgType));
-    ble_clear_timerflag();
+    memset(pag ,0x00 , 4*sizeof(ProtData_T));
+    //ble_cleal_timer();
 }
 
-uint8_t BleCheckEndByte(BleAppMsgType *BleUsartData)
+void ble_easyclear_buffer( char i )
 {
-    if( ( BleUsartData->Data[BleUsartData->DataLength-1] == 0x7E)&&
-        ( BleUsartData->Data[BleUsartData->DataLength-2] == 0x7D)&&
-        ( BleUsartData->Data[BleUsartData->DataLength-3] == 0x7C)&&
-        ( BleUsartData->Data[BleUsartData->DataLength-4] == 0x0B))
-        {
-             printf("BleUsartData->DataLength%d\r\n",BleUsartData->DataLength);
-             log_arry(ERR,"BleCheckEndByte "  , BleUsartData->Data ,BleUsartData->DataLength);
-             ble_clear_timerflag();
-             return TRUE;
-        }
-                                        
-    return FALSE;
+    memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
+    memset(&pag[i] , 0x00 , sizeof(ProtData_T));
+   // ble_cleal_timer();
 }
+
+
 
 /*
 msb                             lsb   
@@ -74,15 +55,15 @@ msb                             lsb
 |        Payload Checksum       | byte N   
 +-------------------------------+ 
 */
-
 void BleReceiveUsartByteHandle( uint8_t ucData)
 {
-
+    char i=0;
+    static char ch =0;
+    static char Rlen=0;
     switch(BleModuleAppData.BytePos)
     {
         case HEARD1_POS:
         {
-            memset(&BleModuleAppData , 0x00 , sizeof(BleModuleAppDateType));
             if(ucData == 'i')
             {
                 BleModuleAppData.BytePos = HEARD2_POS;
@@ -133,33 +114,36 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
         {
             BleModuleAppData.Length |= ucData;
             BleModuleAppData.BytePos = ADDR_POS;
-            if( BleModuleAppData.Length > BLEMODE_FARM_MAX)
-            {
-                memset(&BleModuleAppData , 0x00 , sizeof(BleModuleAppDateType));
+            if( BleModuleAppData.Length > 40)
+            {   NEVERSHOW
+                ble_clear_buffer();
             }
-            BleModuleAppData.cnt = 0;
+
         }break; 
-        case ADDR_POS:
+        
+        case ADDR_POS:/*开始进入数据壳子*/
         {
-            BleModuleAppData.Msg.FormAddr[BleModuleAppData.cnt++] = ucData;
-            if( BleModuleAppData.cnt == BLE_ADDR_SIZE)
+	
+            BleModuleAppData.Msg.hdr.FormAddr[Rlen++] = ucData;
+            if( Rlen == BLE_ADDR_SIZE)
             {
                 BleModuleAppData.BytePos = HANDLE_H_POS;
+                Rlen = 0;
             }
         }break; 
         case HANDLE_H_POS:
         {
-            BleModuleAppData.Msg.Handle = ucData << 8;
+            BleModuleAppData.Msg.hdr.Handle = ucData << 8;
             BleModuleAppData.BytePos = HANDLE_L_POS;
         }break;  
         case HANDLE_L_POS:
         {
-            BleModuleAppData.Msg.Handle |= ucData ;
+            BleModuleAppData.Msg.hdr.Handle |= ucData ;
             BleModuleAppData.BytePos = WRITE_TYPE_POS;
         }break;   
         case WRITE_TYPE_POS:
         {
-            BleModuleAppData.Msg.WriteType = ucData ;
+ 
             if(BleModuleAppData.Length >0 )
             {
                 BleModuleAppData.BytePos = DATA_POS;
@@ -167,99 +151,86 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
             else
             {
                 BleModuleAppData.BytePos = CRC_POS;
+                NEVERSHOW
             }
-            BleModuleAppData.cnt = 0;
+
         }break;     
         
-        case DATA_POS:
-        {
-            BleModuleAppData.Msg.Data[BleModuleAppData.cnt++] = ucData ;
-            if( BleModuleAppData.cnt == BleModuleAppData.Length - BLE_DATA_HEARD_LENG)
+        case DATA_POS:/*开始进入数据*/
+        {     	
+            BleModuleAppData.Msg.Data[Rlen++] = ucData ;
+            if( Rlen == BleModuleAppData.Length - BLE_DATA_HEARD_LENG)
             {
-                BleModuleAppData.Msg.DatLength = BleModuleAppData.Length - BLE_DATA_HEARD_LENG;
+                BleModuleAppData.Msg.DatLength = Rlen;
                 BleModuleAppData.BytePos = CRC_POS;
-            } 
-            else if( BleModuleAppData.cnt > BleModuleAppData.Length - BLE_DATA_HEARD_LENG)
-            {
-                BleModuleAppData.cnt = 0;
-                BleModuleAppData.BytePos = HEARD1_POS;
-            }
-        }break;    
-        case CRC_POS:
-        {   
-            uint8_t i,ucCheckCrc = 0;       
-            BleModuleAppData.Crc = ucData ;
-            ucCheckCrc = BleModuleCheckSum((uint8_t *)&BleModuleAppData.Msg , BleModuleAppData.Length);
-            if( ucCheckCrc == BleModuleAppData.Crc)
-            {
-                if( ( BleModuleAppData.Command == CMD_LE_XFER2H) && ( BleModuleAppData.Response == 1))
-                {
-                    for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
-                    {
-                        if(BleUserMsg.Msg[i].Flag != TRUE)
-                        {
-                            if(aiot_strcmp(BleModuleAppData.Msg.FormAddr,BleUserMsg.Msg[i].FormAddr , BLE_ADDR_SIZE) == TRUE)
-                            {
-                                if(BleUserMsg.Msg[i].DataLength + BleModuleAppData.Msg.DatLength < BLEMODE_FARM_MAX )
-                                {
-                                    memcpy(BleUserMsg.Msg[i].Data+BleUserMsg.Msg[i].DataLength, BleModuleAppData.Msg.Data , BleModuleAppData.Msg.DatLength);
-                                    BleUserMsg.Msg[i].DataLength += BleModuleAppData.Msg.DatLength;
-                                    
-                                    //log(ERR,"BleUserMsg.Msg[%d].DataLength%d\r\n",i,BleUserMsg.Msg[i].DataLength);
-                                    //log_arry(INFO,"蓝牙模块IN "  , BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
+                Rlen = 0;
 
-                                    if( BleUserMsg.Msg[i].DataLength>60 && BleCheckEndByte(&BleUserMsg.Msg[i]) == TRUE)
-                                    {
-                                          BleUserMsg.Msg[i].Flag = TRUE;  
-                                          static BaseType_t xHigherPriorityTaskWoken =  pdFALSE;;
-                                          xSemaphoreGiveFromISR( xBtSemaphore, &xHigherPriorityTaskWoken );
-                                          portEND_SWITCHING_ISR(xHigherPriorityTaskWoken );
-                                    }
-                                }
-                                else
-                                {
-                                    memset(&BleUserMsg.Msg[i] , 0x00 , sizeof(BleAppMsgType));
-                                }
-                                break;
-                            }
+            } 
+
+        }break;    
+        case CRC_POS:/*all in   BleModuleAppData.Msg.Data*/
+        {   
+            BleModuleAppData.BytePos = DATA_TRANS;
+        };   
+        case DATA_TRANS:
+        {   
+              
+              for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
+              {
+                      if(is_arr_same(BleModuleAppData.Msg.hdr.FormAddr,pag[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
+                      {
+                        
+                        if(pag[i].hdr.WriteType!=0XFF)
+                        {
+                          
+                              memcpy(pag[i].POS25V + pag[i].POS25Vlen,    BleModuleAppData.Msg.Data  , BleModuleAppData.Msg.DatLength );
+                              pag[i].POS25Vlen += BleModuleAppData.Msg.DatLength;
+   
+
+                              if(pag[i].POS25Vlen +2  >= pag[i].POS1415_len)
+                              {
+                                SHOWME 
+                                pag[i].hdr.WriteType=0XFF; 
+                                release_sig();
+                             
+                              }
                         }
                         else
-                        {
-                            log(INFO,"蓝牙数据接收完成，正常处理\n");
-                        }
-                    }
-                    if( i == BLEMODE_PHONE_MAX)
-                  /*这是第一次的入口 因为BleUserMsg.Msg[i].Flag 虽然都没有拉起 
-                  但是你进去以后发现无处安放 FormAddr 不对 第一次到这里赋予地址*/
-                    {
-                        //log(ERR,"1>\n");
-                        memcpy(&BleUserMsg.Msg[BleUserMsg.Length] , &BleModuleAppData.Msg , sizeof(BleModuleAppMsgType));
-                        BleUserMsg.Msg[BleUserMsg.Length].DataLength = BleModuleAppData.Msg.DatLength;
-                        //log_arry(INFO,"蓝牙模块IN1 "  , BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
-                        if( BleCheckEndByte(&BleUserMsg.Msg[BleUserMsg.Length]) == TRUE)
-                        {   /*有可能短短的一包就结束战斗了 可以无视*/
-                             log(ERR,"1>万分之一的短包\n");
-                             static BaseType_t xHigherPriorityTaskWoken =  pdFALSE;;                                
-                             BleUserMsg.Msg[i].Flag = TRUE;   
-                             xSemaphoreGiveFromISR( xBtSemaphore, &xHigherPriorityTaskWoken );
-                             portEND_SWITCHING_ISR(xHigherPriorityTaskWoken );
-                        }
-                        BleUserMsg.Length++;
-                        if( BleUserMsg.Length >= BLEMODE_PHONE_MAX)
-                        {
-                            BleUserMsg.Length = 0;
-                        }
-                    }
-                }
-                
-            }
-            else
-            {
-                log(WARN,"Get frame crc is err, get crc=%x,calc crc =%x. \r\n" ,BleModuleAppData.Crc , ucCheckCrc);  
-            }
-            memset(&BleModuleAppData , 0x00 , sizeof(BleModuleAppDateType));
-            BleModuleAppData.BytePos =HEARD1_POS;
-        }break;         
-        
+                        { memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));NEVERSHOW}
+                        
+                        i=100;
+                        break;
+                     }
+              }/*第一次过来这个for进去马上出来  因为if进不去的 此时pag全是0* 所以第一次就是进下面的*/
+              if( i == BLEMODE_PHONE_MAX)
+              {
+                      memset( &pag[ch]      ,0 ,sizeof(ProtData_T));
+                      memcpy( &pag[ch].hdr  ,&BleModuleAppData.Msg.hdr  ,sizeof(AppDataHeardType));
+                      memcpy( &pag[ch]      ,&BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
+                      
+                      if( pag[ch].POS11_head != 0XAA )
+                      {
+                        NEVERSHOW ble_clear_buffer();break;
+                      }
+                      else
+                      {
+                          pag[ch].POS1415_len =    exchangeBytes(  pag[ch].POS1415_len);//全包长度 设定值
+                          pag[ch].POS2122T    =    exchangeBytes(  pag[ch].POS2122T);
+                          pag[ch].POS2324L    =    exchangeBytes(  pag[ch].POS2324L);//小包 不管
+
+                          pag[ch].POS25Vlen   =     BleModuleAppData.Msg.DatLength - 9;//POS25Vlen 包含了CRC
+                          
+                        
+                          if(pag[ch].POS25Vlen + 4 == pag[ch].POS1415_len + 2)
+                          { pag[ch].hdr.WriteType=0XFF; release_sig();}
+                                                     
+                           ch = (ch + 1)% BLEMODE_PHONE_MAX ;
+                      }
+              }
+              
+              
+          memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
+                    
+        }break;       
     }
 }

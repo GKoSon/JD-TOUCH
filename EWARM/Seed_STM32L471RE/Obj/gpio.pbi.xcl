@@ -185,10 +185,6 @@ D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\components\mate
 -I
 D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\components\sysCntSave
 -I
-D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\applications\net
--I
-D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\applications\net\ABDoorSDK
--I
 D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\Middlewares\Third_Party\cjson
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\CMSIS\Core\Include
@@ -378,10 +374,6 @@ D:\TSBrowserDownloads\JD-TOUCH\applications\QRCode
 D:\TSBrowserDownloads\JD-TOUCH\components\mate
 -I
 D:\TSBrowserDownloads\JD-TOUCH\components\sysCntSave
--I
-D:\TSBrowserDownloads\JD-TOUCH\applications\net
--I
-D:\TSBrowserDownloads\JD-TOUCH\applications\net\ABDoorSDK
 -I
 D:\TSBrowserDownloads\JD-TOUCH\Middlewares\Third_Party\cjson
 -I

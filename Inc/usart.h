@@ -69,7 +69,7 @@ extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
 
-#define RECEIVE_MAX 2048
+#define RECEIVE_MAX 2040
 
 typedef struct
 {

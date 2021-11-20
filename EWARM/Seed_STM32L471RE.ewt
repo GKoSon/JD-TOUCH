@@ -2389,6 +2389,27 @@
                     <name>$PROJ_DIR$\..\applications\buletooth\before\btTask.c</name>
                 </file>
             </group>
+            <group>
+                <name>model</name>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleCommon.pb.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleCommon.pb.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleUser.pb.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleUser.pb.h</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleWizard.pb.c</name>
+                </file>
+                <file>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleWizard.pb.h</name>
+                </file>
+            </group>
         </group>
         <group>
             <name>card</name>
@@ -2408,7 +2429,7 @@
                 <name>$PROJ_DIR$\..\applications\card\tslDatahand.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\applications\card\tslDataHand.h</name>
+                <name>$PROJ_DIR$\..\applications\card\tslDatahand.h</name>
             </file>
         </group>
         <group>
@@ -2805,15 +2826,6 @@
             </file>
         </group>
         <group>
-            <name>rs485</name>
-            <file>
-                <name>$PROJ_DIR$\..\components\rs485\rs485.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\components\rs485\rs485.h</name>
-            </file>
-        </group>
-        <group>
             <name>socket</name>
             <file>
                 <name>$PROJ_DIR$\..\components\socket\socket.c</name>
@@ -3074,6 +3086,36 @@
                 <name>$PROJ_DIR$\..\Middlewares\Third_Party\mqtt\MQTTPacket\src\StackTrace.h</name>
             </file>
         </group>
+        <group>
+            <name>nanopb</name>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\cmd_pb.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\cmd_pb.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_common.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_common.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_decode.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_decode.h</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_encode.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb\pb_encode.h</name>
+            </file>
+        </group>
     </group>
     <group>
         <name>modules</name>
@@ -3311,72 +3353,6 @@
         <group>
             <name>net</name>
             <group>
-                <name>eth</name>
-                <group>
-                    <name>w5500</name>
-                    <group>
-                        <name>drv</name>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\drv\w5500_drv.c</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\drv\w5500_drv.h</name>
-                        </file>
-                    </group>
-                    <group>
-                        <name>lib</name>
-                        <group>
-                            <name>dhcp</name>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\DHCP\dhcp.c</name>
-                            </file>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\DHCP\dhcp.h</name>
-                            </file>
-                        </group>
-                        <group>
-                            <name>dns</name>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\DNS\dns.c</name>
-                            </file>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\DNS\dns.h</name>
-                            </file>
-                        </group>
-                        <group>
-                            <name>w5500</name>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\W5500\w5500.c</name>
-                            </file>
-                            <file>
-                                <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\W5500\w5500.h</name>
-                            </file>
-                        </group>
-                    </group>
-                    <group>
-                        <name>socket</name>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\w5500_config.c</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\w5500_config.h</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\w_socket.c</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\w_socket.h</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\wizchip_conf.c</name>
-                        </file>
-                        <file>
-                            <name>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket\wizchip_conf.h</name>
-                        </file>
-                    </group>
-                </group>
-            </group>
-            <group>
                 <name>gsm</name>
                 <group>
                     <name>sim800c</name>
@@ -3409,18 +3385,6 @@
             <file>
                 <name>$PROJ_DIR$\..\module\relay\relay.h</name>
             </file>
-        </group>
-        <group>
-            <name>rs485</name>
-            <group>
-                <name>SN75176BDR</name>
-                <file>
-                    <name>$PROJ_DIR$\..\module\rs485\SN75176BDR\SN75176BDR.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\module\rs485\SN75176BDR\SN75176BDR.h</name>
-                </file>
-            </group>
         </group>
         <group>
             <name>spi flash</name>

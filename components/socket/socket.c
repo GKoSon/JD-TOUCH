@@ -6,7 +6,6 @@
 #include "component.h"
 #include "sysCfg.h"
 #include "esp12s.h"
-#include "w5500_config.h"
 #include "config.h"
 #include "sys_led.h"
 
@@ -485,11 +484,7 @@ void socket_compon_init(void )/*must--标识必须要建立任务 lev-是正常时候建立任务 
         log(DEBUG,"使用WIFI联网\n");
         devCom = &wifi;
     }
-    else if( runModule == TSLNetType_TSLEthernet )
-    {
-        log(DEBUG,"使用以太网联网\n");
-        devCom = &eth;
-    }
+
     else
     {
         log(INFO,"联网方式选择未初始化 , 不能运行，恢复出厂设置\n");

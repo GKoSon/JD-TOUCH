@@ -11,14 +11,12 @@
 #include "open_log.h"
 #include "tslDataHand.h"
 
-
 #define    UID_SIZE 16    
 uint8_t beforeTagUID[UID_SIZE];
 uint8_t readFishFlag = FALSE;
 uint8_t readType = TRACK_NONE;
 uint8_t detectTagCount = 0;
 uint8_t detectTagFlag = 0;
-
 
 blinkParmType beepTagNullErr=
 {
@@ -53,7 +51,9 @@ uint8_t ReadCardTypeArry[]=
     TRACK_NFCTYPE4A,
     TRACK_NFCTYPE4B,
 };
+
 uint8_t ReadCardTypeCnt;
+
 const uint8_t ReadCardTypeMax = sizeof(ReadCardTypeArry);
 
 void tag_updata_beforeUid(  tagBufferType *tag )
@@ -68,6 +68,7 @@ void tag_updata_beforeUid(  tagBufferType *tag )
 void tag_clear_beforeUid( void )
 {
     memset(beforeTagUID , 0x00 , UID_SIZE);
+    
     readFishFlag = FALSE;
 }
 
@@ -85,44 +86,22 @@ uint8_t tag_compare_uid(uint8_t *old_uid , tagBufferType *tag)
     return TRUE;
 }
 
-
 uint64_t assemble_id( tagBufferType *tag)
 {
     uint64_t idTemp[16]={0};
-    
+    uint64_t id;
     for(uint8_t i = 0 ; i < tag->UIDLength ; i++)
     {
         idTemp[i] = tag->UID[i];
     }
     
-    return( idTemp[0]<<56|idTemp[1]<<48|idTemp[2]<<40|idTemp[3]<<32|
-            idTemp[4]<<24|idTemp[5]<<16|idTemp[6]<<8|idTemp[7]);
+    id=idTemp[0]<<56|idTemp[1]<<48|idTemp[2]<<40|idTemp[3]<<32|
+             idTemp[4]<<24|idTemp[5]<<16|idTemp[6]<<8|idTemp[7];
+    log_arry(DEBUG,"[CARD]UID" ,tag->UID , 8);
+    printf("[CARD]assemble_id 0x%llx \r\n",id);
+    return id;
     
 }
-
-
-uint8_t comm_bcd_to_bin(uint8_t bcd)
-{
-    return (bcd>>4)*10 + (bcd&0x0F);
-}
-
-uint8_t tag_is_null( uint8_t *buffer , uint8_t length)
-{
-    uint32_t sum = 0 ; 
-  
-    for(uint8_t i = 0 ; i < length ; i++)
-    {
-        sum += buffer[i];
-    }
-    
-    if( sum < 0xFF)
-    {
-        return TRUE;
-    }
-    
-    return FALSE;
-}
-
 
 uint8_t tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
 {
@@ -148,35 +127,6 @@ void tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
       *pwcrc=x;
 }
 
-bool tag_check_crc(uint8_t u1,uint8_t *crc2 , uint8_t *uRd)
-{
-    uint8_t i,uLen=(u1==1)?29:30;
-    uint16_t wD=0,wD1=(u1==1)?(((*(uRd+30))<<8)|(*(uRd+29))):(((*(uRd+31))<<8)|(*(uRd+30)));
-    uint16_t wD2=0,wD21=((*(uRd+88))<<8)|(*(uRd+87));
-  
-    for(i=0;i<uLen;i++)
-    {
-        tag_calc_crc16(*(uRd+i),&wD);
-    }
-  
-    for(i=0;i<87;i++)
-    {
-        tag_calc_crc16(*(uRd+i),&wD2);
-    }
-  
-    ///log(INFO,"crc leng = %d ,card crc : %x , %x , calc crc : %x %x\n",uLen ,wD1 ,wD21 , wD , wD2);
-  
-    *crc2 = (wD2==wD21)?TRUE:FALSE;
-
-    if(wD==wD1)
-    {
-        return FALSE;
-    }
-  
-    return TRUE;
-
-}
-
 uint8_t GetReadCardType( void )
 {
     uint8_t rt = TRACK_NOTHING;
@@ -189,6 +139,9 @@ uint8_t GetReadCardType( void )
     
     return rt;
 }
+
+
+
 /*****************************************************************************/
 /*****************************************************************************/
 /*****************************************************************************/
@@ -255,32 +208,11 @@ uint8_t tag_find_class( tagBufferType *tag)
         }
         return  TAG_NONE;
     }    
-    log(DEBUG,"[CARD]tag->cardType=%d\n" ,  tag->cardType );
+    
+    log(DEBUG,"[CARD]tag->cardType=0X%02X[ALL 3(0X20-15693)(0X10-1443B)(0X20-1443A)]\n" , tag->cardType );
     log_arry(DEBUG,"[CARD]tag->UID" , tag->UID , tag->UIDLength   );
     detectTagFlag =1;
     return TAG_SUCESS;
-}
-
-void NO_tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
-{
-    uint16_t x=*pwcrc;
-    x=(uint16_t)((uint8_t)(x>>8)|(x<<8));
-    x^=(uint8_t)ucdata;
-    x^=(uint8_t)(x&0xff)>>4;
-    x^=(x<<8)<<4;
-    x^=((x&0xff)<<4)<<1;
-    *pwcrc=x;
-}
-
-uint8_t NO_tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
-{
-  uint8_t i_crc=0,i;
-  
-  for(i=0;i<uLen;i++)
-  {
-        i_crc ^=*(ps1++);
-  }
-  return i_crc;
 }
 
 void SHANGHAISHOW(shanghaicardtype *p)
@@ -387,6 +319,66 @@ uint8_t checkclasserr(shanghaicardtype *p)
 }
 
 
+uint8_t tag_read_15693_data( tagBufferType *tag ) 
+{
+    uint8_t tag_buffer[98];//16*6+2=98 ALL DATA
+    shanghaicardtype *p=NULL;
+    memset(tag_buffer , 0x00 , 98);
+
+    if( tagComp->iso15693_read_data(0 , 98 ,tag_buffer) == FALSE)
+    {   
+
+      log_arry(DEBUG,"tag_buffer" ,tag_buffer , 98 );
+
+      Decryptionr(tag_buffer,tag->UID,tag->buffer);
+
+      memcpy(&tag->buffer[64],&tag_buffer[64],98-64);
+
+      log_arry(DEBUG,"tag->buffer" ,tag->buffer , 98 ); 
+
+      p = (shanghaicardtype *)tag->buffer;
+
+      SHANGHAISHOW(p);        
+
+
+      if(checkclasserr(p))
+      {
+        log(ERR,"[CARD]CLASS\n");
+        return TAG_NULL;
+      }
+
+      if( checkzeroerr(p))
+      {
+        log(ERR,"[CARD]ZERO\n");
+        return TAG_NULL;
+      } 
+
+      if(checkuiderr(p,tag))
+      {
+        log(ERR,"[CARD]UID\n");
+        return TAG_NULL;
+      }
+
+      if(checkcrcerr(p))
+      {
+        log(ERR,"[CARD]CRC\n");
+        return TAG_CRC_ERR;
+      }    
+
+
+      tag->tagPower = (tagPowerEnum)checkpowerinfo(p);
+      tag->type = TAG_SHANGHAI_CARD;
+
+      log(ERR,"TAG_SHANGHAI_CARD TAG_SUCESS\n");
+      return TAG_SUCESS;
+ 
+    }
+    
+    log_err("[CARD]tag_read_15693_data FAIL\n");
+    return TAG_NONE;
+}
+
+
 uint8_t tag_read_fk_card( tagBufferType *tag ) 
 {
     uint8_t tag_buffer[98];//16*6+2=98 ALL DATA
@@ -447,74 +439,21 @@ uint8_t tag_read_fk_card( tagBufferType *tag )
 }
 
 
-
-uint8_t tag_read_15693_data( tagBufferType *tag )
-{
-	uint8_t tag_buffer[128];
-	memset(tag_buffer , 0x00 , 128);
-	
-	if(  tagComp->iso15693_read_data(0 , 110 ,tag_buffer) == FALSE)
-	{
-		memcpy(tag->buffer , tag_buffer+13 , 100);
-		
-		if( tag_is_null(tag_buffer,110))
-		{
-			log(INFO,"ï¿½ï¿½Æ¬ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½\n");
-			return TAG_NULL;
-		}               
-		log_arry(DEBUG,"Read data:" ,tag->buffer , 110);
-		Decryptionr(tag->buffer,tag->UID,tag->buffer);
-		log_arry(DEBUG,"Decryptionr data:" ,tag->buffer , 110 );
-		if( tag_calc_crc8(tag->buffer , 24) !=  0)
-		{                    
-			log_err("24ï¿½Ö½Úµï¿½CRCÐ£ï¿½ï¿½ï¿½ï¿½ó£¬¿ï¿½Æ¬ï¿½ï¿½ï¿½Ý¶ï¿½È¡Ê§ï¿½ï¿½.\n");
-			return TAG_CRC_ERR;
-		}
-		
-
-
-		return TAG_NONE;
-	}
-	
-	return TAG_NONE;
-}
-
 uint8_t tag_read_data( tagBufferType *tag)
 {
     switch(tag->cardType)
     {
-        case TRACK_NFCTYPE1: 
-        case TRACK_NFCTYPE2: 
-        case TRACK_NFCTYPE3: 
-        {
-            return TAG_NO_SUPPORT;
-        }break;
+/*Ã¿¸öcase ¶¼ÊÇÒ»´ÎÐÔ ÉèÖÃ2¸öflag tag->type  tag->tagPower*/
         case TRACK_NFCTYPE4A: 
         {
-          log(DEBUG,"[CARD]TRACK_NFCTYPE4A:tag->sak:%02X\n",tag->sak);        
-                          if((tag->sak == 0x08)||(tag->sak == 0x28))
-                         {
-                                uint8_t ret = 0;
-
-                    ret = tag_read_fk_card(tag);
-
-
-                    if((ret != TAG_NO_SUPPORT)&&(ret != TAG_ERR))
-                    {
-                        return ret;
-                    }  
-                          } 
-            
-
+            log(DEBUG,"[CARD]TRACK_NFCTYPE4A:tag->sak:%02X\n",tag->sak);        
                                 
             if(tag->sak == 0x28)
-           {
+            {
               log(DEBUG,"[CARD]FM1208 CUP card");
-           }
+            }
 
-        log(DEBUG,"[CARD]Read liking Failed\n");
-            return TAG_TYPE4A_ERR;
-            
+            return tag_read_fk_card(tag);            
         }break;
         
         case TRACK_NFCTYPE4B: 
@@ -532,13 +471,12 @@ uint8_t tag_read_data( tagBufferType *tag)
         
         default: 
         {
-            log(ERR ,"tag_read_data ERR type =%d.\r\n" , tag->cardType);
+            NEVERSHOW
             return TAG_NONE;
         }break;
     }
 
 }
-
 
 uint8_t read_tag( tagBufferType *tag)
 {
@@ -573,7 +511,7 @@ uint8_t read_list_name(tagBufferType *tag)
     
     log_err("[CARD]read_list_name ID:%llx\n",ID);
     
-    if( permi.find(ID , &list) != FIND_NULL_ID)
+    if(permi.find(ID , &list) != FIND_NULL_ID)
     {
         stamp = rtc.read_stamp();
         if(( list.status == LIST_WRITE) )
@@ -672,11 +610,7 @@ void tag_interaction_buzzer( tagBufferType *tag , uint8_t *result)
             tag_updata_beforeUid(tag);
         }break;
         
-        case TAG_TYPE4A_ERR:
-        {
-            beep.write(BEEP_DEALY);
-        }break;
-        
+       
         case TAG_BALCK_LIST_ERR:
         {
           beep.write_base(&beepBlackListErr);
@@ -685,9 +619,9 @@ void tag_interaction_buzzer( tagBufferType *tag , uint8_t *result)
         }break;
 
         case TAG_TYPE4B_ERR:log(WARN,"[CARD-RET]TAG_TYPE4B_ERR A STRANGER ID CARD \n");
-        case TAG_NO_SUPPORT:    //????????
-        case TAG_ERR:            //??????
-        case TAG_COMM_ERR:        //???????
+        case TAG_NO_SUPPORT:    
+        case TAG_ERR:           
+        case TAG_COMM_ERR:        
         {
           beep.write(BEEP_ALARM);
           tag_updata_beforeUid(tag);
@@ -708,7 +642,7 @@ void tag_interaction_buzzer( tagBufferType *tag , uint8_t *result)
 
     
     if( sendLogFlag == TRUE )
-        {    
+    {    
             memset(&logData , 0x00 , sizeof(openlogDataType));
             logData.type = OPENLOG_FORM_CARD;
             logData.length = openResult;

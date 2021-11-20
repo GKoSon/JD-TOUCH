@@ -18,9 +18,8 @@
 #include "md5.h"
 #include "sha1.h"
 #include "mqtt_client.h"
+extern SystemConfigType   cfg;
 extern char topicPath[GMAX_MESSAGE_HANDLERS][52];
-
-SystemConfigType   cfg;
 
 _ble2http *bh = &cfg.ble2http;
 
@@ -396,9 +395,9 @@ void sysCfg_print( void )
       log(DEBUG,"mqtt user name = %s\n" ,    cfg.mqtt.mqttUserName);
       log(DEBUG,"mqtt user pwd  = %s\n" ,    cfg.mqtt.mqttUserPwd);
       showsyslocation(&cfg.commun);
-
-      //tempwd.show();
-      permi.show();
+      permi.show();//展示一下黑白名单
+ permi_list_init();
+      permi.show();//展示一下黑白名单
       log(INFO,"************************************ end  ************************************ \n");
       log(INFO,"************************************ end  ************************************ \n");
 }
@@ -610,6 +609,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         case CFG_SYS_OPEN_TIME:
         {
             data = cfg.parm.delay_time;
+            log_err("[SYS]READ CFG_SYS_OPEN_TIME:%d\r\n",data);
         }break;
         
         case CFG_SYS_CHIP_ID:

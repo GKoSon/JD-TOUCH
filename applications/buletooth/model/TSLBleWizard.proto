@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+option java_package = "com.terminus.ble.common.protobuf";
+package TslBLEProto;
+
+
+
+// 设置设备密码
+message TSLBLEDeviceSetPWDRequest {
+    int32 security = 1;     // 密码， BCD码表示
+}
+
+// 设置默认通行组
+message TSLBLEDeviceSetGUPRequest {
+   string  groupid = 1; 
+}
+
+// 设置平台网诺地址
+message TSLBLEDeviceSetMQTTNETRequest {
+   string  ipport = 1; //举例“192.168.1.2:8001”
+}
+
+// 设置设备网诺地址
+message TSLBLEDeviceSetDEVNETRequest {
+    int32   isdhcp = 1;   
+	string  ip = 2; 
+	string  msk = 3; 
+	string  gw = 4; 
+	string  dns = 5; 
+}
+
+
+
+// 设置位置点码
+message TSLBLEDeviceSetLOCATIONCODERequest {  
+	bytes  code = 1; 
+}
+
+// 设置设备点码
+message TSLBLEDeviceSetDEVICECODERequest {  
+	bytes  code = 1; 
+}
+
+// 设置开门密码
+message TSLBLEDeviceSetLOCKPWDRequest {
+    int32 pwd = 1;     
+}
+
+
+// 设备通用回答信息
+message TSLBLEDeviceCommonResponse {
+    int32   status = 1;           
+	string  reserved = 2; 
+}

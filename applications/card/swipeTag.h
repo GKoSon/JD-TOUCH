@@ -51,11 +51,7 @@ typedef enum
     USER_TAG,
     MANAGENT_TAG,
     TEMP_TAG ,
-    APP_TAG = 6,
-    CONFIG_TAG = 8,
-    UINT_ADMIN_TAG,
-    UINT_MANAGENT_TAG ,
-    YULI_CARD,
+    
     BLE_CARD,
 }tagPowerEnum;
 
@@ -83,7 +79,7 @@ typedef struct
 
 extern uint8_t readFishFlag ;
 
-uint8_t comm_bcd_to_bin(uint8_t bcd);
+
 uint8_t read_tag( tagBufferType *tag);
 uint8_t read_list_name( tagBufferType *tag);
 uint8_t tag_data_process( tagBufferType *tag);

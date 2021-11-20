@@ -4,8 +4,8 @@
 #include "timer.h"
 #include "beep.h"
 
-static uint8_t prefix[] = {0x4C ,0X00,0X02,0X15};
-static uint8_t UUID[]   = {0xF1 ,0xCE,0xBB,0x2A,0xB2,0xF8,0x47,0x92,0x85,0x7A,0x2D,0x26,0x8E,0x4F,0x6D,0x94};
+static uint8_t prefix[] ={0x4C ,0X00,0X02,0X15};
+static uint8_t UUID[] = {0x00 ,0x00,0x18,0xF0,0x00,0x00,0x10,0x00,0x80,0x00,0x00,0x80,0x5F,0x9B,0x34,0xFB};
 
 static void *bb0906_port = NULL;
 
@@ -28,7 +28,7 @@ static __IO uint8_t BleConnectCnt = 0;
 Internal variable declaration
 *
 */ 
-
+static uint8_t ble_write_mac( void *pucdata ,void *pucParma);
 static uint8_t ble_get_mac( void *pucdata ,void *pucParma);
 static uint8_t ble_get_version( void *pucdata ,void *pucParma);
 static uint8_t ble_get_work_data( void *pucdata ,void *pucParma);
@@ -59,12 +59,12 @@ void ble_recvive_timer( void )
 {
     if( bleTimerStart )
     {
-        if(bleTimerCnt++ > 100)
+        if(bleTimerCnt++ > 10)
         {
             pb_clear_protocol();
             ble_clear_buffer();
             memset(&bleModuleReceiveCmd , 0x00 , sizeof(bleModuleReceiveCmdType));
-            log(WARN,"[BLE]ble_recvive_timer\n");
+            log(WARN,"[BLE]ble_recvive_timer out clear all\n");
         }
     }
 }
@@ -188,8 +188,6 @@ void bleDrv_receive_usart_byte( uint8_t usartData)
 }
 
 
-
-//command processing arry
 static bleCmdHandleArryType bleCmdTaskArry[]=
 {
   {CMD_STATE            , ble_get_work_data},  
@@ -203,11 +201,21 @@ static bleCmdHandleArryType bleCmdTaskArry[]=
   {CMD_ORGL             , ble_get_raw_data},
   {CMD_VERSION          , ble_get_version},
   {CMD_ATTR_INDEX       , ble_get_raw_data},
-  {CMD_LEADVPARAMS       , ble_get_raw_data},
+  {CMD_LEADVPARAMS      , ble_get_raw_data},
+  {CMD_MODBTADDR        , ble_write_mac},
   
 };
 const uint8_t bleCmdTasksCnt = sizeof (bleCmdTaskArry) / sizeof (bleCmdTaskArry[0]);
 
+static uint8_t ble_write_mac( void *pucdata ,void *pucParma)
+{
+    bleModuleReceiveCmdType *BlePkt = (bleModuleReceiveCmdType *)pucdata;
+    
+    log(DEBUG,"Recv command is =%x ##\r\n" , BlePkt->command);
+    memcpy(pucParma , BlePkt ,sizeof(bleModuleReceiveCmdType));
+
+    return BLE_OK;
+}
 
 static uint8_t ble_get_mac( void *pucdata ,void *pucParma)
 {
@@ -391,7 +399,7 @@ uint8_t ble_write_command(uint16_t dcommand,uint8_t *ptSenddata,uint16_t dLength
     return uRt;
 }
 
-uint8_t ble_write_msg(uint8_t *ptAddr , uint8_t *ptSenddata , uint16_t uLegnth , uint16_t dHandle)
+uint8_t ble_write_msg(uint8_t *ptAddr , uint8_t *ptSenddata , uint8_t uLegnth , uint16_t dHandle)
 {
     uint8_t PackBuff[BLEMODE_FARM_MAX+BLE_HEARD_SIZE];
     uint8_t ReadBuff[BLEMODE_FARM_MAX+BLE_HEARD_SIZE];
@@ -525,11 +533,41 @@ uint8_t ble_set_beacon(uint8_t *Prefix, uint8_t *UUID)
     return uRt;
 }
 
+//SIM800 [DC 2C 26 00 2D 80 ]
+uint8_t ble_set_mac(void)
+{
+    bleModuleReceiveCmdType Bledata;
+
+    uint8_t uRt = BLE_INIT_ERR;
+
+    uint8_t NewMac[6]={0x01,0x02,0x03,0x04,0x05,0x06};
+
+    memset(&Bledata , 0x00 , sizeof(bleModuleReceiveCmdType));
+
+    uRt = ble_write_command(CMD_MODBTADDR ,NewMac , 6,  (uint8_t *)&Bledata);
+
+    if(( Bledata.data[0] == 0x00) &&( Bledata.response == 0x01))
+    {
+      log(DEBUG,"[BLE]ble_set_mac OK\n" );
+    }
+    else
+    {
+      log(DEBUG,"[BLE]ble_set_mac Fail\n" );
+    }
+
+    return uRt;
+
+}
+
+
 uint8_t ble_read_mac(uint8_t *pMac)
 {
     uint8_t BtMac[BLE_MAC_LENGTH]={0x00,0x00,0x00,0x00,0x00,0x00};
     uint8_t uRt = BLE_INIT_ERR;
-    
+
+
+    ble_set_mac(); 
+
     uRt = ble_write_command(CMD_READADDR ,NULL , 0 ,  BtMac);
     if( uRt == BLE_OK)
     {
@@ -653,7 +691,6 @@ void bb0906_init( void )
     bb0906_resert();
         
 }
-
 
 btDrvType    BB0906Drv=
 {

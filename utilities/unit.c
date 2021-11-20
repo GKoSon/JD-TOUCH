@@ -6,8 +6,17 @@
 
 uint32_t    sysDebugFlag = 0xFF;
 
-char W5500ERR = 0;
+
 char otasee   = 0;
+
+
+/*一个十六进制数 比如0X11 那就是0001 0001 按照下面计算 返回是 11 也就是0X11变成11*/
+uint8_t bcd_to_bin(uint8_t bcd)
+{
+    return (bcd>>4)*10 + (bcd&0x0F);
+}
+
+
 
 //比较AB相等 1是的 0 不是 AB的差距是不是再rang内部 1是 0不是
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)
@@ -24,7 +33,18 @@ uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)
     }
 
 }
+double mypow( double x, int n )
+{
+	double sum;
 
+    if(n==0)
+    	return 1;
+	else if(n == 1)
+		sum = x;
+	else 
+		sum = mypow(x, n-1)*x;
+	return sum;
+}
 //0XAB-->"AB" 长度会扩大一倍！注意：0没有结束符
 void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len)
 {
@@ -37,6 +57,68 @@ void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len
         strings[j+1]=GET_LSB_STR(bytes[i]);
     }
 
+}
+uint32_t Beint(uint8_t *arry,uint8_t Len)
+{
+	uint32_t rst=0;					
+	uint8_t i=0;
+	while(Len)
+		rst += (arry[--Len])*(mypow(10,i++));
+
+    return rst;
+}
+
+unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen)  
+{  
+  unsigned short wCRCin = 0x0000;  
+  unsigned short wCPoly = 0x1021;  
+  unsigned char wChar = 0;  
+    
+  while (usDataLen--)     
+  {  
+        wChar = *(puchMsg++);  
+ 
+        wCRCin ^= (wChar << 8);  
+        for(int i = 0;i < 8;i++)  
+        {  
+          if(wCRCin & 0x8000)  
+            wCRCin = (wCRCin << 1) ^ wCPoly;  
+          else  
+            wCRCin = wCRCin << 1;  
+        }  
+  }  
+  
+  return (wCRCin) ;  
+}
+
+
+uint16_t  exchangeBytes(uint16_t value)
+{
+
+    uint16_t tmp_value = 0;
+    uint8_t *index_1, *index_2;
+
+    index_1 = (uint8_t *)&tmp_value;
+    index_2 = (uint8_t *)&value;
+
+    *index_1     = *(index_2+1);
+    *(index_1+1) = *index_2;
+
+    return tmp_value;
+
+}
+
+
+uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len)
+{
+  uint8_t i;
+ // printf("A::");
+ // for(i=0;i<len;i++) printf("%02X ",A[i]);  printf("\n");
+ // printf("B::");
+//  for(i=0;i<len;i++) printf("%02X ",B[i]);  printf("\n");
+  for(i=0;i<len;i++)
+    if(A[i]!=B[i]) return 0;
+  return 1;
 }
 
 
@@ -260,9 +342,53 @@ void IPStrTO4ARR(unsigned char *arr,unsigned char *str)
         arr[i]=Arr[i];
 
 }
-
+//完成'4'-->4  ‘A’-->10
+unsigned char G_strTobyte(unsigned char dData)
+{
+        unsigned char rst=0;
+	if((dData >= '0')&& (dData <= '9'))
+          rst = dData-'0';
+	else if((dData >= 'A')&&(dData <= 'F'))
+          rst =  dData+10-'A';
+	else if((dData >= 'a')&&(dData <= 'f'))
+          rst =  dData+10-'a';
+        else rst = 0;//不是ASCII的char
+        
+        return rst;
+}
+ 
+//??"10"--->0x10  "1234"--->0X12,0X34 
+//len?????strlen(strings)
+//????len???
+//G_strsTobytes(CQType.locatcode,   &pRtData[12],22);
+char G_strsTobytes(void* Strings,void* Bytes,char len)
+{
+	unsigned char* strings=(unsigned char *)Strings;
+	unsigned char* bytes  =(unsigned char *)Bytes;
+	unsigned char i = 0,j=0,lowbits=0,highbits=0;
+	if(len%2)return 0;//????
+	for (i = 0; i < len; i+=2)
+	{           
+		highbits = G_strTobyte(strings[i]  );
+		lowbits  = G_strTobyte(strings[i+1]);
+		bytes[j++] =( highbits << 4)|lowbits;//j???i???
+	}
+	return j;
+}
 
 void IP4ARRToStr(unsigned char *arr, char *str)
 { 
     sprintf(str,"%d.%d.%d.%d",arr[0],arr[1],arr[2],arr[3]);
+}
+
+void GIPStringtoarry(unsigned char *sor,unsigned char *arr)
+{
+    int Arr[4];
+    if(strstr((const char *)sor,"."))
+    {
+      sscanf((const char*)sor,"%d.%d.%d.%d",&Arr[0],&Arr[1],&Arr[2],&Arr[3]);
+      for(char i=0;i<4;i++)
+          arr[i]=Arr[i];
+    }
+
 }

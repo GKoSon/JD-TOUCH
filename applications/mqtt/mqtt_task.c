@@ -31,7 +31,7 @@ uint8_t                    mqttRunType = GMQTT_CONNECT_TCP;
 mqttClientType             client;
 Network                    network;
 
-uint8_t                 mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
+uint8_t                    mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
 
 
 
@@ -64,7 +64,6 @@ char suball(void)
 
 void pack_connect_message(MQTTPacket_connectData *con)
 {
-
 
     uint8_t *mac; 
     uint8_t *pwd; 

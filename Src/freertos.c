@@ -66,7 +66,6 @@
 #include "err_log.h"
 #include "adc.h"
 #include "socket.h"
-#include "rs485.h"
 #include "permi_list.h"
 #include "tagComponent.h"
 #include "mqtt_task.h"
@@ -92,6 +91,7 @@ SemaphoreHandle_t    xSocketCmdSemaphore;
 SemaphoreHandle_t    xSocketConnectSemaphore;
 SemaphoreHandle_t    xMqttRecvSemaphore;
 SemaphoreHandle_t    xMqttOtaSemaphore;
+SemaphoreHandle_t    xBleUpdateNetSemaphore;
 
 EventGroupHandle_t   xWatchdogEventGroup;
 QueueHandle_t        xLogQueue;
@@ -176,6 +176,9 @@ void MX_FREERTOS_Init(void)
     configASSERT((xSocketSemaphore = xSemaphoreCreateBinary()));    //socket 资源
     configASSERT((xMqttRecvSemaphore = xSemaphoreCreateBinary()));    //mqtt 资源
     configASSERT((xMqttOtaSemaphore = xSemaphoreCreateBinary()));    //mqtt ota 资源
+
+    configASSERT((xBleUpdateNetSemaphore = xSemaphoreCreateBinary()));	//串口
+
     xSemaphoreGive( xChipFlashSemaphore );
     xSemaphoreGive(xSocketSemaphore);
     configASSERT((xWatchdogEventGroup = xEventGroupCreate()));

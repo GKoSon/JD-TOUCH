@@ -54,6 +54,7 @@ typedef enum
     WRITE_TYPE_POS,
     DATA_POS,
     CRC_POS,
+    DATA_TRANS,
 }UsartPosType;
 
 
@@ -62,4 +63,5 @@ typedef enum
 
 extern void BleReceiveUsartByteHandle( uint8_t ucData);
 extern void ble_clear_buffer( void );
+extern void ble_easyclear_buffer( char i );
 #endif

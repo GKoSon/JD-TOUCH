@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.general.xcl" --backend -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\JD-TOUCH-OLD\bootloader\settings\bootloader.Debug.general.xcl" --backend -f "D:\git\JD-TOUCH-OLD\bootloader\settings\bootloader.Debug.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\TSBrowserDownloads\JD-TOUCH\bootloader\settings\bootloader.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\JD-TOUCH-OLD\bootloader\settings\bootloader.Debug.general.xcl" --debug_file=$debugfile --backend -f "D:\git\JD-TOUCH-OLD\bootloader\settings\bootloader.Debug.driver.xcl" 
 }

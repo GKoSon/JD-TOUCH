@@ -308,11 +308,11 @@ void sysCfg_set_default( void )
       cfg.parm.updataTime = FALSE;
       hal_read_chipId(cfg.parm.chipId);
 
-      memset(cfg.wifi.ssid , 0x00 , 50);
-      memcpy(cfg.wifi.ssid , "TERMINUS" , strlen("TERMINUS"));
+memset(cfg.wifi.ssid , 0x00 , 50);
+memcpy(cfg.wifi.ssid , "mCube-Xsens-Employee" , strlen("mCube-Xsens-Employee"));
 
-      memset(cfg.wifi.pwd , 0x00 , 32);
-      memcpy(cfg.wifi.pwd , "WXtsl66117066" , strlen("WXtsl66117066"));
+memset(cfg.wifi.pwd , 0x00 , 32);
+memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));
 
 
       //OTA    ȫ0

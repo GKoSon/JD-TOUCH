@@ -307,6 +307,26 @@ void ADC1_2_IRQHandler(void)
 }
 
 
-
+//????¡§2?¡§?¡§o????D?D??  
+/*
+void UsartReceive_IDLE(UART_HandleTypeDef *huart)  
+{  
+    uint32_t temp;  
+    static BaseType_t xHigherPriorityTaskWoken =  pdFALSE;
+    
+    if((__HAL_UART_GET_FLAG(huart,UART_FLAG_IDLE) != RESET))  
+    {   
+        
+        temp = hdma_usart2_rx.Instance->CNDTR;  //get dma length empty
+        receiveData.len =  RECEIVE_MAX - temp;   // calc receive length
+        __HAL_UART_CLEAR_IDLEFLAG(huart);  //clear IDLE flag
+        HAL_UART_DMAStop(huart);  //stop dma receive 
+        receiveData.receiveFinsh = 1;  // receive finsh
+        xSemaphoreGiveFromISR( xUsartNetSemaphore, &xHigherPriorityTaskWoken );
+        portEND_SWITCHING_ISR(xHigherPriorityTaskWoken );
+        // start receive form dma
+        HAL_UART_Receive_DMA(huart, (uint8_t *)receiveData.rxBuff , RECEIVE_MAX);  
+    }  
+} */
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

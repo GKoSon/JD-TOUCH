@@ -1069,7 +1069,7 @@
                 </option>
                 <option>
                     <name>IlinkTrustzoneImportLibraryOut</name>
-                    <state>###Unitialized###</state>
+                    <state>bootloader_import_lib.o</state>
                 </option>
                 <option>
                     <name>OILinkExtraOption</name>
@@ -2165,12 +2165,6 @@
                 <name>$PROJ_DIR$\..\Src\config.cfg</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Src\fatfs.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\flash_fat_dev.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Src\freertos.c</name>
             </file>
             <file>
@@ -2193,9 +2187,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Src\usart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\user_diskio.c</name>
             </file>
         </group>
     </group>

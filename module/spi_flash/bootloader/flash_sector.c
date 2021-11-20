@@ -1,7 +1,6 @@
 #include "flash_sector.h"
 #include "spi_flash.h"
 #include "sysCfg.h"
-#include "tempwd.h"
 #include "permi_list.h"
 #include "open_log.h"
 #include "unit.h"
@@ -9,8 +8,7 @@ uint32_t    sysCfgAddr = 0;
 uint32_t    permiListBootAddr = 0;
 uint32_t    permiListDataAddr = 0;
 uint32_t    openLogDataAddr = 0;
-uint32_t    passwordBootAddr = 0;
-uint32_t    passwordDataAddr = 0;
+
 uint32_t    endFlashAddr = 0;
 
 void flash_sector_init( void )
@@ -19,11 +17,10 @@ void flash_sector_init( void )
     permiListBootAddr = sysCfgAddr + ((sizeof(SystemConfigType)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
     permiListDataAddr   = permiListBootAddr + ((PERMI_LIST_MAX*PERMI_LISD_INDEX_SIZE/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
     openLogDataAddr =  permiListDataAddr+ (((PERMI_LIST_SIZE*PERMI_LIST_MAX)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
-    passwordBootAddr = openLogDataAddr + (((LOG_SIZE*LOG_MAX)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
-    passwordDataAddr = passwordBootAddr + + ((PWD_MAX_NUM*PWD_INDEX_SIZE/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
+
     
     
-    endFlashAddr = passwordDataAddr + (((PWD_SIZE*PERMI_LIST_MAX)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
+    endFlashAddr = openLogDataAddr + (((LOG_SIZE*LOG_MAX)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
     
     //endFlashAddr = passwordDataAddr + (((PWD_SIZE*PERMI_LIST_MAX)/FLASH_SPI_BLOCKSIZE)+1)*FLASH_SPI_BLOCKSIZE;
     //log(DEBUG,"系统日志存储起始地址 , ADDR = %x ,PAGE = %d \n" ,sysCfgAddr , sysCfgAddr/FLASH_SPI_BLOCKSIZE );

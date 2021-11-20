@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.general.xcl" --backend -f "D:\TSBrowserDownloads\JD-TOUCH\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\JD-TOUCH-OLD\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.general.xcl" --backend -f "D:\git\JD-TOUCH-OLD\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\TSBrowserDownloads\JD-TOUCH\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.general.xcl" --debug_file=$debugfile --backend -f "D:\TSBrowserDownloads\JD-TOUCH\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\common\bin\cspybat" -f "D:\git\JD-TOUCH-OLD\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.general.xcl" --debug_file=$debugfile --backend -f "D:\git\JD-TOUCH-OLD\EWARM\settings\Seed_STM32L471RE.Seed_STM32L471RE.driver.xcl" 
 }

@@ -264,7 +264,7 @@ int mqtt_network_connect(Network* n, uint8_t* addr, int port)
     {
         sys_delay(500);
     }
-    log(DEBUG,"socket 底层驱动已经加载成功，开始连接MQTT服务器\n");
+    log(DEBUG,"[MQTT]底层socket驱动已经加载成功，开始连接MQTT服务器\n");
     
     if( (ret = socket.connect(addr , port, mqttSocketBuffer , sizeof(mqttSocketBuffer))) >= 0)
     {

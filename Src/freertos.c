@@ -72,7 +72,6 @@
 #include "tsl_mqtt.h"
 #include "mqtt_ota.h"
 #include "sysCntSave.h"
-#include "httpbuss.h"
 #include "magnet.h"
 /* USER CODE END Includes */
 
@@ -98,7 +97,7 @@ QueueHandle_t        xLogQueue;
 QueueHandle_t        xKeyQueue;
 QueueHandle_t        xMqttSendQueue;
 QueueHandle_t        xMqttRecvQueue;
-QueueHandle_t        xHttpRecvQueue;
+
 
 __IO uint8_t        rtcTimerEnable = FALSE;
 __IO uint32_t       clearFlashFlag = 0;
@@ -213,9 +212,8 @@ void MX_FREERTOS_Init(void)
 
     xMqttRecvQueue = xQueueCreate( QUEUE_MQTT_RECV_LENGTH, sizeof( mqttRecvMsgType ) );
     configASSERT(xMqttRecvQueue);
-    
-    xHttpRecvQueue = xQueueCreate( 2, sizeof( httpRecvMsgType ) );
-    configASSERT(xHttpRecvQueue);
+
+
     /* USER CODE END RTOS_QUEUES */
 }
 
@@ -268,8 +266,7 @@ void device_set_default( char flag )
 /* main_task function */
 void main_task(void const * argument)
 {
-      char level = 0;
-      httpRecvMsgType p;
+
       EventBits_t uxBits;
 
       spi_flash_init();
@@ -289,22 +286,13 @@ void main_task(void const * argument)
       creat_swipe_task();         //刷卡初始化
       creat_open_log_task();      //开门日志初始化
       creat_mqtt_ota_task();           //ota任务
-      creat_http_task();
-      level = config.read(CFG_DEV_LEVEL , NULL);
-      if(level)
+
+
       create_mqtt_task();
 
       
-      
-      if(level==0)
-      {
-         p.rule = 'A';
-         xQueueSend(xHttpRecvQueue, (void*)&p, NULL);
-      }
-      
-      
       printf("<<<<<<<<<--------开机成功-------->>>>>>>>>>>\r\n");
-      beep.write(3-2*level);
+
    
     for(;;)
     { 

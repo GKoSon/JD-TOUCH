@@ -15,7 +15,7 @@ void modules_init( void )
         HAL_IWDG_Refresh(&hiwdg);
         if( tp != NULL)
         { 
-            //mdu_log(DEBUG,"%s\n", tp->name);
+            mdu_log(DEBUG,"[modules_init]%s\n", tp->name);
             tp->fun();
         }
         else

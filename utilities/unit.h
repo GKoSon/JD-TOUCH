@@ -180,7 +180,7 @@ uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len);
 #define NEVERSHOW    log(ERR,"\r\n¡¾%d¡¿----*********-----*********-----*********------¡¾%s¡¿\r\n",__LINE__,__func__);
 
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
-
+#define GGMIN(A,B) (A)>(B)?B:A
 void IPStrTO4ARR(unsigned char *arr,unsigned char *str);
 
 void IP4ARRToStr(unsigned char *arr, char *str);

@@ -51,7 +51,6 @@
 #include "stm32l4xx_hal.h"
 #include "cmsis_os.h"
 #include "adc.h"
-#include "fatfs.h"
 #include "iwdg.h"
 #include "rtc.h"
 #include "spi.h"
@@ -198,7 +197,7 @@ uint8_t read_sys_cfg( void )
         sys_cfg_read(&cfg);
         if((cfg.crc16 == 0xFFFF) && (cfg.mark == 0xFFFFFFFF))
         {
-            log(WARN,"读取到的CRC和MARK都是FF return FALSE\n");
+            log(WARN,"[BOOT]读取sys_cfg_read都是FF 说明无需OTA直接返回\n");
             
             return FALSE;
         }
@@ -209,13 +208,13 @@ uint8_t read_sys_cfg( void )
         
         calcCrc =  crc16_ccitt(fb , sizeof(fb));
 
-        log(ERR,"读取系统配置文件,计算的CRC16 = %x, 读取到的cfg.crc16 = %x \n" , calcCrc , crc);
+        log(ERR,"[BOOT]读取系统配置文件,计算的CRC16 = %x, 读取到的cfg.crc16 = %x \n" , calcCrc , crc);
   
     }while((calcCrc != crc)&& (--cnt) );
 
     if( cnt ==0 )
     {
-        log(WARN,"配置文件被修改 ,需要重新加载配置未见  return FALSE\n");
+        log(WARN,"[BOOT]配置文件被修改 ,需要重新加载配置未见  return FALSE\n");
 
         return FALSE;
     }
@@ -493,7 +492,7 @@ void jump_application( void )
 {
     if (((*(__IO uint32_t*)APPLICATION_ADDRESS) & 0x1FFE0000 ) == 0x10000000) //stack use ram1
     {
-      log(DEBUG,"跳转至应用程序\n\n\n");
+      log(DEBUG,"[BOOT]跳转至应用程序\n\n\n");
       /* Jump to user application */
       __set_PRIMASK(1); //must be close en all
       JumpAddress = *(__IO uint32_t*) (APPLICATION_ADDRESS + 4);
@@ -504,7 +503,7 @@ void jump_application( void )
     } 
     else  
     {  
-        log(DEBUG,"没有应用程序\n");  
+        log(DEBUG,"[BOOT]没有应用程序\n");  
     } 
 }
 
@@ -547,7 +546,7 @@ int main(void)
   serial_console_init();
   spi_flash_init();
   log(DEBUG,"\n");
-  log(DEBUG,"********************* 2017 Copyright by terminus hw team ********************* \n");
+  log(DEBUG,"********************* 2021 Copyright by koson boot********************* \n");
   log(DEBUG,"引导系统系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
   log(DEBUG,"检查是否是需要升级应用程序\n");
   bootloader_iap();
@@ -563,7 +562,7 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-    log(DEBUG,"i am ok!!!\n");
+    log(DEBUG,"boot i am ok!!!\n");
     HAL_Delay(1000);
   /* USER CODE BEGIN 3 */
 

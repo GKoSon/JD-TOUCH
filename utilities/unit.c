@@ -206,7 +206,30 @@ void log_arry(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigne
     }
 }
 
-
+void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigned int leng)
+{
+    if(LOG_BIT_ON(sysDebugFlag,level))
+    {
+        if(level == ERR)
+        printf("\033[0;31m");
+        else if(level == WARN)
+        printf("\033[0;32m");
+        else if(level == INFO)
+        printf("\033[0;33m");
+        else if(level == DEBUG)
+        printf("\033[0;37m");
+        printf("[#]");
+        printf("[%d%]" , osGetCPUUsage());
+        printf_time();
+        printf("%s :  [" , pst);
+        for(unsigned int i = 0 ; i < leng ; i++)
+        {
+            printf("%d " , arry[i]);
+        }
+        printf("]\r\n");
+        printf("\033[0;39m");
+    }
+}
 
 uint64_t atol64( char *str)
 {

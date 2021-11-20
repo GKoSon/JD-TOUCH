@@ -1,7 +1,7 @@
 #include "sysCfg.h"
 #include "unit.h"
 #include "relay.h"
-#include "mate.h"
+
 
 uint16_t openDoorIndex = 0xFFFF;
 

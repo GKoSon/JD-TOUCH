@@ -877,7 +877,7 @@ void esp12s_close( void )
 
 void creat_esp12s_task( void )
 {
-    osThreadDef( esp12s, esp12s_task , osPriorityRealtime, 0, configMINIMAL_STACK_SIZE*15);
+    osThreadDef( esp12s, esp12s_task , osPriorityRealtime, 0, configMINIMAL_STACK_SIZE*20);
     esp12sTask = osThreadCreate(osThread(esp12s), NULL);
     configASSERT(esp12sTask);
 }

@@ -14,7 +14,7 @@ void components_init( void )
         HAL_IWDG_Refresh(&hiwdg);
         if( tp != NULL)
         { 
-            //comp_log(DEBUG,"%s\n", tp->name);
+            comp_log(DEBUG,"[components_init]%s\n", tp->name);
             tp->fun();
         }
         else

@@ -566,7 +566,7 @@ uint8_t ble_read_mac(uint8_t *pMac)
     uint8_t uRt = BLE_INIT_ERR;
 
 
-    ble_set_mac(); 
+    //ble_set_mac(); 
 
     uRt = ble_write_command(CMD_READADDR ,NULL , 0 ,  BtMac);
     if( uRt == BLE_OK)

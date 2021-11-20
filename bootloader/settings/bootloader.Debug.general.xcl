@@ -2,7 +2,7 @@
 
 "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\bin\armstlink2.dll" 
 
-"D:\TSBrowserDownloads\JD-TOUCH\bootloader\Debug\Exe\bootloader.out" 
+"D:\git\JD-TOUCH-OLD\bootloader\Debug\Exe\bootloader.out" 
 
 --plugin="C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\bin\armbat.dll" 
 

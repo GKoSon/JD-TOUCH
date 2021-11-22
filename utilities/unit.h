@@ -199,4 +199,10 @@ char G_strsTobytes(void* Strings,void* Bytes,char len);
 extern char otasee;
 
 uint8_t bcd_to_bin(uint8_t bcd);
+#define GMAX_LEN_TOPIC        55/* 文本最长33 + 点码是22 那就是55 */
+extern char topicPath0[];
+extern char topicPath1[GMAX_LEN_TOPIC];
+extern char topicPath2[GMAX_LEN_TOPIC];
+extern char topicPath3[GMAX_LEN_TOPIC];
+extern char topicPath4[GMAX_LEN_TOPIC];
 #endif

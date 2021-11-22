@@ -157,7 +157,7 @@ See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 header file. */
 /* USER CODE BEGIN 1 */   
 
-#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS();printf("---Freertos config assert %s %d---\n",__func__,__LINE__);  for( ;; );}
+#define configASSERT( x ) if ((x) == 0) {taskDISABLE_INTERRUPTS();printf("--- [KOSON] Freertos config assert %s %d---\n",__func__,__LINE__);  for( ;; );}
 /* USER CODE END 1 */
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS

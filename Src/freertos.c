@@ -266,7 +266,6 @@ void device_set_default( char flag )
 /* main_task function */
 void main_task(void const * argument)
 {
-
       EventBits_t uxBits;
 
       spi_flash_init();
@@ -275,7 +274,6 @@ void main_task(void const * argument)
       modules_init();             //模块初始化
       components_init();          //组件加载
       get_resert_status();        //复位原因输出
-
 
       bluetooth_drv_init();        //初始化蓝牙模块
       tag_component_init();        //初始化NFC芯片
@@ -289,8 +287,7 @@ void main_task(void const * argument)
       create_mqtt_task();
       
       printf("<<<<<<<<<--------开机成功-------->>>>>>>>>>>\r\n");
-
-   
+  
     for(;;)
     { 
         uxBits = xEventGroupWaitBits(xWatchdogEventGroup,TASK_ALL_BIT, pdTRUE,pdTRUE,2500);

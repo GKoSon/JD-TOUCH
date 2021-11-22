@@ -9,6 +9,16 @@ uint32_t    sysDebugFlag = 0xFF;
 
 char otasee   = 0;
 
+/*时间*/
+/*控制*/
+/*黑白名单*/
+/*通讯组*/
+/*升级*/ 
+char topicPath0[]               = {"/star_line/server/timeCalibration"};
+char topicPath1[GMAX_LEN_TOPIC] = {"/star_line/server/deviceControl/"};
+char topicPath2[GMAX_LEN_TOPIC] = {"/star_line/server/syncFilterItem/"};
+char topicPath3[GMAX_LEN_TOPIC] = {"/star_line/server/syncGroup/"};
+char topicPath4[GMAX_LEN_TOPIC] = {"/star_line/server/otaDown/"};
 
 /*一个十六进制数 比如0X11 那就是0001 0001 按照下面计算 返回是 11 也就是0X11变成11*/
 uint8_t bcd_to_bin(uint8_t bcd)

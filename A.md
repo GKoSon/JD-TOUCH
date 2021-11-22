@@ -40,3 +40,5 @@ void mqtt_set_default( void )
 }
 
 2021/11/21 简化del关于info的部分 只需要cfg文件/ESP32工作还有relay工作必须12V上电
+
+2021/11/22修改MQTT协议代码 此时发现上拉名单会死机 暂存 保存当前问题现场

@@ -957,17 +957,23 @@ int mqtt_run( mqttClientType* c )
 
 #include "mqtt_client.h"
 
-extern char topicPath[GMAX_MESSAGE_HANDLERS][52];
-
 
 uint8_t GettopicNo(char *topicName)
 {
+  /*
   char i;
   for( i=0;i<GMAX_MESSAGE_HANDLERS;i++)
       if(aiot_strcmp(( unsigned char *)topicPath[i],( unsigned char *)topicName,23))//24怎么来的？从后往前比较一样12个MAC不是区别 还有Request/8个 也就是20 最大是时间
          return i;
          
-  return 44;       
+  return 44;  */
+  
+  if(aiot_strcmp(( unsigned char *)topicPath0,( unsigned char *)topicName,30)) return 0;
+  else if(aiot_strcmp(( unsigned char *)topicPath1,( unsigned char *)topicName,30)) return 1;
+  else if(aiot_strcmp(( unsigned char *)topicPath2,( unsigned char *)topicName,30)) return 2;
+  else if(aiot_strcmp(( unsigned char *)topicPath3,( unsigned char *)topicName,30)) return 3;
+  else if(aiot_strcmp(( unsigned char *)topicPath4,( unsigned char *)topicName,30)) return 4;
+  return 44;
 }
 extern char      RXOKLOCK;
 //extern uint8_t    COMMONSTATIC[1024];

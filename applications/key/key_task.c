@@ -48,13 +48,13 @@ static void fun_key_handle(keyTaskType *key)
         beep.write(BEEP_NORMAL);
         logData.type = OPENLOG_FORM_KEY;
         
-        log(ERR,"门内开门成功\n");
+        log(ERR,"[KEY]门内开门成功\n");
 
 //journal.save_log(&logData);  一句话使能log上报
         
     }break;
 
-    default:log_err("按键键值错误，VALUE=%d\n" ,key->keyValue);
+    default:log_err("[KEY]按键键值错误，VALUE=%d\n" ,key->keyValue);
     }
 
 

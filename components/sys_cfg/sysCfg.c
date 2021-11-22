@@ -19,9 +19,7 @@
 #include "sha1.h"
 #include "mqtt_client.h"
 extern SystemConfigType   cfg;
-extern char topicPath[GMAX_MESSAGE_HANDLERS][52];
 extern _SHType SHType;
-
 
 void hal_read_chipId(unsigned char *p)
 {
@@ -88,20 +86,20 @@ void sys_cfg_write(SystemConfigType *cfg)
          MX_NVIC_SetIRQ(ENABLE); 
           if(ack == TRUE)
           break;
-          sys_delay(500);
+          sys_delay(50);
           if(--cnt==0)
           break;
       
       }
       if(cnt==0)
-          log(ERR,"sys_cfg_write失败 r\n");
+          log(ERR,"[SYS]sys_cfg_write失败 r\n");
       else
-          log(ERR,"sys_cfg_write成功\r\n");
+          log(ERR,"[SYS]sys_cfg_write成功\r\n");
 
       chip_flash_release_lock(); 
     } 
     else
-    log(ERR,"sys_cfg_write ERR\n"); 
+    log(ERR,"[SYS]sys_cfg_write ERR\n"); 
 }
 
 
@@ -256,6 +254,8 @@ void mqtt_set_default( void )
 
       memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
       memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
+      //memcpy(cfg.mqtt.mqttUserName , "device" ,strlen("device"));
+      //memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
       sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
 }
 
@@ -332,7 +332,6 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
 
       journal.clear();
 
-      //tempwd.clear();
     
       SHOWME  SHOWME  SHOWME
 }
@@ -343,11 +342,10 @@ void show_SH(_SHType *p)
     
     char num=0;
 
-    log(INFO,"\n********************* ************  ********************* \n");
-    SHOWME
-    log_arry(ERR,"devcode  "  ,p->codedev,11);
-    log_arry(ERR,"locatcode"  ,p->codelocation,11);
+    log(INFO,"\n********************* ******show_SH******  ********************* \n");
 
+    //log_arry(ERR,"deviceCode     "  ,p->deviceCode,11);
+    printf("deviceCode:%s\n",p->deviceCode);
     printf("gup.ver:%llx\n",p->gup.ver);
     printf("gup.cnt:%d\n",p->gup.cnt);
     printf("gup.code\n");
@@ -358,7 +356,7 @@ void show_SH(_SHType *p)
         printf("%02X ",p->gup.code[i][j]);
         if(j==10) printf("\n");
     }
-   log(INFO,"\n********************* ************  ********************* \n");
+   log(INFO,"\n********************* ******show_SH******  ********************* \n");
 
 }
 void sysCfg_print( void )
@@ -370,7 +368,7 @@ void sysCfg_print( void )
       log(DEBUG,"设备编号 = [%d]\n",cfg.parm.deviceNum);
       log(DEBUG,"设备类型 = [%d]\n",cfg.parm.device_type);
 
-      log(ERR,"MQTTDONE = [%d]\n",cfg.parm.mqttdone);
+      
       log(ERR,"设备模式 =[%d][安装位置 0:门口机单元门禁 ,1:楼栋门禁 ,2: 围墙机小区门禁]\n" ,cfg.parm.lock_mode);
       log(DEBUG,"软件版本: [%d]\n" , cfg.parm.soft_version);
 
@@ -390,7 +388,8 @@ void sysCfg_print( void )
       log(DEBUG,"mqtt client    = %s\n" ,    cfg.mqtt.mqttClientId);
       log(DEBUG,"mqtt user name = %s\n" ,    cfg.mqtt.mqttUserName);
       log(DEBUG,"mqtt user pwd  = %s\n" ,    cfg.mqtt.mqttUserPwd);
-
+     log(ERR,"设备是否拉过黑白名单 = [%d]\n",cfg.parm.filterSynced);
+     
       permi.show();//展示一下黑白名单
  permi_list_init();
       permi.show();//展示一下黑白名单
@@ -405,9 +404,9 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
     switch(mode)
     {
       
-         case CFG_DEV_USED:
+         case MQTT_FILTER_SYNCED:
         {
-            cfg.parm.mqttdone = *(uint8_t *)(parma);
+            cfg.parm.filterSynced = *(uint8_t *)(parma);
         }break;
 
         case CFG_SYS_SW_VERSION:
@@ -544,7 +543,7 @@ return false;
   
     if(earseFlag)
     {
-        log(INFO,"earseFlag 1\r\n");
+        log(INFO,"[SYS]写到本地\r\n");
         sysCfg_save();
     }
     
@@ -557,9 +556,9 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
 
     switch(mode)
     {
-        case CFG_DEV_USED:
+        case MQTT_FILTER_SYNCED:
         {
-            data = cfg.parm.mqttdone;
+            data = cfg.parm.filterSynced;
         }break;
 
          case CFG_OTA_PORT:
@@ -690,7 +689,10 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {      
             *parma = &cfg.parm.deviceName[4];
         }break;
-
+        case CFG_MQTT_DC:
+        {      
+            *parma = SHType.deviceCode;
+        }break;
         case CFG_PRO_PWD:
         {
             static uint8_t proj_pwd[7];
@@ -759,20 +761,27 @@ void sysCfg_init( void )
         soft_system_resert(__func__);
     }
     
-    //HERE
-      log(INFO,"topicPath[0] %s\r\n",topicPath[0]);
-      for(char i=1;i<GMAX_MESSAGE_HANDLERS;i++)
-      {
-        strcat(topicPath[i],(char *)&(cfg.parm.deviceName[4]));
-        log(INFO,"topicPath[%d] %s\r\n",i,topicPath[i]);
-      }
+    
+ 
+
+/*上海平台信息*/  
     memset(&SHType,0x00,sizeof(_SHType));
     
     config.read(CFG_SYS_SHANGHAI , (void **)&SHType );
 
     if(SHType.gup.cnt==0XFF || SHType.gup.cnt==0)
     {
-      log_err("\n************sysCfg_init************n");
+      log_err("\n************新设备****在此设置缺损值******\n");
+memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void **)&SHType );已经变成全F
+
+static char * deviceCode   =   "110101001001003102001";//21长!!!!!
+memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
+//G_strsTobytes(deviceCode,SHType.deviceCode,22);
+
+
+static char * groupcode    =   "3101040110130060000001";//默认通行组  
+G_strsTobytes(groupcode,SHType.gup.code[0],22);
+SHType.gup.cnt=1;
 
     }
     else
@@ -780,8 +789,33 @@ void sysCfg_init( void )
       log_err("\n************旧设备*****无操作*****\n");
     }
       
-show_SH(&SHType);
+    show_SH(&SHType);
 
+    
+    
+    
+    
+    
+    
+/*主题*/  
+    
+log(INFO,"topicPath0 %s\r\n",topicPath0);
+log(INFO,"topicPath1 %s\r\n",topicPath1);
+log(INFO,"topicPath2 %s\r\n",topicPath2);
+log(INFO,"topicPath3 %s\r\n",topicPath3);
+log(INFO,"topicPath4 %s\r\n",topicPath4);
+strncat(topicPath1,"110101001001003102001",21);
+strncat(topicPath2,"110101001001003102001",21);
+strncat(topicPath3,"110101001001003102001",21);
+strncat(topicPath4,"110101001001003102001",21);
+log(INFO,"topicPath0 %s\r\n",topicPath0);
+log(INFO,"topicPath1 %s\r\n",topicPath1);
+log(INFO,"topicPath2 %s\r\n",topicPath2);
+log(INFO,"topicPath3 %s\r\n",topicPath3);
+log(INFO,"topicPath4 %s\r\n",topicPath4);
+    
+    
+    
     sysCfg_print();
 
 }

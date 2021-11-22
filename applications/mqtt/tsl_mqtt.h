@@ -55,8 +55,6 @@ char * GmakeJson(void);
 
 int GparseJson(const char * pJson);
 
-char *getDeviceId(void);
-
 char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
 char *cj_create_uploadAccessLog_pwd( long openTime,  int passwordType) ;
 

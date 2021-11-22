@@ -20,7 +20,7 @@
         <LeaveTargetRunning>_ 0</LeaveTargetRunning>
     </StLinkDriver>
     <DebugChecksum>
-        <Checksum>2952623207</Checksum>
+        <Checksum>2212052297</Checksum>
     </DebugChecksum>
     <Exceptions>
         <StopOnUncaught>_ 0</StopOnUncaught>
@@ -125,12 +125,12 @@
         <mode>0</mode>
     </DisassembleMode>
     <Breakpoints2>
-        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.268.1" 0 0 1 "" 0 "" 0</Bp0>
-        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.268.1" 0 0 1 "" 0 "" 0</Bp1>
+        <Bp0>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.268.13" 0 0 1 "" 0 "" 0</Bp0>
+        <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.268.13" 0 0 1 "" 0 "" 0</Bp1>
         <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.268.13" 0 0 1 "" 0 "" 0</Bp2>
         <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\buletooth\before\btTask.c}.41.17" 0 0 1 "" 0 "" 0</Bp3>
         <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\module\buletooth\BB0906\bb0906_protocol.c}.178.15" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\mqtt_task.c}.144.19" 0 0 1 "" 0 "" 0</Bp5>
+        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\components\sys_cfg\sysCfg.c}.811.1" 0 0 1 "" 0 "" 0</Bp5>
         <Count>6</Count>
     </Breakpoints2>
     <Aliases>

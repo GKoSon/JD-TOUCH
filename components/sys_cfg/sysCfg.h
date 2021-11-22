@@ -46,7 +46,7 @@
 #define        MQTT_PORT                1883
 #define        HTTP_PORT                0
 #define        OTA_PORT                 0
-#define        DSYS_DIANMA_ADDR        0x0807E000
+#define        DSYS_DIANMA_ADDR         0x0807E000
 
 
 
@@ -73,17 +73,13 @@
 
 
 
-
-
-
 typedef enum
 {
-    CFG_DEV_USED,
+    MQTT_FILTER_SYNCED,
 
     CFG_HTTP_ADDR,
     CFG_PAIR_PWD,
     CFG_USER_PWD,
-
 
     CFG_BLE_MAC,
     CFG_BLE_VERSION,
@@ -102,7 +98,6 @@ typedef enum
     CFG_SYS_ALARM_TIME,
     CFG_SYS_LOCK_MODE,
 
-
     CFG_SYS_MAGNET_STATUS,
     CFG_NET_ADDR,
     CFG_OTA_URL,
@@ -114,6 +109,7 @@ typedef enum
     CFG_MQTT_USERNAME,
     CFG_MQTT_USERPWD,
     CFG_MQTT_MAC,
+    CFG_MQTT_DC,
     CFG_PRO_PWD,
 
     CFG_SET_RESTORE,
@@ -134,9 +130,6 @@ typedef struct
 
 
 
-
-
-
 typedef struct
 {
       uint8_t support_net_types;//入网方式  TSLNetType_TSLGPRS 3种
@@ -148,7 +141,7 @@ typedef struct
       uint8_t  alarm_time; //开门
       uint16_t delay_time;//开门
       uint8_t  magnet_status;
-      uint8_t  mqttdone; /*1--老设备*/
+      uint8_t  filterSynced; /*1--是有拉过名单*/
       uint8_t  chipId[DEVICE_CHIP_LENGTH];
       uint8_t  deviceName[DEVICE_NAME_LENG];
       uint8_t  updataTime;
@@ -168,12 +161,13 @@ typedef struct
     uint8_t ip[50];
     uint16_t port;
 }serverAddrType;
+
 typedef struct
 {
     serverAddrType    net;
-    uint16_t        httpport;
-    uint16_t        otaport;
-    char           otaurl[64];
+    uint16_t          httpport;
+    uint16_t          otaport;
+    char             otaurl[64];
 }netAttriType;
 
 typedef struct
@@ -196,8 +190,8 @@ typedef struct
   uint32_t                mark;
   SystemBleInfoType       ble;
   SystemParmType          parm;
-  otaType                  otaVar;
-  netAttriType              server;
+  otaType                 otaVar;
+  netAttriType            server;
   wifiApInfoType          wifi;
   MqttLoginInfoType       mqtt;
   uint32_t                sysRestoreFlag; 
@@ -207,8 +201,6 @@ typedef struct
 }SystemConfigType;
 
 
-
-
 typedef struct _cfgTask
 {
     uint8_t  (*write)   ( uint8_t mode , void *parma , uint8_t earseFlag);
@@ -216,9 +208,12 @@ typedef struct _cfgTask
 }cfgTaskType;
 
 void sysCfg_init( void );
-void sysCfg_print( void );
+
 extern cfgTaskType    config;
-#define GUPMAX 20
+
+/*唯一一个设备码 21 来自安装工
+同行组 来自MQTT平台*/
+#define GUPMAX 10
 typedef struct
 {
     uint64_t     ver;
@@ -228,10 +223,8 @@ typedef struct
 
 typedef struct
 {
-    uint8_t      codedev[11];
-    uint8_t      codelocation[11];
-
-    GupType gup;
+    char        deviceCode[21];
+    GupType      gup;
 }_SHType;
 #endif
 

@@ -11,7 +11,7 @@
 
 #if !defined(MAX_MESSAGE_HANDLERS)
 #define MAX_MESSAGE_HANDLERS  5 /* redefinable - how many subscriptions do you want? */
-#define GMAX_MESSAGE_HANDLERS 4 /* redefinable - how many subscriptions do you want? */
+#define GMAX_MESSAGE_HANDLERS 5 /* redefinable - how many subscriptions do you want? */
 #endif
 
 enum QoS { QOS0, QOS1, QOS2, SUBFAIL=0x80 };

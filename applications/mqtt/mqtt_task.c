@@ -1,7 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 /* FreeRTOS includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -26,46 +25,26 @@
 #include "sysCntSave.h"
 xTaskHandle                mqttTask;
 uint8_t                    mqttRunType = GMQTT_CONNECT_TCP;
-
-
 mqttClientType             client;
 Network                    network;
-
 uint8_t                    mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
-
-
-
-#include "mqtt_client.h"
-
-//需要优化
-char topicPath[GMAX_MESSAGE_HANDLERS][52]={\
-  "/server/timeCalibration/",\
-  "/server/dispatchFilterItem/",\
-  "/server/uploadDeviceInfoRequest/",\
-  "/server/dispatchReadingHeadProgramURL/",\
-};
-
 
 
 char suball(void)
 {
-  char rc = 0,i=0;
-  
-  for( i=0;i<GMAX_MESSAGE_HANDLERS;i++)//GMAX_MESSAGE_HANDLERS
-  {
-       rc = mqtt_subscribe(&client, ( uint8_t *)topicPath[i] , QOS2, mqtt_message_arrived);
-       if(rc !=0)
-       return 1;
-  }
-
-  return 0;
-
+char rc = 0;
+rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+rc = mqtt_subscribe(&client, ( uint8_t *)topicPath3 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+rc = mqtt_subscribe(&client, ( uint8_t *)topicPath4 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+return 0;
 }
 
 void pack_connect_message(MQTTPacket_connectData *con)
 {
 
-    uint8_t *mac; 
+
     uint8_t *pwd; 
     uint8_t *client; 
     uint8_t *username; 
@@ -74,7 +53,7 @@ void pack_connect_message(MQTTPacket_connectData *con)
     if(mqttWillInfoFlag == FALSE)
     {
 
-        config.read(CFG_MQTT_MAC , (void **)&mac);
+
         config.read(CFG_MQTT_USERPWD, (void **)&pwd);
         config.read(CFG_MQTT_CLIENTID, (void **)&client);
         config.read(CFG_MQTT_USERNAME, (void **)&username);
@@ -98,18 +77,6 @@ void mqtt_login_info( MQTTPacket_connectData *con )
     pack_connect_message(con);
 }
 
-int sum_hex( uint8_t *data , uint16_t len)
-{
-    int sum = 0 ; 
-
-    for(uint16_t i = 0 ; i < len ; i++ )
-    {
-        sum += data[i];
-    }
-
-    return sum;
-}
-
 
 extern void upuploadDevicever(void) ;
 extern void upuploadDeviceInfo(void) ;
@@ -118,8 +85,9 @@ extern void upkeepAlive(char isr) ;
 
 void BLUE_keep_alive(void)
 {
-        upkeepAlive(1);
+    upkeepAlive(1);
 }
+
 void mqtt_keep_alive( void )
 {
     mqtt_send_keep_alive();
@@ -127,12 +95,12 @@ void mqtt_keep_alive( void )
 
 static void mqtt_task( void const *pvParameters)
 {
-    int     rc = 0;
+    int rc;
     MQTTPacket_connectData    connectData = MQTTPacket_connectData_initializer;
 
     mqtt_network_init(&network);
     mqtt_client_init(&client, &network, 30 , 30000,mqttreadbuf, sizeof(mqttreadbuf));
-    mqttAliveTimerPort = timer.creat(50000 ,  FALSE , mqtt_keep_alive );
+    mqttAliveTimerPort = timer.creat(50000 , FALSE , mqtt_keep_alive );
     mqttKEEPAliveBLUE =  timer.creat(60000 , FALSE , BLUE_keep_alive );//60000 一分钟
         
     while(1)
@@ -157,7 +125,7 @@ static void mqtt_task( void const *pvParameters)
                   config.read(CFG_NET_ADDR , (void **)&addr);
                   while ((rc = mqtt_network_connect(&network,addr->ip, addr->port )) < 0)
                   {
-                    log(WARN , "return code from network connect is %d\n", rc);
+                    log(WARN , "[MQTT-STA]return code from network connect is %d\n", rc);
                     mqtt_network_close();
                   }
                   mqttRunType = GMQTT_CONNECT_MQTT;
@@ -166,70 +134,63 @@ static void mqtt_task( void const *pvParameters)
                   mqtt_login_info(&connectData);             
                   if ((rc = mqtt_connect_server(&client, &connectData)) != MQTT_SUCCESS)
                   {
-                          log(WARN,"MQTT connect return code from MQTT connect is %d\n", rc);
-                          mqttRunType = GMQTT_INIT;  
-
+                      log(WARN,"[MQTT-STA]MQTT connect return code from MQTT connect is %d\n", rc);
+                      mqttRunType = GMQTT_INIT;  
                   }
                   else
                   {
-                          log(DEBUG,"MQTT Connected success \n");    
-                          timer.start(mqttAliveTimerPort);
-                          mqttRunType = GMQTT_SUBSCRIBE;
+                      log(DEBUG,"[MQTT-STA]MQTT Connected success \n");    
+                      timer.start(mqttAliveTimerPort);
+                      mqttRunType = GMQTT_SUBSCRIBE;
                   }
                 break;
-                case GMQTT_SUBSCRIBE:
+        case GMQTT_SUBSCRIBE:
                   if (suball()!= 0 )
                       {
-                        log(WARN,"MQTT subscribe return code from MQTT subscribe is %d\n", rc);
+                        log(WARN,"[MQTT-STA]MQTT subscribe return code from MQTT subscribe is %d\n", rc);
                         mqttRunType = GMQTT_INIT;
                       }
                       else
                       {
-                        log(DEBUG,"MQTT subscribe success\r\n");
+                        log(DEBUG,"[MQTT-STA]MQTT subscribe success\r\n");
                         mqttRunType = GMQTT_DEVINFO;
                         sysLed.write(SYS_LED_CONNECT_SERVER);
                       }
                 break;
 
-                case GMQTT_DEVINFO:
+        case GMQTT_DEVINFO:
                     upuploadDeviceInfo();
-                    sys_delay(10);
-                    
+                    sys_delay(10);       
                     //vTaskSuspend( NULL );/*会把自己挂起 后面没有了  挂起*/
-
                     mqttRunType = GMQTT_VER;
                 break;
 
-                case GMQTT_VER:
+        case GMQTT_VER:
                     upuploadDevicever();
                     sys_delay(10);
                     mqttRunType = GMQTT_ALIEVE;
                 break;
   
-              case GMQTT_ALIEVE:
+        case GMQTT_ALIEVE:
                     upkeepAlive(0);
                     sys_delay(10);
                     timer.start(mqttKEEPAliveBLUE);
                     mqttRunType = GMQTT_FILTER;
                 break;  
                 
-                case GMQTT_FILTER:
+       case GMQTT_FILTER:
                     upfilterRequest();
-                    rc =1;
-                    config.write(CFG_DEV_USED , &rc,1);
                     sys_delay(10);
-                    mqttRunType = GMQTT_OK;
-                    
+                    mqttRunType = GMQTT_OK;                
                 break;                
         case GMQTT_OK:
-        if( mqtt_run( &client ) < 0)
-                {
-                    SHOWME
-                    mqtt_disconnect(&client);
-                    mqttRunType = GMQTT_CONNECT_MQTT;
-                }
-        sys_delay(10);
-
+                  if( mqtt_run( &client ) < 0)
+                  {
+                      SHOWME
+                      mqtt_disconnect(&client);
+                      mqttRunType = GMQTT_CONNECT_MQTT;
+                  }       
+                  sys_delay(10);
                 break;
               default:   break;
         }

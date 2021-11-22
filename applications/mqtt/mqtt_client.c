@@ -960,13 +960,6 @@ int mqtt_run( mqttClientType* c )
 
 uint8_t GettopicNo(char *topicName)
 {
-  /*
-  char i;
-  for( i=0;i<GMAX_MESSAGE_HANDLERS;i++)
-      if(aiot_strcmp(( unsigned char *)topicPath[i],( unsigned char *)topicName,23))//24怎么来的？从后往前比较一样12个MAC不是区别 还有Request/8个 也就是20 最大是时间
-         return i;
-         
-  return 44;  */
   
   if(aiot_strcmp(( unsigned char *)topicPath0,( unsigned char *)topicName,30)) return 0;
   else if(aiot_strcmp(( unsigned char *)topicPath1,( unsigned char *)topicName,30)) return 1;
@@ -975,21 +968,21 @@ uint8_t GettopicNo(char *topicName)
   else if(aiot_strcmp(( unsigned char *)topicPath4,( unsigned char *)topicName,30)) return 4;
   return 44;
 }
-extern char      RXOKLOCK;
+
 //extern uint8_t    COMMONSTATIC[1024];
 void mqtt_message_arrived(void *client , MessageData* data)
 {
- //   SHOWME  
-mqttRecvMsgType p;
+    mqttRecvMsgType p;
 
-log(INFO,"Message arrived on topic %.*s\n", data->topicName->lenstring.len, data->topicName->lenstring.data);
-   // log_arry(ERR,"recv data:" , data->message->payload , data->message->payloadlen);
-log(INFO,"data->message->payload: \r\n %.*s \r\n",data->message->payloadlen, (char *)data->message->payload);
-log(ERR, "\r\n\r\ndata->message->payloadlen = %d\r\n",data->message->payloadlen);//一般200以内
-    if( data->message->payloadlen != 0 && (0 == RXOKLOCK))
+    log(INFO,"【MQTT-RX】Message arrived on topic:%.*s\n", data->topicName->lenstring.len, data->topicName->lenstring.data);
+    //log_arry(ERR,"recv data:" , data->message->payload , data->message->payloadlen);
+    log(ERR, "【MQTT-RX】data->message->payloadlen = %d\r\n",data->message->payloadlen);//一般200以内
+    log(INFO,"【MQTT-RX】data->message->payload:%.*s \r\n",data->message->payloadlen, (char *)data->message->payload);
+
+    if( data->message->payloadlen != 0)
     {
         memset(&p , 0x00 , sizeof(mqttRecvMsgType));
-        p.topicNo =  GettopicNo(data->topicName->lenstring.data);//CURTOPIC
+        p.topicNo =  GettopicNo(data->topicName->lenstring.data);
         p.id = data->message->id;
         p.payloadlen = data->message->payloadlen;
         p.qos = data->message->qos;
@@ -1007,15 +1000,11 @@ log(ERR, "\r\n\r\ndata->message->payloadlen = %d\r\n",data->message->payloadlen)
       //  p.payload =  COMMONSTATIC;     
     
         memset(p.payload , 0x00, sizeof(uint8_t)*data->message->payloadlen);
-        log(ERR,"malloc p address = %x\n" , p.payload);
+        //log(ERR,"malloc p address = %x\n" , p.payload);
         memcpy(p.payload , data->message->payload , data->message->payloadlen);
-        //log(INFO,"data->message->payload: \r\n %s \r\n", p.payload);
-//     log(INFO,"p.topicNo = %d\n",p.topicNo);
-//       RXOKLOCK =1;
+
         xQueueSend(xMqttRecvQueue, (void*)&p, NULL);  
 
-//       log(INFO,"recv mqtt data [ 123456 -2] \n");
-//        SHOWME
     }
 }
 

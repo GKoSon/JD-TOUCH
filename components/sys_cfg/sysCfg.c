@@ -344,11 +344,10 @@ void show_SH(_SHType *p)
 
     log(INFO,"\n********************* ******show_SH******  ********************* \n");
 
-    //log_arry(ERR,"deviceCode     "  ,p->deviceCode,11);
-    printf("deviceCode:%s\n",p->deviceCode);
-    printf("gup.ver:%llx\n",p->gup.ver);
-    printf("gup.cnt:%d\n",p->gup.cnt);
-    printf("gup.code\n");
+    printf("******************deviceCode:%s\n",p->deviceCode);
+    printf("*********************gup.md5:%d\n",p->gup.md5);
+    printf("*********************gup.cnt:%d\n",p->gup.cnt);
+    printf("*********************gup.code\n");
     num = GGMIN(GUPMAX,p->gup.cnt);
     for(char i=0;i<num;i++)
     for(char j=0;j<11;j++)
@@ -362,7 +361,7 @@ void show_SH(_SHType *p)
 void sysCfg_print( void )
 {
       log(DEBUG,"\n");
-      log(INFO,"********************* 2021 Copyright by mcube team ********************* \n");
+      log(INFO,"********************* 2021 Copyright ********************* \n");
       log(DEBUG,"系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
       log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));
       log(DEBUG,"设备编号 = [%d]\n",cfg.parm.deviceNum);
@@ -525,6 +524,7 @@ return true;
 }
 if(true==chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
 {
+  printf("\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
 return true;
 }
 else

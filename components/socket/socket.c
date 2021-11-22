@@ -267,7 +267,7 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
                 
                 memset(socket->msg , 0x00 , socket->len);
                 socket->len = 0;
-            socket->status = SOCKET_INIT;
+                socket->status = SOCKET_INIT;
 
                 return ret;
             }

@@ -22,18 +22,16 @@
  *  会造成读取越界
  */
 
-#define    DEVICE_NAME            "CCYA" 
+#define    DEVICE_NAME            "TI00" //蓝牙协议规范.doc
 
 
 //0----门口机   1----围墙机
+//cfg.parm.lock_mode
 #define        UNIT_LOCK_MODE            0
-#define        BULID_LOCK_MODE            1
-#define        VILLAGE_LOCK_MODE        2
-
-
+#define        BULID_LOCK_MODE           1
 #define        WEIQIANGJI                2        /*只需要VILLAGE判断*/
 
-#define        DEVICD_MODE                WEIQIANGJI
+#define        DEVICD_MODE               BULID_LOCK_MODE
 
 
 
@@ -216,9 +214,9 @@ extern cfgTaskType    config;
 #define GUPMAX 10
 typedef struct
 {
-    uint64_t     ver;
-    uint8_t      cnt;
-    uint8_t      code[GUPMAX][11];
+    uint16_t      md5;//计划修改这里是 uint8_t 但是编译失败 对齐
+    uint8_t       cnt;
+    uint8_t       code[GUPMAX][11];
 }GupType;
 
 typedef struct
@@ -226,5 +224,7 @@ typedef struct
     char        deviceCode[21];
     GupType      gup;
 }_SHType;
+
+extern void show_SH(_SHType *p);
 #endif
 

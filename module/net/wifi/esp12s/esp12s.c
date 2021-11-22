@@ -571,14 +571,14 @@ static void wifi_rx_data_analisys(char *str , int len)
                 if(( socket->useFlag == TRUE ) &&(socket->id == id))
                 {                        
                     socket->status = SOCKET_READ;
-                    log(INFO," socket = %d ,len = %d , data len = %d\n" , id , dlen , socket->len);
+                    log(INFO,"[ESP32]socket = %d ,len = %d , data len = %d\n" , id , dlen , socket->len);
                     if( socket->msg != NULL)
                     {
                                           if( socket->len + dlen < socket->maxSize )
                                           {
                                               memcpy(socket->msg+socket->len , pst+1 ,dlen);
-                                               log_arry(WARN,"IS "  ,pst+1 ,dlen);
-                                               if(socket)printf("[%s]\r\n",pst+1);
+                                              //log_arry(WARN,"[ESP32-RX]"  ,pst+1 ,dlen);
+                                              //if(socket)printf("[ESP32-RX][%s]\r\n",pst+1);
                                               socket->len += dlen;
                                           }
                                           else

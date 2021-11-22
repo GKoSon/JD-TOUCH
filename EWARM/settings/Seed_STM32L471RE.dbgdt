@@ -933,7 +933,7 @@
                 <expressions>
                     <item>BleModuleAppData</item>
                     <item>topicPath</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

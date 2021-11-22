@@ -19,7 +19,7 @@
 
 xTaskHandle tslMqttTask;
 uint8_t  sendGetTimeTimerHandle = 0xFF;
-__IO char    RXOKLOCK=0;
+#define CLIENT_TOPIC_LEN 70
 int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p) ;
 static char taskID[33]={0};
 enum
@@ -91,9 +91,7 @@ static void mqtt_recv_task( void const *pvParameters)
               MutexLock(&client->mutex);
       
               tsl_mqtt_recv_message(client, &msg);
-              
-              RXOKLOCK=0;
-              
+                          
               free(msg.payload);
               
               memset(&msg, 0x00, sizeof(mqttRecvMsgType));
@@ -232,7 +230,7 @@ static char *cj_create_uploadDeviceInfo(void)
 }
 
 
-//timeStamp==1标识初始化
+/*何时下拉?靠的是时间锉*/
 static char *cj_create_filterRequest(void) 
 {
     cJSON *root = NULL;
@@ -253,7 +251,7 @@ static char *cj_create_filterRequest(void)
     root =  cJSON_CreateObject();
 
     cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
-    cJSON_AddNumberToObject(root,"timeStamp", timeStamp);
+    cJSON_AddNumberToObject(root,"timeStamp",  timeStamp);
 
     outStr = cJSON_Print(root);
     cJSON_Delete(root);
@@ -295,7 +293,7 @@ void cj_response(char * taskID,int statusCode) //1--失败 0--成功
 
     char *outStr;
 
-    char topicPath[50];    memset(topicPath,0,50);
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
       
     root =  cJSON_CreateObject();
 
@@ -306,60 +304,60 @@ void cj_response(char * taskID,int statusCode) //1--失败 0--成功
     cJSON_Delete(root);
 
 
-    sprintf(topicPath,"%s%s","/star_line/client/ack/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/star_line/client/ack/",getdeviceCode());
     
     
-    mqtt_send_publish(&client, (uint8_t *)topicPath, (uint8_t *)outStr, strlen(outStr), QOS1, 0);
+    mqtt_send_publish(&client, (uint8_t *)clientTopic, (uint8_t *)outStr, strlen(outStr), QOS1, 0);
     
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,outStr);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,outStr);
     return ;
 }
              
 void upuploadDevicever(void) 
 {
     SHOWME
-    char topicPath[60];    memset(topicPath,0,60);   
-      
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);   
+
     char *send = cj_create_uploadDeviceVer();
 
-    sprintf(topicPath,"%s%s","/client/uploadReaderProgramVersion/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/client/uploadReaderProgramVersion/",getdeviceCode());
     
-    mqtt_send_publish(&client, (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+    mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
     
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
 void upuploadDeviceInfo(void) 
 {
     SHOWME
-    char topicPath[50];    memset(topicPath,0,50);    
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);   
          
     char *send = cj_create_uploadDeviceInfo();
 
-    sprintf(topicPath,"%s%s","/star_line/client/uploadDeviceInfo/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/star_line/client/uploadDeviceInfo/",getdeviceCode());
     
-    mqtt_send_publish(&client, (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+    mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
     
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
 void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) 
 {
     SHOWME
-    char topicPath[50];    memset(topicPath,0,50); 
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
         
      char *send = cj_create_uploadAccessLog_card(openTime,lockStatus, openResult,cardNo, cardType,cardIssueType);
 
     //sprintf(topicPath,"%s%s","/client/uploadAccessLog/",getBleMac());
-    memcpy(topicPath,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
+    memcpy(clientTopic,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
     //strcat(topicPath,getBleMac());
    
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
-    mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+    log(DEBUG,"topicPath【%s】[%s]\n",clientTopic,send);
+    mqtt_send_publish(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
         
     journal.send_queue(LOG_DEL , 0);
     
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
 
@@ -367,22 +365,22 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
 void upuploadAccessLog_pwd(long openTime,  int passwordType) 
 {       
     SHOWME
-    char topicPath[50];    memset(topicPath,0,50); 
+        char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN); 
     char *send = cj_create_uploadAccessLog_pwd( openTime,   passwordType) ;
-    sprintf(topicPath,"%s%s","/client/uploadAccessLog/",getdeviceCode());
-    printf("topicPath:%s\r\n",topicPath);
-    mqtt_send_publish(&client, (uint8_t *)topicPath, (uint8_t *)send, strlen(send), QOS1, 0);
+    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());
+    printf("clientTopic:%s\r\n",clientTopic);
+    mqtt_send_publish(&client, (uint8_t *)clientTopic, (uint8_t *)send, strlen(send), QOS1, 0);
     journal.send_queue(LOG_DEL , 0);
 }
 
 void upuploadAccessLog_indoor(long openTime) 
 {       
     SHOWME
-    char topicPath[50];    memset(topicPath,0,50); 
+    char clientTopic[50];    memset(clientTopic,0,50); 
     char *send = cj_create_uploadAccessLog(openTime,5,0);
-    sprintf(topicPath,"%s%s","/client/uploadAccessLog/",getdeviceCode());   
-    printf("topicPath:%s\r\n",topicPath);
-    mqtt_send_publish(&client, (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);   
+    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());   
+    printf("clientTopic:%s\r\n",clientTopic);
+    mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);   
     journal.send_queue(LOG_DEL , 0);
 }
 
@@ -390,6 +388,7 @@ void upuploadAccessLog_indoor(long openTime)
 
 void upuploadAccessSensor(long logTime ,int sensorStatus) 
 {
+  /*
     SHOWME
     char topicPath[50];    memset(topicPath,0,50); 
 
@@ -401,7 +400,7 @@ void upuploadAccessSensor(long logTime ,int sensorStatus)
     mqtt_send_publish_form_isr(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
     
     log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
-
+*/
 }
                                                              
 
@@ -444,7 +443,7 @@ void upkeepAlive(char isr)
 typedef struct _cj_dispatchFilterItem
 {
     char cardNo[17] ;
-    long endTime;
+    long authEndTime;
     char filterType;
     long timeStamp;
 } cj_dispatchFilterItem;
@@ -453,12 +452,30 @@ void showdispatchFilterItem(cj_dispatchFilterItem *p)
 {
    
     log(ERR,"p->taskID      %s\r\n",taskID);
-    log(ERR,"p->cardNo     %s\r\n",p->cardNo);
-    log(ERR,"p->endTime    %d\r\n",p->endTime);
-    log(ERR,"p->filterType %d\r\n",p->filterType);
-    log(ERR,"p->timeStamp  %d\r\n",p->timeStamp);
+    log(ERR,"p->cardNo      %s\r\n",p->cardNo);
+    log(ERR,"p->authEndTime %ld\r\n",p->authEndTime);
+    log(ERR,"p->filterType  %d\r\n",p->filterType);
+    log(ERR,"p->timeStamp   %ld\r\n",p->timeStamp);
 
 }
+
+/*
+topic /star_line/server/syncFilterItem/(设备code)
+type FilterItemSync struct {
+	DeviceCode 		string 			`json:"deviceCode"`			//	设备编号
+	TaskID			string 			`json:"taskID"`				//	会话ID
+	Data 	struct{
+		CardNo 			string 			`json:"cardNo"`				//	卡号
+		AuthEndTime 	int64			`json:"authEndTime"`		//	授权截止时间
+		FilterType		int 			`json:"filterType"`			//	1: 新增黑名单，2: 删除黑名单 3: 新增白名单，4: 取消白名单
+		TimeStamp 		int64			`json:"timeStamp"`			//	记录产生时间
+	} `json:"data"`
+
+}
+
+ {"deviceCode":"110101001001003102001","taskID":"5bb56aaa4b4511ec935d0242ac170003","data":{"cardNo":"F1D47137042302E0","authEndTime":4102300800000,"filterType":1,"timeStamp":1637552180508}} 
+
+*/
 int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
 {
 
@@ -478,14 +495,13 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
           return 2;
       }
       
+      
+     
+      cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID");
+      if(NULL == pSubONE) { cJSON_Delete(pRoot); return 3; }
       memset(taskID,0,33);
-      cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "seqNo");
-      if(NULL == pSubONE)
-      {
-          cJSON_Delete(pRoot);
-          return 3;
-      }
       sprintf(taskID,"%.32s",pSubONE->valuestring);
+
       
       
        cJSON * pSubALL = cJSON_GetObjectItem(pRoot, "data");
@@ -503,7 +519,8 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
           return 3;
       }
 
-      sprintf(item->cardNo,"%.16s",pSub->valuestring);
+      sprintf(item->cardNo,"%.16s","40D1BB0133CE6498");
+      //sprintf(item->cardNo,"%.16s",pSub->valuestring);
 
       pSub = cJSON_GetObjectItem(pSubALL, "timeStamp");
       if(NULL == pSub)
@@ -515,13 +532,13 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
       item->timeStamp = pSub->valueint;
       
       
-      pSub = cJSON_GetObjectItem(pSubALL, "endTime");
+      pSub = cJSON_GetObjectItem(pSubALL, "authEndTime");
       if(NULL == pSub)
       {
           cJSON_Delete(pRoot);
           return 4;
       }   
-      item->endTime = pSub->valueint;
+      item->authEndTime = pSub->valueint;
 
       
       
@@ -538,7 +555,7 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
 
       cJSON_Delete(pRoot);
 
-      //showdispatchFilterItem(item);
+      showdispatchFilterItem(item);
       
       return 0;
 }
@@ -633,6 +650,8 @@ out:
      return code;
 }
 
+
+
 void downdispatchFilterItem(char *p)
 {
         char code = 0;
@@ -645,9 +664,9 @@ void downdispatchFilterItem(char *p)
         
         cj_parse_dispatchFilterItem(p,&item);
 
-        log(DEBUG,"接到黑白名单命令[cnt=%d],item.cardNo=%s , item.endTime=%ld , item.filterType=%d(0:增加黑名单，2：增加白名单，1&3:删除名单)\n" ,++cnt,item.cardNo , item.endTime ,item.filterType  );
+        log(DEBUG,"接到黑白名单命令[cnt=%d],item.cardNo=%s , item.authEndTime=%ld , item.filterType=%d(0:增加黑名单，2：增加白名单，1&3:删除名单)\n" ,++cnt,item.cardNo , item.authEndTime ,item.filterType  );
         list.ID = atol64((char*)item.cardNo);
-        list.time = item.endTime;
+        list.time = item.authEndTime;
 
                 
         switch( item.filterType )
@@ -844,8 +863,9 @@ static char downtimeCalibration(char *pJson)
   {
         log(DEBUG,"[MQTT-TSL]需要修改时间,服务器返回时间戳 = %d , 设备当前时间戳 = %d\n" , stamp , rtc.read_stamp());
         rtc.set_time_form_stamp(stamp);
-  } 
+  } else 
   log(DEBUG,"[MQTT-TSL]不需要修改时间,服务器返回时间戳 = %d , 设备当前时间戳 = %d\n" , stamp , rtc.read_stamp());
+  
   cJSON_Delete(pRoot);
   return 0;
         
@@ -913,6 +933,88 @@ static char downdeviceControl(char *pJson)
   return 0;
 }
 
+
+/*
+
+{"taskID":"88d25d1d4b5811ec935d0242ac170003","deviceCode":"110101001001003102001","data":{"md5str":"a4b18b05dce72bdf144ca071865cc535","groupList":["1101010010010030000001","1101010010010030000002","1101010010010030000003"],"timeStamp":1637560416633}} 
+type GroupSync struct {
+	TaskID			string 			`json:"taskID"`				//	会话ID
+	DeviceCode 		string 			`json:"deviceCode"`			//	设备编号
+	Data 	struct{
+		Md5Str 			string 			`json:"md5str"`				//	整个groupCodeList的md5值
+		GroupList 		[]string 		`json:"groupList"`			//	组code
+		TimeStamp 		int64			`json:"timeStamp"`			//	记录产生时间
+	} `json:"data"`
+
+}
+*/
+extern _SHType SHType;
+static char downGupcode(char *pJson) 
+{    
+    SHOWME
+    uint8_t dosave = 1;
+    if(NULL == pJson) return 1;
+
+
+    cJSON * pRoot = cJSON_Parse(pJson);
+    if(NULL == pRoot) { cJSON_Delete(pRoot);  SHOWME  return 2;  }
+
+
+    cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID");
+    if(NULL == pSubONE) { cJSON_Delete(pRoot); return 3; }
+    memset(taskID,0,33);
+    sprintf(taskID,"%.32s",pSubONE->valuestring);
+
+
+    cJSON * pSub = cJSON_GetObjectItem(pRoot, "data");
+    if(NULL == pSub)  {  cJSON_Delete(pRoot);  SHOWME return 2; }
+
+    cJSON * pmd5str = cJSON_GetObjectItem(pSub, "md5str");
+    if(NULL == pmd5str) {  cJSON_Delete(pRoot); SHOWME return 2; }
+    uint16_t md5 = CRC16_CCITT((uint8_t *)pmd5str->valuestring,32);
+    printf("[MQTT-TSL]pmd5str = %s [%d][%d]\n",pmd5str->valuestring,md5,SHType.gup.md5);
+    
+    cJSON * gup_arry = cJSON_GetObjectItem(pSub, "groupList");
+    if(NULL == gup_arry) {  cJSON_Delete(pRoot); SHOWME return 2; }
+    char  array_size   = cJSON_GetArraySize ( gup_arry );
+    printf("[MQTT-TSL]array_size = [%d]\n",array_size);
+    
+    if(SHType.gup.cnt == array_size)
+    {
+      printf("[MQTT-TSL]first SHType.gup.cnt == array_size go on check md5\n");
+      
+      if(md5 == SHType.gup.md5)
+      {
+        printf("[MQTT-TSL]md5 == SHType.gup.md5 do nothing\n");
+        dosave = 0;
+      }     
+    }
+    
+    if(dosave)
+    {
+      SHType.gup.cnt = array_size;
+      SHType.gup.md5 = md5;
+      
+      for( char iCnt = 0 ; iCnt < array_size ; iCnt ++ ){
+          pSub = cJSON_GetArrayItem(gup_arry, iCnt);
+          if(NULL == pSub ){ continue ; }
+          char * ivalue = pSub->valuestring ;
+          G_strsTobytes(ivalue,SHType.gup.code[iCnt],22);
+          printf("[MQTT-TSL]groupList[%d] : %s\r\n",iCnt,ivalue);
+      }
+      config.write(CFG_SYS_SHANGHAI ,&SHType, TRUE);
+    }
+
+
+    cj_response(taskID ,0); 
+    cJSON_Delete(pRoot);
+    show_SH(&SHType);
+    return 0;
+}
+
+
+
+
 void downuploadDeviceInfoRequest(char *p)
 {
     cj_uploadDeviceInfoRequest item;
@@ -927,22 +1029,22 @@ int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p)
 {
     if(p->topicNo==44) { log(ERR,"[MQTT-TSL]该主题没有预定\n",); return MQTT_RECV_SUCCESS; }
 
-    printf("[MQTT-TSL]收到主题 ￥￥￥￥￥￥￥￥￥￥￥￥￥%d(enum{MQTIME,MQCTL,MQBWLIST,MQGUP,MQOTA,})\r\n",p->topicNo);
+    printf("[MQTT-TSL]收到主题 ￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥%d(enum{MQTIME,MQCTL,MQBWLIST,MQGUP,MQOTA,})\r\n",p->topicNo);
     
     switch(p->topicNo)
     {
        case MQTIME:
-         downtimeCalibration((char *)p->payload);
-         break;
-         case MQCTL:
-         downdeviceControl((char *)p->payload);
-         break;  
-        case MQBWLIST:
+          downtimeCalibration((char *)p->payload);
+          break;
+       case MQCTL:
+          downdeviceControl((char *)p->payload);
+          break;  
+       case MQBWLIST:
           downdispatchFilterItem((char *)p->payload);
-        break;
-        case MQGUP:
-          downuploadDeviceInfoRequest((char *)p->payload);///////////////////////////需要测试 现在是我自己杜撰的
-        break;
+          break;
+       case MQGUP:
+          downGupcode((char *)p->payload);
+          break;
         
 
         case MQOTA:

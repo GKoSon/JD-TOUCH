@@ -1,0 +1,33 @@
+1--MQTT时间下发以后 设备不需要回答
+2--mqttClientId 是不需要的 但是每个设备自己保证自己的mqttClientId唯一
+void mqtt_set_default( void ) 
+{
+      memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
+
+      memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
+      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
+      sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
+}
+3--已经放弃位置码了 统一为一个 deviceCode 长度为21  而通讯组 长度22
+
+4--流程 无所谓
+
+5--给一个code测试
+static char * deviceCode   =   "110101001001003102001"
+6--黑白名单测试
+char* cardNo = "40D1BB0133CE6498";//身份证
+char* cardNo = "723F170A8F2102E0";//特斯连NFC
+
+7--主题
+订阅 平台发布的
+topic /star_line/server/syncFilterItem/(设备code)---- 回答
+topic /star_line/server/deviceControl/(设备code)----
+topic /star_line/server/syncGroup/(设备code) ----
+topic /star_line/server/timeCalibration   ---[]
+topic /star_line/server/otaDown/(设备code)----
+
+
+发布 设备发布的
+topic /star_line/client/ack/(设备code)----
+topic /star_line/client/keepAlive/(设备code)---主动保活[ upkeepAlive ]
+topic /star_line/client/filterSync/(设备code)--主动请求黑白名单 平台回答 syncFilterItem 安装的时候拉一次 重启的时候拉一次

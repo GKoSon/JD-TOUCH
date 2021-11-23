@@ -281,7 +281,7 @@ static char *cj_create_keepAlive(int status)
 
     if(strlen(outStr) < 10)
       soft_system_resert(__FUNCTION__);
-    printf("\r\n\r\n【%s】【%d】\r\n\r\n", outStr,strlen(outStr));
+    //printf("\r\n\r\n【%s】【%d】\r\n\r\n", outStr,strlen(outStr));
     return outStr;
 }
 
@@ -881,6 +881,8 @@ type DeviceControlSync struct {
 		Type 		int 			`json:"type"`				//	控制命令类型, 1-表示开，2-表示关, 3-常开
 	} `json:"data"`
 
+
+{"DeviceCode":"110101001001003102001","TaskID":"b47e8d194a6711ec87a60242ac170011","Data":{"PhoneNo":"13621896469","Type":1}} 
 */
 static char downdeviceControl(char *pJson) 
 {    
@@ -920,7 +922,7 @@ static char downdeviceControl(char *pJson)
   
   
   log(INFO,"[MQTT-TSL]获得服务器控制命令= %d(1-表示开，2-表示关, 3-常开)\n" ,  pSub_2->valueint); 
-  if(pSub_2->valueint==2)
+  if(pSub_2->valueint==1)
   {
         open_door();
         beep.write(BEEP_NORMAL);
@@ -1045,9 +1047,7 @@ int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p)
        case MQGUP:
           downGupcode((char *)p->payload);
           break;
-        
-
-        case MQOTA:
+       case MQOTA:
            if(downProgramURL((char *)p->payload)==0)
            {
               xSemaphoreGive(xMqttOtaSemaphore);         
@@ -1058,212 +1058,4 @@ int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p)
 
 
     return MQTT_RECV_SUCCESS;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*接口设计
-
-/v1/device/canRegister
-/v1/device/register
-/v1/device/update
-/v1/device/delete
-
-*/
-
-const char httpurl[4][12]={\
-  "register",\
-  "update",\
-  "delete",\
-  "canRegister",\
-};
-
-
-void HTTP_POSTHEAD(char *out,const char *url,uint8_t *strip,uint16_t intport,uint16_t len)
-{
-sprintf(out,"POST /v1/device/%s HTTP/1.1\r\n"\
-                            "Host:%s:%d\r\n"\
-                            "Content-Length:%d\r\n\r\n",url,(char *)strip,intport,len);
-
-}
-
-
-
-//【1】一共5个int 其他str
-uint16_t cj_create_httpreg0update1(char id,char *out) 
-{
-      cJSON *root = NULL;//基础类型
-      cJSON *son  = NULL;//嵌套再里面的
-      char *outStr;uint16_t bodylen=0;
-
-      char *pd;
-#if 0
-      config.read(CFG_PRO_PWD , (void **)&pd);
-      root =  cJSON_CreateObject();
-      cJSON_AddStringToObject(root,"deviceName",         bh->NAME);
-      cJSON_AddStringToObject(root,"deviceNo",          getDeviceId());
-      cJSON_AddStringToObject(root,"bluetoothPassword",     pd);
-      cJSON_AddStringToObject(root,"doorOpenPassword",        pd);
-      cJSON_AddNumberToObject(root,"doorOpenDelay",         config.read(CFG_SYS_OPEN_TIME , NULL));//【1】
-      cJSON_AddNumberToObject(root,"doorAlarmDelay",         config.read(CFG_SYS_ALARM_TIME , NULL));//【2】
-      cJSON_AddStringToObject(root,"streetID",                 bh->streetID);
-      cJSON_AddStringToObject(root,"committeeID",             bh->committeeID);
-      cJSON_AddStringToObject(root,"villageID",                bh->villageID);
-      cJSON_AddStringToObject(root,"buildingID",             bh->buildingID);
-      cJSON_AddStringToObject(root,"type",                    "access");
-      cJSON_AddStringToObject(root,"productModel",             bh->productName_productModel);//-------------------------写死
-      cJSON_AddNumberToObject(root,"longitude",             bh->longitude);//【3】
-      cJSON_AddNumberToObject(root,"latitude",                 bh->latitude);//【4】
-
-      son =  cJSON_CreateObject();
-      DeviceIpType    *devIp;    
-      config.read(CFG_IP_INFO , (void **)&devIp);
-      char temp[16];
-      memset(temp,0,16);
-      IP4ARRToStr(devIp->ip,temp);
-      cJSON_AddStringToObject(son,"deviceIP",         temp);
-      memset(temp,0,16);
-      IP4ARRToStr(devIp->mark,temp) ;
-      cJSON_AddStringToObject(son,"deviceMask",             temp);
-      memset(temp,0,16);
-      IP4ARRToStr(devIp->gateway,temp) ;
-      cJSON_AddStringToObject(son,"deviceGateway",             temp);
-      memset(temp,0,16);
-      IP4ARRToStr(devIp->dns,temp) ;
-      cJSON_AddStringToObject(son,"dnsServer",         temp);
-      cJSON_AddItemToObject(root, "network", son);
-#endif
-
-/*冲突 seriesType 12围墙机  10门口机*/
-
-    //  cJSON_AddNumberToObject(root,"seriesType", bh->type);/*【5】12围墙机(小区)      10门口机*/
-      
-      outStr = cJSON_Print(root);
-      cJSON_Delete(root);
-
-      bodylen = strlen(outStr);
-
-      serverAddrType *addr;         
-      uint16_t port  =  config.read(CFG_HTTP_ADDR , (void **)&addr);
-      HTTP_POSTHEAD(out,httpurl[id],addr->ip,port,bodylen);
-
-      strcat(out,outStr); 
-      //RT_DEBUG_LOG(RT_DEBUG_IPC,("\r\n\r\n[bodylen %d  len %d]\r\n\r\n",  bodylen,strlen(out)));
-      //RT_DEBUG_LOG(RT_DEBUG_IPC,("\r\n\r\n[%s]\r\n\r\n",  out));
-      return strlen(out);
-}
-
-uint16_t HTTP_packREG(char *out)
-{
-    return cj_create_httpreg0update1(0,out);
-}
-uint16_t HTTP_packUP(char *out)
-{
-    return cj_create_httpreg0update1(1,out);
-}
-
-uint16_t cj_create_httpdel2canreg3(char id,char *out) 
-{
-      cJSON *root = NULL;
-
-      char *outStr;uint16_t bodylen=0;
-
-      root =  cJSON_CreateObject();
-      cJSON_AddStringToObject(root,"deviceNo",         getDeviceId());
-
-      outStr = cJSON_Print(root);
-      cJSON_Delete(root);
-
-      
-      
-      bodylen = strlen(outStr);
-      serverAddrType *addr;         
-      uint16_t port  =  config.read(CFG_HTTP_ADDR , (void **)&addr);
-      HTTP_POSTHEAD(out,httpurl[id],addr->ip,port,bodylen);
-      strcat(out,outStr);
-
-      //RT_DEBUG_LOG(RT_DEBUG_IPC,("\r\n\r\n[bodylen %d  len %d]\r\n\r\n",  bodylen,strlen(out)));
-      //RT_DEBUG_LOG(RT_DEBUG_IPC,("\r\n\r\nTX:[%s]\r\n\r\n",  out));
-      return strlen(out);
-}
-
-uint16_t HTTP_packDEL(char *out)
-{
-
-    return cj_create_httpdel2canreg3(2,out);
-}
-
-uint16_t HTTP_packCANREG(char *out)
-{
-
-    return cj_create_httpdel2canreg3(3,out);
-}
-
-
-//1---我发上去的数据有问题 
-char HTTP_checkbody(char *pJson)
-{
-
-  
-  if(NULL == pJson) return -1;
-
-  cJSON * pRoot = cJSON_Parse(pJson);
-
-  if(NULL == pRoot) { cJSON_Delete(pRoot);  SHOWME  return -1;  }
-
-  cJSON * pSub = cJSON_GetObjectItem(pRoot, "code");
-
-  if(NULL == pSub)  {  cJSON_Delete(pRoot);  SHOWME return -1; }
-
-  return (char)(pSub->valueint);
-
-}
-
-char HTTP_checkack(char *in)
-{
-  char *p=NULL;
-
-  if( (p = strstr(in,"HTTP/1.1 2") )==0 )
-    return -1;
-     
-  if( (p = strstr(in,"\r\n\r\n") )==0 )
-    return -1; 
-  
-  p+=4;
-
-  return HTTP_checkbody(p);
-
 }

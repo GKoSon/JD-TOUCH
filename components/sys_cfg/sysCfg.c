@@ -245,9 +245,6 @@ void sysCfg_set_ble_default( void )
 
 }
 
-
-
-
 void mqtt_set_default( void )
 {
       memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
@@ -336,6 +333,16 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
       SHOWME  SHOWME  SHOWME
 }
 
+void show_OTA(otaType *p)
+{
+    log(INFO,"\n********************* ******show_OTA******  ********************* \n");
+
+    printf("**************otaUpgMark:%d\n",p->otaUpgMark);
+    printf("*********************ver:%d\n",p->ver);
+    printf("****************fileSize:%d\n",p->fileSize);
+    printf("*******************crc32:%d\n",p->crc32);
+    log(INFO,"\n********************* ******show_OTA******  ********************* \n");
+}
 
 void show_SH(_SHType *p)
 {

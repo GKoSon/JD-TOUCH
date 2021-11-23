@@ -154,6 +154,10 @@ typedef struct
     uint32_t        crc32;
 }otaType;
 
+
+
+void show_OTA(otaType *p);
+
 typedef struct
 {
     uint8_t ip[50];

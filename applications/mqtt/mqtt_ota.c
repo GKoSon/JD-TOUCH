@@ -178,15 +178,19 @@ static uint8_t dev_ota_erase_flash(uint32_t sectorAddr)
 uint8_t ota_write_file(uint8_t *msg , uint32_t len)
 {
     
-    uint32_t writeAddr =   ota.len + OTA_START_ADDR;
+    uint32_t writeAddr = ota.len + OTA_START_ADDR;
     
     if( writeAddr%FLASH_SPI_BLOCKSIZE == 0)
     {
-        dev_ota_erase_flash(writeAddr);
+        if(dev_ota_erase_flash(writeAddr)==FALSE)
+        {
+             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候 反馈不能擦\n"));
+             return FALSE;
+        }        
     }
 
-    dev_ota_write_flash(writeAddr , msg , len);
-
+    if(dev_ota_write_flash(writeAddr , msg , len)==FALSE)OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候失败了\n"));
+    OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len ));
     return TRUE;
 }
 
@@ -321,11 +325,11 @@ void ota_init_buffer( void )
     
     
     
-memcpy(ota.fileKey,"/upload/193599818.bin" ,strlen("/upload/193599818.bin")  );
-//memcpy(ota.fileKey,"/upload/485982176.bin" ,strlen("/upload/485982176.bin")  );
+//memcpy(ota.fileKey,"/upload/193599818.bin" ,strlen("/upload/193599818.bin")  );
+memcpy(ota.fileKey,"/upload/485982176.bin" ,strlen("/upload/485982176.bin")  );
 ota.len=       0;
-//ota.fileSize=  51484;
-ota.fileSize=  10;
+ota.fileSize=  51484;
+//ota.fileSize=  10;
 show_OTA(otaCfg);
 }
 
@@ -395,7 +399,7 @@ int8_t ota_download_read_file(void)
             dataLen = ONESTEP;
         }
         
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】准备发送 %s\n" , httprequest));
+        //OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】准备发送 %s\n" , httprequest));
         ret = socket.send(clientId , httprequest , httpsendLen , 3000);
         if( ret != SOCKET_OK)
         {
@@ -411,12 +415,11 @@ int8_t ota_download_read_file(void)
             return SOCKER_READ_ERR;
         }
                                       
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的内容:%s \n" , rxBuf ));
+        //OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的内容【打印这个会死机 兄弟！】:%s \n" , rxBuf ));
         if( ota_check_http(rxBuf ) == FALSE)
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到返回HTTP的数据头错误\n"));
-            continue;
-            
+            continue;          
         }
         
         //解析数据长度
@@ -470,9 +473,6 @@ int8_t ota_download_read_file(void)
                 OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-BAD】接收到总长度:%d\n", ota.len )); 
             }
         }           
- 
-        sys_delay(1000);
-
     }
 
     
@@ -491,6 +491,7 @@ int8_t ota_download_read_file(void)
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证糟糕白忙活了\n"));
             socket.disconnect(clientId);
             ota_init_buffer();
+
         }
     }
 
@@ -517,8 +518,11 @@ int8_t ota_download_file( void )
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】RUN_CONNECTING ota start connect server\n"));
             memset(rxBuf  , 0x00 , OTARXBUF_SIZE);
+            serverAddrType *addr;         
+            config.read(CFG_OTA_ADDR , (void **)&addr);
             //if( (ret = socket.connect("34.73.14.154" , 80 ,rxBuf  , OTARXBUF_SIZE)) >= 0)
-            if( (ret = socket.connect("ibinhub.com" , 80 ,rxBuf  , OTARXBUF_SIZE)) >= 0)
+            //if( (ret = socket.connect("ibinhub.com" , 80 ,rxBuf  , OTARXBUF_SIZE)) >= 0)
+            if( (ret = socket.connect(addr->ip , addr->port ,rxBuf  , OTARXBUF_SIZE)) >= 0)
             {
                 clientId = ret;
                 OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】RUN_CONNECTING ota connect server success , client id = %d\n" , clientId));
@@ -533,6 +537,7 @@ int8_t ota_download_file( void )
         }break;
         case RUN_CONNECT:
         {
+//taskDISABLE_INTERRUPTS();
             if( (ret = ota_download_read_file()) == SOCKET_OK )
             {
                 otaType otaCfg;
@@ -561,6 +566,7 @@ int8_t ota_download_file( void )
                 log(WARN , "网络错误 ，回退部分字节， 重新下载开始位置=%d\n" , ota.len);
                 ota_repert_connect();
             }
+//taskENABLE_INTERRUPTS();            
         }break;
         default:break;
     }

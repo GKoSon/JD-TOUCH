@@ -19,7 +19,7 @@
 
 xTaskHandle tslMqttTask;
 uint8_t  sendGetTimeTimerHandle = 0xFF;
-#define CLIENT_TOPIC_LEN 70
+#define CLIENT_TOPIC_LEN          70
 int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p) ;
 static char taskID[33]={0};
 enum

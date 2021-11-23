@@ -170,7 +170,7 @@ static void mqtt_send_task( void const *pvParameters)
     {
         if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
         {
-            //if( network_read_status() ==  TRUE )
+            if( network_read_status() ==  TRUE )
             {
                 //log(DEBUG,"1   time=%d\n" , HAL_GetTick() - sysRunTimerCnt);
                 if( mqtt_send_mesg(client , msg.msg , msg.len , msg.qos) == MQTT_SUCCESS) 
@@ -179,9 +179,9 @@ static void mqtt_send_task( void const *pvParameters)
                     sys_delay(20);
                 }      
             }
-            //else
+            else
             {
-                //log(INFO,"网络未连接\n");
+                log(INFO,"[mqtt_send_task]网络未连接\n");
             }
             memset(&msg , 0x00 , sizeof(mqttSendMsgType));
         }

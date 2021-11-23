@@ -23,12 +23,13 @@
 #include "tsl_mqtt.h"
 #include "sys_led.h"
 #include "sysCntSave.h"
+
 xTaskHandle                mqttTask;
 uint8_t                    mqttRunType = GMQTT_CONNECT_TCP;
 mqttClientType             client;
 Network                    network;
 uint8_t                    mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
-
+extern void startota(void);
 
 char suball(void)
 {
@@ -176,6 +177,7 @@ static void mqtt_task( void const *pvParameters)
                     sys_delay(10);
                     timer.start(mqttKEEPAliveBLUE);
                     mqttRunType = GMQTT_FILTER;
+                    startota();
                 break;  
                 
        case GMQTT_FILTER:

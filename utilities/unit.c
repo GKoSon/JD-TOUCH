@@ -340,8 +340,6 @@ void sys_delay(uint32_t ms)
         task_keep_alive(TASK_ALL_BIT); 
         
     }
-
-
 }
 
 

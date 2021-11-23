@@ -5,27 +5,18 @@
 
 #include "mqtt_client.h"
 
-/*
-typedef enum {
-    MQTT_INIT,
-    MQTT_CONNECT_TCP,
-    MQTT_CONNECT_SERVER,
-    MQTT_SUBSCRIBE,
-    MQTT_AES,
-    MQTT_OK,
-}mqttRunEnum;
-*/
+
 enum
 {
-GMQTT_INIT,
-GMQTT_CONNECT_TCP,
-GMQTT_CONNECT_MQTT,
-GMQTT_SUBSCRIBE,
-GMQTT_DEVINFO,
-GMQTT_ALIEVE,
-GMQTT_VER,
-GMQTT_FILTER,
-GMQTT_OK,
+  GMQTT_INIT,
+  GMQTT_CONNECT_TCP,
+  GMQTT_CONNECT_MQTT,
+  GMQTT_SUBSCRIBE,
+  GMQTT_DEVINFO,
+  GMQTT_ALIEVE,
+  GMQTT_VER,
+  GMQTT_FILTER,
+  GMQTT_OK,
 };
 
 extern uint8_t            mqttreadbuf[2048];    

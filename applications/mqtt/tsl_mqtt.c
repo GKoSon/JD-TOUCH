@@ -621,7 +621,7 @@ char downProgramURL(char *pJson)
         
         config.write(CFG_OTA_URL ,url ,0);
         
-        config.write( CFG_OTA_PORT , &port ,0);
+
       }
       
       pSub = cJSON_GetObjectItem(pSubALL, "version");

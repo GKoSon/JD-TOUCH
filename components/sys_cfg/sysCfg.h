@@ -42,8 +42,6 @@
 //∆ΩÃ®µÿ÷∑
 #define        NET_IP                  "139.9.66.72"
 #define        MQTT_PORT                1883
-#define        HTTP_PORT                0
-#define        OTA_PORT                 0
 #define        DSYS_DIANMA_ADDR         0x0807E000
 
 
@@ -75,7 +73,7 @@ typedef enum
 {
     MQTT_FILTER_SYNCED,
 
-    CFG_HTTP_ADDR,
+
     CFG_PAIR_PWD,
     CFG_USER_PWD,
 
@@ -98,8 +96,9 @@ typedef enum
 
     CFG_SYS_MAGNET_STATUS,
     CFG_NET_ADDR,
+    CFG_OTA_ADDR,
     CFG_OTA_URL,
-    CFG_OTA_PORT,
+
     CFG_OTA_CONFIG,
     CFG_WIFI_INFO,
 
@@ -167,8 +166,7 @@ typedef struct
 typedef struct
 {
     serverAddrType    net;
-    uint16_t          httpport;
-    uint16_t          otaport;
+    serverAddrType    otanet;
     char             otaurl[64];
 }netAttriType;
 

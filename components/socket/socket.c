@@ -67,7 +67,7 @@ void socket_clear_buffer( uint8_t id)
 {
     if( id < SOCKET_CONNECT_MAX )
     {
-        sockeArry[id].len =0;
+        sockeArry[id].len = 0;
     }
 }
 

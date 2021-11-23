@@ -30,14 +30,13 @@
 
 那么三元组信息还差一个mqttClientId 其实测试已经可以接进去了
 
-void mqtt_set_default( void )
-{
-      memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
-
-      memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
-      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
-      sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
-}
+`void mqtt_set_default( void )`
+`{`
+      `memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));`
+      `memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));`
+      `memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));`
+      `sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);`
+`}`
 
 2021/11/21 简化del关于info的部分 只需要cfg文件/ESP32工作还有relay工作必须12V上电
 
@@ -46,3 +45,26 @@ void mqtt_set_default( void )
 2021/11/22解决死机问题 订阅的主题是写一个一个数组 发布的主题我是自己放在函数内部的 数组写大一点
 
 2021/11/22测试平台下发时间/同行组/黑白名单 还可以
+
+2021/11/23测试OTA此时代码是主动释放信号量启动OTA任务可以把云平台一个bin文件1234567890下载
+
+*基于当前程序做一个真正的测试bin文件*
+
+*1--修改main里面TESTOTA为1*
+
+*2--编译结果IAR设置输出Seed_STM32L471RE.bin*
+
+*3--本地自己可以测试boot.hex + 0x0800A000 烧写app.bin 就是循环输出*
+
+*4--EWARM\Seed_STM32L471RE\Exe\Seed_STM32L471RE.bin 重命名app.bin放到平台*
+
+![image-20211123160403863](C:\Users\Koson.Gong\AppData\Roaming\Typora\typora-user-images\image-20211123160403863.png)
+
+*准备继续测试*
+
+*1--文件大小是 ota.fileSize=  51484;*
+
+*2--PC点击下载是http://www.ibinhub.com/upload/485982176.bin  memcpy(ota.fileKey,"/upload/485982176.bin" ,strlen("/upload/485982176.bin")  );*
+
+暂存一次 当前可以下载那个简易的bin
+

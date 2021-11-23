@@ -157,7 +157,6 @@ void sysCfg_load( void )
 }
 
 
-
 void sys_info_read_device_module( void )
 {
     uint8_t config=0 , config1 = 0 , config2 = 0;
@@ -193,11 +192,11 @@ void sys_info_read_device_module( void )
 
       if(  ( moduleValue > 50) && ( moduleValue < 80))
       {
-        cfg.parm.support_ble_types = 0;//BM77            
+        cfg.parm.support_ble_types = 0;        
       }
       else if(( moduleValue >= 80) && ( moduleValue < 115))
       {
-        cfg.parm.support_ble_types = 1;//0906
+        cfg.parm.support_ble_types = 1;
       }
       else if(( moduleValue >= 140) && ( moduleValue < 180))
       {
@@ -209,11 +208,11 @@ void sys_info_read_device_module( void )
       }
       else
       {
-        log(ERR,"设备BLE模式ADC采集不在约定范围 默认是BM77\n");
-        cfg.parm.support_ble_types = 0;
+        log(ERR,"[SYS]设备BLE模式ADC采集不在约定范围 默认是0906\n");
+        cfg.parm.support_ble_types = 1;
       }
-//cfg.parm.support_ble_types = 0;
-      log(ERR,"设备BLE模式=%d .[0--BM77  1---0906]\n" ,  cfg.parm.support_ble_types);     
+
+      log(ERR,"[SYS]设备BLE模式=%d .(0--BM77  1--0906)\n" ,  cfg.parm.support_ble_types);     
 }
 
 
@@ -309,8 +308,8 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
       memset( &cfg.server , 0x00 , sizeof(netAttriType));
       memcpy(cfg.server.net.ip , NET_IP , strlen(NET_IP));
       cfg.server.net.port = MQTT_PORT;
-      cfg.server.httpport = HTTP_PORT;
-      cfg.server.otaport =  OTA_PORT;
+
+
       
 
       //基于MAC的标识
@@ -388,9 +387,8 @@ void sysCfg_print( void )
       log_arry(DEBUG,"蓝牙模块的MAC地址 "  ,cfg.ble.ble_mac ,BLE_MAC_LENGTH);
       log(DEBUG,"设备网络类型 = [%d] [1:GPRS,2:WFI,4ETH]\n" ,cfg.parm.support_net_types);
 
-      log(DEBUG,"MQTT业务服务器IP地址: %s:%d\n" , cfg.server.net.ip , cfg.server.net.port);
-      log(DEBUG,"HTTP业务服务器IP地址: %s:%d\n" , cfg.server.net.ip , cfg.server.httpport);
-      log(DEBUG,"OTA 业务服务器IP地址: %s:%d\n" , cfg.server.net.ip,  cfg.server.otaport);
+      log(DEBUG,"MQTT业务服务器IP地址: %s:%d\n" , cfg.server.net.ip ,    cfg.server.net.port);
+      log(DEBUG,"OTA 业务服务器IP地址: %s:%d\n" , cfg.server.otanet.ip,  cfg.server.otanet.port);
       log(DEBUG,"mqtt client    = %s\n" ,    cfg.mqtt.mqttClientId);
       log(DEBUG,"mqtt user name = %s\n" ,    cfg.mqtt.mqttUserName);
       log(DEBUG,"mqtt user pwd  = %s\n" ,    cfg.mqtt.mqttUserPwd);
@@ -464,11 +462,6 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             log(DEBUG,"设置设备类型 = %d \n" , cfg.parm.lock_mode);
         }break;
 
-        case CFG_OTA_PORT:
-        {
-             cfg.server.otaport = *(uint16_t *)(parma);
-             log(INFO,"OTA PORT = %d \n" ,cfg.server.otaport);
-        }break;
 
         
         case CFG_SYS_MAGNET_STATUS:
@@ -482,7 +475,10 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
              memcpy(&cfg.server.net , parma , sizeof(serverAddrType));
         }break;
 
-
+        case CFG_OTA_ADDR:
+        {
+             memcpy(&cfg.server.otanet , parma , sizeof(serverAddrType));
+        }break;
         case CFG_OTA_URL:
         {
              memset(&cfg.server.otaurl,0,64);
@@ -568,10 +564,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             data = cfg.parm.filterSynced;
         }break;
 
-         case CFG_OTA_PORT:
-        {
-            data = cfg.server.otaport;
-        }break;
+
         case CFG_PAIR_PWD:
         {
             *parma = cfg.pair_pwd;
@@ -652,18 +645,18 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
              *parma = &cfg.server.net;
 
         }break;
+        case CFG_OTA_ADDR:
+        {
+             *parma = &cfg.server.otanet;
 
+        }break;
 
          case CFG_OTA_URL:
         {
               *parma = &cfg.server.otaurl;
 
         }break;
-         case CFG_HTTP_ADDR:
-        {
-              *parma =  &cfg.server.net;
-              data = cfg.server.httpport;
-        }break;
+
         case CFG_OTA_CONFIG:
         {
                 *parma = &cfg.otaVar;

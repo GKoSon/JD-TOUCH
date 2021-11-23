@@ -262,7 +262,19 @@ void device_set_default( char flag )
       soft_system_resert(__func__);
     }
 }
+void startota(void)
+{
+  printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");
 
+  serverAddrType ip_port;
+  memcpy(ip_port.ip,"ibinhub.com",strlen("ibinhub.com"));
+  ip_port.port = 80;
+  config.write(CFG_OTA_ADDR ,&ip_port,1);
+
+  xSemaphoreGive(xMqttOtaSemaphore);
+  
+  printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");
+}
 /* main_task function */
 void main_task(void const * argument)
 {

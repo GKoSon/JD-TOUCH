@@ -6,9 +6,6 @@
 #define        UPG_MARK                          0xAABB55AA
 #define        OTA_OK                            SOCKET_OK
 
-//#define ota_log(level, fmt, ...)     log(level , fmt, ## __VA_ARGS__) 
-#define ota_log(level, fmt, ...)   
-
 typedef enum
 {
     CHECH_UPG_FILE,

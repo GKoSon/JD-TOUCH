@@ -2453,9 +2453,6 @@
         <group>
             <name>mqtt</name>
             <file>
-                <name>$PROJ_DIR$\..\applications\mqtt\httpbuss.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\applications\mqtt\mqtt_client.c</name>
             </file>
             <file>
@@ -2799,12 +2796,12 @@
             </file>
         </group>
         <group>
-            <name>mate</name>
+            <name>MD5</name>
             <file>
-                <name>$PROJ_DIR$\..\components\mate\mate.c</name>
+                <name>$PROJ_DIR$\..\components\GMD5\gmd5.c</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\components\mate\mate.h</name>
+                <name>$PROJ_DIR$\..\components\GMD5\gmd5.h</name>
             </file>
         </group>
         <group>
@@ -2832,15 +2829,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\components\socket\socket.h</name>
-            </file>
-        </group>
-        <group>
-            <name>startup_config</name>
-            <file>
-                <name>$PROJ_DIR$\..\components\startup_config\startup_config.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\components\startup_config\startup_config.h</name>
             </file>
         </group>
         <group>

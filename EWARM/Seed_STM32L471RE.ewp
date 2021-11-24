@@ -439,6 +439,7 @@
                     <state>$PROJ_DIR$\..\components\sys_led</state>
                     <state>$PROJ_DIR$\..\components\sysCntSave</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\cjson</state>
+                    <state>D:\TSBrowserDownloads\JD-TOUCH\components\GMD5</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -2670,6 +2671,15 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\components\log\open_log.h</name>
+            </file>
+        </group>
+        <group>
+            <name>MD5</name>
+            <file>
+                <name>$PROJ_DIR$\..\components\GMD5\gmd5.c</name>
+            </file>
+            <file>
+                <name>$PROJ_DIR$\..\components\GMD5\gmd5.h</name>
             </file>
         </group>
         <group>

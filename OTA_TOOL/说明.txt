@@ -1,0 +1,43 @@
+﻿1--IAR的APP工程编译出来的是HEX文件 
+当然也可以设置编译出来bin文件
+这里是自己做的一个脚本HEX2BIN.c放在树莓派
+gcc HEX2BIN.c
+./a.out 
+可以完成同级目录下面1.hex变成1.bin
+比较工具和原料\orange一样的
+
+2--对上面的脚本升级编出1.bin同时在文件最后追加一个MD5
+其实MD5是16个HEX（或者说32个char）
+gcc HEX2BINPLUS.c
+./a.out 
+可以完成同级目录下面1.hex变成1.bin 同时1.bin最后追加4个HEX表示文件长度 追加16个HEX表示文件MD5
+14 A9 02 00    A5 07 0F 96 B7 BA CD 08 3A 59 0E 51 20 A0 C6 D3
+本文件夹的例子是如下LOG【十进制174356就是0X00 02 A9 14】
+bin len =174356 = 170K
+infilelen=2324
+MD5rst:
+A5070F96B7BACD083A590E5120A0C6D3
+
+
+1--IAR的APP工程编译出来的是HEX文件 
+当然也可以设置编译出来bin文件
+这里是自己做的一个脚本HEX2BIN.c放在树莓派
+gcc HEX2BIN.c
+./a.out 
+可以完成同级目录下面1.hex变成1.bin
+比较工具和原料\orange一样的
+
+2--对上面的脚本升级编出1.bin同时在文件最后追加一个MD5
+其实MD5是16个HEX（或者说32个char）
+gcc HEX2BINPLUS.c
+./a.out 
+可以完成同级目录下面1.hex变成1.bin 同时1.bin最后追加4个HEX表示文件长度 追加16个HEX表示文件MD5
+14 A9 02 00    A5 07 0F 96 B7 BA CD 08 3A 59 0E 51 20 A0 C6 D3
+本文件夹的例子是如下LOG【十进制174356就是0X00 02 A9 14】
+bin len =174356 = 170K
+infilelen=2324
+MD5rst:
+A5070F96B7BACD083A590E5120A0C6D3
+
+
+3--在平台下载485982176.bin 修改为1.bin 执行简单的bin追加MD5(BINaddMD5.c)看到平台显示的hash就是我们计算的MD5

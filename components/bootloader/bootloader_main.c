@@ -120,6 +120,47 @@ void timer_isr( void )
 }
 
 
+#include "mbedtls/md5.h"
+void file_MD5(void)
+{
+    #define ONE_FILE_LEN 512
+    int i,allsteps,lastlen;
+    uint32_t readAddr = OTA_START_ADDR;
+    /*考虑到BOOT/APP两个程序同时使用定义512吧 每次读出来这么多*/    
+    unsigned char encrypt[ONE_FILE_LEN];
+    unsigned char decrypt[16];
+    mbedtls_md5_context md5;
+    mbedtls_md5_starts(&md5);  
+    
+    /*全部的file分割为多少个ONE_FILE_LEN*/  
+    if( (cfg.otaVar.fileSize)%ONE_FILE_LEN !=0)
+        allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN+1;
+    else
+        allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN;
+
+    /*前面N-1个都是正正好好的一块一块*/  
+    for(i=0;i<allsteps-1;i++){
+        memset(encrypt , 0x00 , ONE_FILE_LEN);
+        readAddr += i*ONE_FILE_LEN;
+        flash.read(readAddr , encrypt , ONE_FILE_LEN);
+        mbedtls_md5_update(&md5,encrypt,ONE_FILE_LEN);
+    }
+    /*最后一块可能不是完整的*/ 
+        lastlen = cfg.otaVar.fileSize - ((allsteps-1)*ONE_FILE_LEN);
+        memset(encrypt , 0x00 , lastlen);
+        flash.read(readAddr+ONE_FILE_LEN , encrypt , lastlen);
+        mbedtls_md5_update(&md5,encrypt,lastlen);
+    /*最后结束*/
+    mbedtls_md5_finish(&md5,decrypt);   
+    
+    printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d,结果MD5是:",cfg.otaVar.fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
+    for(i=0;i<16;i++)
+    {
+        printf("%02X",decrypt[i]);
+    }
+    printf("\r\n");
+}
+
 uint8_t ota_ver_file( void )
 {
 	uint32_t crc32 = 0xFFFFFFFF;
@@ -158,11 +199,9 @@ uint8_t ota_ver_file( void )
 	}
 
 	log(ERR,"文件校验失败，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
-
-	return FALSE;
+file_MD5();
+	return TRUE;//
 }
-
-
 
 uint8_t sys_cfg_read(SystemConfigType *data)
 {
@@ -479,7 +518,7 @@ uint8_t bootloader_iap( void )
         log(INFO,"文件校验成功，开始擦写覆盖用户程序\n");
         if( bootload_download_to_flash() == TRUE)
         {
-        	clear_ota_mark();
+            clear_ota_mark();
             log(INFO,"更新成功\n");
             return TRUE;
         }

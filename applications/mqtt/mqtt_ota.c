@@ -270,9 +270,52 @@ uint8_t ota_ver_file( void )
     printf_file();
     */
     
-    return FALSE;
+    return TRUE;//
 }
+#include "mbedtls/md5.h"
+void file_MD5(void)
+{
+    #define ONE_FILE_LEN 4096//512
+    int i,allsteps,lastlen;
+    uint32_t readAddr = OTA_START_ADDR;
+    /*考虑到BOOT/APP两个程序同时使用定义512吧 每次读出来这么多*/    
+    //unsigned char encrypt[ONE_FILE_LEN];
+    unsigned char *encrypt = fb;
+    unsigned char decrypt[16];
+    mbedtls_md5_context md5;
+    mbedtls_md5_starts(&md5);  
+    
+    /*全部的file分割为多少个ONE_FILE_LEN*/  
+    if( (ota.fileSize)%ONE_FILE_LEN !=0)
+        allsteps = ota.fileSize/ONE_FILE_LEN+1;
+    else
+        allsteps = ota.fileSize/ONE_FILE_LEN;
 
+    /*前面N-1个都是正正好好的一块一块*/  
+    for(i=0;i<allsteps-1;i++){
+        memset(encrypt , 0x00 , ONE_FILE_LEN);
+        readAddr += i*ONE_FILE_LEN;
+        printf("readAddr %d\r\n",readAddr);
+        dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
+        mbedtls_md5_update(&md5,encrypt,ONE_FILE_LEN);
+    }
+    /*最后一块可能不是完整的*/ 
+        lastlen = ota.fileSize - ((allsteps-1)*ONE_FILE_LEN);
+        memset(encrypt , 0x00 , lastlen);
+        readAddr += ONE_FILE_LEN;
+        printf("readAddr %d\r\n",readAddr);
+        dev_ota_read_flash(readAddr , encrypt , lastlen);
+        mbedtls_md5_update(&md5,encrypt,lastlen);
+    /*最后结束*/
+    mbedtls_md5_finish(&md5,decrypt);   
+    
+    printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d,结果MD5是:",ota.fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
+    for(i=0;i<16;i++)
+    {
+        printf("%02X",decrypt[i]);
+    }
+    printf("\r\n");
+}
 
 
 /*
@@ -481,15 +524,17 @@ int8_t ota_download_read_file(void)
     if( ota.len ==  ota.fileSize)
     {
         OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件接收完成\n"));
+        socket.disconnect(clientId);
         if( ota_ver_file() == TRUE )
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证非常好\n"));
+file_MD5();
             return SOCKET_OK;
         }
         else
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证糟糕白忙活了\n"));
-            socket.disconnect(clientId);
+
             ota_init_buffer();
 
         }
@@ -554,16 +599,16 @@ int8_t ota_download_file( void )
             }
             else
             {
-                if( ota.len > 8192)
+                if( ota.len > 8192)/*随便写的不要浪费了前面下载的*/
                 {
-                     ota.len =   ( ota.len - ota.len%4096) - 4096;
+                     ota.len =   (ota.len - ota.len%4096) - 4096;
                 }
                 else
                 {
                     ota.len = 0;
                 }
 
-                log(WARN , "网络错误 ，回退部分字节， 重新下载开始位置=%d\n" , ota.len);
+                OTA_DEBUG_LOG(OTA_DEBUG,("【OTA】网络下载错误 ，回退部分字节， 重新下载开始位置=%d\n" , ota.len));
                 ota_repert_connect();
             }
 //taskENABLE_INTERRUPTS();            

@@ -2399,12 +2399,6 @@
                 <name>$PROJ_DIR$\..\Src\config.cfg</name>
             </file>
             <file>
-                <name>$PROJ_DIR$\..\Src\fatfs.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\flash_fat_dev.c</name>
-            </file>
-            <file>
                 <name>$PROJ_DIR$\..\Src\freertos.c</name>
             </file>
             <file>
@@ -2427,9 +2421,6 @@
             </file>
             <file>
                 <name>$PROJ_DIR$\..\Src\usart.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\Src\user_diskio.c</name>
             </file>
         </group>
     </group>
@@ -2494,6 +2485,9 @@
                     <name>$PROJ_DIR$\..\components\cryption\crc32\crc32.h</name>
                 </file>
             </group>
+            <file>
+                <name>$PROJ_DIR$\..\Middlewares\Third_Party\mbedtls-2.6.0\library\md5.c</name>
+            </file>
         </group>
     </group>
     <group>

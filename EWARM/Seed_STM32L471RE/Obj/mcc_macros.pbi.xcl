@@ -183,6 +183,8 @@ D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\components\sysCntSave
 -I
 D:\TSBrowserDownloads\JD-TOUCH\EWARM\..\Middlewares\Third_Party\cjson
 -I
+D:\TSBrowserDownloads\JD-TOUCH\components\GMD5
+-I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\CMSIS\Core\Include
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\CMSIS\DSP\Include
@@ -368,6 +370,8 @@ D:\TSBrowserDownloads\JD-TOUCH\components\sys_led
 D:\TSBrowserDownloads\JD-TOUCH\components\sysCntSave
 -I
 D:\TSBrowserDownloads\JD-TOUCH\Middlewares\Third_Party\cjson
+-I
+D:\TSBrowserDownloads\JD-TOUCH\components\GMD5
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.2\arm\CMSIS\Core\Include
 -I

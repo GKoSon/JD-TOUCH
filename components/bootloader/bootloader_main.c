@@ -119,106 +119,71 @@ void timer_isr( void )
 
 }
 
-#include "mbedtls/md5.h"
-uint32_t file_MD5(void)
+uint32_t file_tail16hex(void)
 {
-    #define ONE_FILE_LEN 512
-    int i,allsteps,lastlen;
-    uint32_t readAddr = OTA_START_ADDR;
-    /*考虑到BOOT/APP两个程序同时使用定义512吧 每次读出来这么多*/    
+#define ONE_FILE_LEN 512
+    uint8_t binmd5[16];
+    int allsteps,lastlen;
+    uint32_t readAddr = OTA_START_ADDR;  
     unsigned char encrypt[ONE_FILE_LEN];
-    unsigned char decrypt[16];
-    mbedtls_md5_context md5;
-    mbedtls_md5_starts(&md5);  
-    
-    /*全部的file分割为多少个ONE_FILE_LEN*/  
-    if((cfg.otaVar.fileSize)%ONE_FILE_LEN !=0)
-        allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN+1;
+/*读出文件的最后16个*/   
+    uint32_t fileSize = cfg.otaVar.fileSize;
+    if( (fileSize)%ONE_FILE_LEN !=0)
+        allsteps = fileSize/ONE_FILE_LEN+1;
     else
-        allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN;
-
-    /*前面N-1个都是正正好好的一块一块*/  
-    for(i=0;i<allsteps-1;i++){
-        memset(encrypt , 0x00 , ONE_FILE_LEN);
-        flash.read(readAddr , encrypt , ONE_FILE_LEN);
-        mbedtls_md5_update(&md5,encrypt,ONE_FILE_LEN);
-        //printf("readAddr 0X%08X\r\n",readAddr);
-        readAddr += ONE_FILE_LEN;
-
-    }
-    /*最后一块可能不是完整的*/ 
-        lastlen = cfg.otaVar.fileSize - ((allsteps-1)*ONE_FILE_LEN);
-        memset(encrypt , 0x00 , lastlen);
-        //printf("readAddr 0X%08X\r\n",readAddr);
-        flash.read(readAddr , encrypt , lastlen);
-        mbedtls_md5_update(&md5,encrypt,lastlen);
-    /*最后结束*/
-    mbedtls_md5_finish(&md5,decrypt);   
+        allsteps = fileSize/ONE_FILE_LEN;
     
-    printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d,结果MD5是:",cfg.otaVar.fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
-    for(i=0;i<16;i++)
+    lastlen = fileSize - ((allsteps-1)*ONE_FILE_LEN);
+    printf("【file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d】",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
+    
+    if(lastlen >= 16)/*测试成功*/
     {
-        printf("%02X",decrypt[i]);
+      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
+      printf("[readAddr =0X%08X]",readAddr);
+      flash.read(readAddr , encrypt , lastlen);
+      memcpy(binmd5,&encrypt[lastlen-16],16);
     }
-    return  CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
-}
+    else if (lastlen == 0)
+    {
+      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
+      printf("[readAddr =0X%08X]",readAddr);
+      flash.read(readAddr , encrypt , ONE_FILE_LEN);
+      memcpy(binmd5,&encrypt[ONE_FILE_LEN-16],16);
+    }
+    else/*加入lastlen是2的话 那就是14个在前面 最后2个在最后一次 先直接把这2个拿下来 在把前面的再次读出*/
+    {
+       readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN;
+       printf("[readAddr =0X%08X]",readAddr);
+       flash.read(readAddr , encrypt , lastlen);
+       memcpy(&binmd5[lastlen],encrypt,lastlen);
+       
+       readAddr = OTA_START_ADDR + (allsteps-2)*ONE_FILE_LEN;
+       printf("[readAddr =0X%08X]",readAddr);
+       flash.read(readAddr , encrypt , ONE_FILE_LEN);
+       memcpy(binmd5,encrypt,ONE_FILE_LEN-(16-lastlen));
+    }
+    log_arry(DEBUG,"读BIN的MD5是:" ,binmd5, 16);
+    uint16_t bincrc = CRC16_CCITT(binmd5,16);
 
+    return bincrc;
+}
 
 uint8_t ota_ver_file( void )
 {
   
-    uint32_t crc32 = file_MD5();
+    uint32_t crc32 = file_tail16hex();
 
     if( crc32 == cfg.otaVar.crc32)
     {
-        log(WARN,"文件校验正确，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
+        log(WARN,"文件校验正确，calc CRC=%d , get crc = %d\n" , crc32 , cfg.otaVar.crc32);
         return TRUE;
     }
 
-    log(ERR,"文件校验失败，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
+    log(ERR,"文件校验失败，calc CRC=%d, get crc = %d\n" , crc32 , cfg.otaVar.crc32);
 
     
     return FALSE;
-  /*
-	uint32_t crc32 = 0xFFFFFFFF;
-	uint32_t crcTbl;
-	uint8_t buff[512];
-	uint32_t readAddr = OTA_START_ADDR;
-	uint16_t readSize = 512 ;
-        __IO int32_t len =0;
 
-	while( len < cfg.otaVar.fileSize )
-	{
-		if( len + readSize > cfg.otaVar.fileSize)
-		{
-			readSize = cfg.otaVar.fileSize - len;
-		}
-
-		memset(buff , 0x00 , 512);
-		flash.read(readAddr+len , buff , readSize);
-
-		for (uint32_t i = 0; i!= readSize; ++i)
-		{
-			crcTbl = (crc32 ^ buff[i]) & 0xFF;
-			crc32 = ((crc32 >> 8) & 0xFFFFFF) ^ gdwCrc32Table[crcTbl];
-		}
-		len += readSize;
-		HAL_IWDG_Refresh(&hiwdg);
-
-	}
-
-	crc32 = ~crc32;
-
-	if(( crc32 == cfg.otaVar.crc32)&&( APPLICATION_ADDRESS+cfg.otaVar.fileSize < USER_FLASH_END_ADDRESS))
-	{
-		log(WARN,"文件校验正确，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
-		return TRUE;
-	}
-
-	log(ERR,"文件校验失败，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
-file_MD5();
-	return TRUE;//
-*/
 }
 
 uint8_t sys_cfg_read(SystemConfigType *data)
@@ -497,14 +462,12 @@ int8_t bootload_download_to_flash( void )
 
 void clear_ota_mark( void )
 {
-	cfg.otaVar.otaUpgMark = 0;
-	cfg.otaVar.crc32 = 0;
-	cfg.otaVar.fileSize =0;
-	cfg.otaVar.ver =0;
-	sysCfg_save();
+    cfg.otaVar.otaUpgMark = 0;
+    cfg.otaVar.crc32 = 0;
+    cfg.otaVar.fileSize =0;
+    cfg.otaVar.ver =0;
+    sysCfg_save();
 }
-
-
 
 uint8_t bootloader_iap( void )
 {

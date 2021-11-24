@@ -156,7 +156,7 @@ int BLEWIZ_return_comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
 int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
 {
     uint8_t pbBuf[256] , msg[256] , size = 0;
-    uint8_t manufacturers[]={"TERMINUS"};
+
     //_DeviceInfo *devinfo;
     TslBLEProto_TSLBLEDeviceInfoResponse    result = TslBLEProto_TSLBLEDeviceInfoResponse_init_zero; 
     pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 256);  

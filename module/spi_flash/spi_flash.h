@@ -31,11 +31,11 @@
 typedef struct  _spi_flash
 {
     uint8_t  (*earse)            (uint32_t addr);
-    void      (*earse_chip)        (void);
-    uint32_t (*read_chip_id)    (void);
+    void      (*earse_chip)      (void);
+    uint32_t (*read_chip_id)     (void);
     uint8_t  (*write)            (uint32_t writeAddr,uint8_t* buffer,  uint16_t numByteToWrite);
     uint8_t  (*read)             (uint32_t readAddr, uint8_t* buffer, uint16_t NumByteToRead);
-    uint8_t  (*get_lock)            (void);
+    uint8_t  (*get_lock)         (void);
     void     (*release_lock)     (void);
 }spi_flash_type;
 

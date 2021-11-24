@@ -2674,15 +2674,6 @@
             </file>
         </group>
         <group>
-            <name>MD5</name>
-            <file>
-                <name>$PROJ_DIR$\..\components\GMD5\gmd5.c</name>
-            </file>
-            <file>
-                <name>$PROJ_DIR$\..\components\GMD5\gmd5.h</name>
-            </file>
-        </group>
-        <group>
             <name>open_door</name>
             <file>
                 <name>$PROJ_DIR$\..\components\open_door\open_door.c</name>

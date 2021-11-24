@@ -119,9 +119,8 @@ void timer_isr( void )
 
 }
 
-
 #include "mbedtls/md5.h"
-void file_MD5(void)
+uint32_t file_MD5(void)
 {
     #define ONE_FILE_LEN 512
     int i,allsteps,lastlen;
@@ -133,7 +132,7 @@ void file_MD5(void)
     mbedtls_md5_starts(&md5);  
     
     /*全部的file分割为多少个ONE_FILE_LEN*/  
-    if( (cfg.otaVar.fileSize)%ONE_FILE_LEN !=0)
+    if((cfg.otaVar.fileSize)%ONE_FILE_LEN !=0)
         allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN+1;
     else
         allsteps = cfg.otaVar.fileSize/ONE_FILE_LEN;
@@ -141,14 +140,17 @@ void file_MD5(void)
     /*前面N-1个都是正正好好的一块一块*/  
     for(i=0;i<allsteps-1;i++){
         memset(encrypt , 0x00 , ONE_FILE_LEN);
-        readAddr += i*ONE_FILE_LEN;
         flash.read(readAddr , encrypt , ONE_FILE_LEN);
         mbedtls_md5_update(&md5,encrypt,ONE_FILE_LEN);
+        //printf("readAddr 0X%08X\r\n",readAddr);
+        readAddr += ONE_FILE_LEN;
+
     }
     /*最后一块可能不是完整的*/ 
         lastlen = cfg.otaVar.fileSize - ((allsteps-1)*ONE_FILE_LEN);
         memset(encrypt , 0x00 , lastlen);
-        flash.read(readAddr+ONE_FILE_LEN , encrypt , lastlen);
+        //printf("readAddr 0X%08X\r\n",readAddr);
+        flash.read(readAddr , encrypt , lastlen);
         mbedtls_md5_update(&md5,encrypt,lastlen);
     /*最后结束*/
     mbedtls_md5_finish(&md5,decrypt);   
@@ -158,11 +160,26 @@ void file_MD5(void)
     {
         printf("%02X",decrypt[i]);
     }
-    printf("\r\n");
+    return  CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
 }
+
 
 uint8_t ota_ver_file( void )
 {
+  
+    uint32_t crc32 = file_MD5();
+
+    if( crc32 == cfg.otaVar.crc32)
+    {
+        log(WARN,"文件校验正确，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
+        return TRUE;
+    }
+
+    log(ERR,"文件校验失败，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
+
+    
+    return FALSE;
+  /*
 	uint32_t crc32 = 0xFFFFFFFF;
 	uint32_t crcTbl;
 	uint8_t buff[512];
@@ -201,6 +218,7 @@ uint8_t ota_ver_file( void )
 	log(ERR,"文件校验失败，calc CRC=%x , get crc = %x\n" , crc32 , cfg.otaVar.crc32);
 file_MD5();
 	return TRUE;//
+*/
 }
 
 uint8_t sys_cfg_read(SystemConfigType *data)

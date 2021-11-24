@@ -34,7 +34,7 @@ do                                                                            \
         printf message;                                                   \
 }                                                                             \
 while (0)
-#define OTA_DEBUG                                                      1
+#define OTA_DEBUG                                                     0
 
 
 /*
@@ -187,98 +187,23 @@ uint8_t ota_write_file(uint8_t *msg , uint32_t len)
              OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候 反馈不能擦\n"));
              return FALSE;
         }        
+        printf("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len );
     }
 
     if(dev_ota_write_flash(writeAddr , msg , len)==FALSE)OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候失败了\n"));
     OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len ));
+    
     return TRUE;
 }
 
 
-void printf_file(void)
-{
-
-    uint8_t buff[512];
-    uint32_t readAddr = OTA_START_ADDR;
-    uint16_t readSize = 12 ;
-    __IO int32_t len =80;
-
-    while( len < ota.fileSize )
-    {
-        if( len + readSize > ota.fileSize)
-        {
-            readSize = ota.fileSize - len;
-        }
-
-        memset(buff , 0x00 , 512);
-        dev_ota_read_flash(readAddr+len , buff , readSize);
-
-        for(uint16_t i =0 ; i < readSize ; i++)
-        {
-            printf("%02X " , buff[i]);
-        }
-        printf("\r\n");
-        len += readSize;
-        //sys_delay(100);
-
-    }
-
-}
-/*
-*********************************** 文件校验 和BOOT里面同名函数几乎一样 这里是读SPIFLASH 那里是读CHIPFLASH ***********************************
-*/
-uint8_t ota_ver_file( void )
-{
-    uint32_t crc32 = 0xFFFFFFFF;
-    uint32_t crcTbl;
-    uint8_t buff[512];
-    uint32_t readAddr = OTA_START_ADDR;
-    uint16_t readSize = 512 ;
-    __IO int32_t len =0;
-
-    while( len < ota.fileSize )
-    {
-        if( len + readSize > ota.fileSize)
-        {
-            readSize = ota.fileSize - len;
-        }
-
-        memset(buff , 0x00 , 512);
-        dev_ota_read_flash(readAddr+len , buff , readSize);
-
-        for (uint32_t i = 0; i!= readSize; ++i)
-        {
-            crcTbl = (crc32 ^ buff[i]) & 0xFF;
-            crc32 = ((crc32 >> 8) & 0xFFFFFF) ^ gdwCrc32Table[crcTbl];
-        }
-        len += readSize;
-
-    }
-
-    crc32 = ~crc32;
-
-    if( crc32 == ota.crc32)
-    {
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件校验正确,calc CRC=%x , get crc = %x\n" , crc32 , ota.crc32));
-        return TRUE;
-    }
-
-    OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件校验失败,calc CRC=%x , get crc = %x\n" , crc32 , ota.crc32));
-
-    /*
-    log_err("读取错误文件信息\n");
-    printf_file();
-    */
-    
-    return TRUE;//
-}
 #include "mbedtls/md5.h"
-void file_MD5(void)
+uint32_t file_MD5(void)
 {
-    #define ONE_FILE_LEN 4096//512
+    #define ONE_FILE_LEN FLASH_SPI_BLOCKSIZE//512
     int i,allsteps,lastlen;
     uint32_t readAddr = OTA_START_ADDR;
-    /*考虑到BOOT/APP两个程序同时使用定义512吧 每次读出来这么多*/    
+     /*考虑到BOOT/APP两个程序同时使用定义512吧 每次读出来这么多*/    
     //unsigned char encrypt[ONE_FILE_LEN];
     unsigned char *encrypt = fb;
     unsigned char decrypt[16];
@@ -291,19 +216,18 @@ void file_MD5(void)
     else
         allsteps = ota.fileSize/ONE_FILE_LEN;
 
-    /*前面N-1个都是正正好好的一块一块*/  
+    /*前面N-1个都是正正好好的一块一块*/ 
     for(i=0;i<allsteps-1;i++){
         memset(encrypt , 0x00 , ONE_FILE_LEN);
-        readAddr += i*ONE_FILE_LEN;
-        printf("readAddr %d\r\n",readAddr);
         dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
         mbedtls_md5_update(&md5,encrypt,ONE_FILE_LEN);
+        printf("readAddr 0X%08X\r\n",readAddr);
+        readAddr += ONE_FILE_LEN;
     }
     /*最后一块可能不是完整的*/ 
         lastlen = ota.fileSize - ((allsteps-1)*ONE_FILE_LEN);
         memset(encrypt , 0x00 , lastlen);
-        readAddr += ONE_FILE_LEN;
-        printf("readAddr %d\r\n",readAddr);
+        printf("readAddr 0X%08X\r\n",readAddr);
         dev_ota_read_flash(readAddr , encrypt , lastlen);
         mbedtls_md5_update(&md5,encrypt,lastlen);
     /*最后结束*/
@@ -315,9 +239,26 @@ void file_MD5(void)
         printf("%02X",decrypt[i]);
     }
     printf("\r\n");
+    
+    return  CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
 }
 
 
+uint8_t ota_ver_file( void )
+{
+    uint32_t crc32 = file_MD5();
+
+    if( crc32 == ota.crc32)
+    {
+        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件校验正确,calc CRC=%x , get crc = %x\n" , crc32 , ota.crc32));
+        return TRUE;
+    }
+
+    OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件校验失败,calc CRC=%x , get crc = %x\n" , crc32 , ota.crc32));
+
+    
+    return FALSE;
+}
 /*
 *********************************** 网络操作 ***********************************
 */
@@ -373,6 +314,8 @@ memcpy(ota.fileKey,"/upload/485982176.bin" ,strlen("/upload/485982176.bin")  );
 ota.len=       0;
 ota.fileSize=  51484;
 //ota.fileSize=  10;
+uint8_t md5[16]={0xFC,0xF8,0x08,0x2E,0xBD,0xB1,0xAD,0x38,0x6D,0x3C,0xA2,0xD5,0xDD,0x5A,0xF5,0x3E};
+ota.crc32=  CRC16_CCITT(md5,16);
 show_OTA(otaCfg);
 }
 
@@ -528,7 +471,7 @@ int8_t ota_download_read_file(void)
         if( ota_ver_file() == TRUE )
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证非常好\n"));
-file_MD5();
+
             return SOCKET_OK;
         }
         else

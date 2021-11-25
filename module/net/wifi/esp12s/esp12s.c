@@ -523,7 +523,7 @@ static void wifi_rx_data_analisys(char *str , int len)
             
             id = *pst - '0';
 
-            log(WARN,"关闭socket = %d\n" , id);
+            log(WARN,"[ESP32]模组自动发送关闭消息 准备关闭socketID = %d\n" , id);
 
             socket =   socket_read_obj(id);
             if(socket->useFlag == TRUE)
@@ -576,14 +576,14 @@ static void wifi_rx_data_analisys(char *str , int len)
                     {
                                           if( socket->len + dlen < socket->maxSize )
                                           {
-                                              memcpy(socket->msg+socket->len , pst+1 ,dlen);
+                                                memcpy(socket->msg+socket->len , pst+1 ,dlen);
                                               //log_arry(WARN,"[ESP32-RX]"  ,pst+1 ,dlen);
                                               //if(socket)printf("[ESP32-RX][%s]\r\n",pst+1);
                                               socket->len += dlen;
                                           }
                                           else
                                           {
-                                              log_err("接收数据太长\n");
+                                              log_err("ESP32]接收数据太长\n");
                                           }
                     }
                     else
@@ -663,13 +663,14 @@ void wifi_module_receive( void )
         usartReceiveDataType    wifiRxData;
         
         //vTaskSuspendAll();
+        
         memset( &wifiRxData ,0x00 ,  sizeof(usartReceiveDataType));
         memcpy(&wifiRxData , &receiveData , sizeof(usartReceiveDataType));
         memset( &receiveData ,0x00 ,  sizeof(usartReceiveDataType));
         
         wifi_rx_data_analisys(wifiRxData.rxBuff , wifiRxData.len);
 
-       // xTaskResumeAll();
+        //xTaskResumeAll();
     }
 
 }
@@ -713,7 +714,7 @@ int8_t esp12s_disconnect( int8_t id )
     uint8_t sendBuff[128] ,sendSize =0;
     
     
-    log(DEBUG,"关闭socket = %d \n" , id);
+    log(DEBUG,"[ESP32]关闭socket = %d \n" , id);
 
     memset(sendBuff , 0x00 , 128);
 

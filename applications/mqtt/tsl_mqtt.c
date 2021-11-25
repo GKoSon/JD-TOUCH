@@ -187,7 +187,7 @@ static char *cj_create_uploadDeviceVer(void)
     cJSON *root = NULL;
     char *outStr;
     char versionData[5];//---------------------不能是4
-    uint16_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
+    uint32_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
     memset(versionData , 0x00 , sizeof(versionData));
     sprintf(versionData ,"v%03d" , swVer);
     
@@ -210,7 +210,7 @@ static char *cj_create_uploadDeviceInfo(void)
     char *outStr;
     uint8_t deviceLockMode = config.read(CFG_SYS_LOCK_MODE , NULL);
     char versionData[4];
-    uint16_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
+    uint32_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
     memset(versionData , 0x00 , sizeof(versionData));
     sprintf(versionData ,"v%03d" , swVer);
     
@@ -559,95 +559,91 @@ int cj_parse_dispatchFilterItem(const char * pJson,cj_dispatchFilterItem *item)
       
       return 0;
 }
-char downProgramURL(char *pJson)
+
+
+/*
+topic /star_line/server/otaDown/(设备code)
+type OtaDown struct {
+	TaskID 			string 		`json:"taskID"`				//	会话ID
+	Data 	struct{
+		FileUrl 	string 		`json:"fileUrl"`			//	文件存放路径
+		Md5Str		string 		`json:"md5Str"`				//	文件md5值
+	} `json:"data"`
+}
+*/
+
+void downProgramURL(char *pJson)
 {
       SHOWME 
-      char code = 1;/*1--失败*/
-      int port = 0,ver=0;
+
+      uint32_t port = 0,ver=0;
       char *p = NULL;
       char url[64];
       cJSON * pRoot = cJSON_Parse(pJson);
       cJSON * pSub  = NULL;
+      
+      
       if(NULL == pRoot) 
       {
           const char *error_ptr = cJSON_GetErrorPtr();
-          if (error_ptr != NULL)    log(ERR,"Error before: %s\n", error_ptr);
+          if (error_ptr != NULL)    log(ERR,"Error before: %s,%d\n", error_ptr,__LINE__);
           cJSON_Delete(pRoot);  
-          return code;
+          return ;
       }
       
 
-      cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "seqNo");
-      if(NULL == pSubONE)
-      {
-          cJSON_Delete(pRoot);
-          return code;
-      }
+      cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID");
+      if(NULL == pSubONE) { cJSON_Delete(pRoot); return ; }
       memset(taskID,0,33);
       sprintf(taskID,"%.32s",pSubONE->valuestring);
-      printf("NO--%s\r\n",pSubONE->valuestring);
+
+      
       
       cJSON * pSubALL = cJSON_GetObjectItem(pRoot, "data");
+
       if(NULL == pSubALL)
       {
           cJSON_Delete(pRoot);
           goto out;
       }   
+
       
-      pSub = cJSON_GetObjectItem(pSubALL, "url");
+      pSub = cJSON_GetObjectItem(pSubALL, "fileUrl");
       if(NULL == pSub)
       {
           cJSON_Delete(pRoot);
           goto out;
       }
-      code = 0;
-      p = strstr(pSub->valuestring,":");
-      p++;
-      p = strstr(p,":");
-      if(p)
-      {
-        memset(url,0,64);
-        url[0]='/';
-        p++;
-
-        for(char i=0;i<strlen(p);i++)
-        if(p[i]=='/')
-        {
-          p[i]=' ';break;
-        }
-
-          sscanf(p, "%d%s",  &port, &url[1]);
-        printf("[port-d-%d][url--%s]\r\n",port,url);
-        
-        config.write(CFG_OTA_URL ,url ,0);
-        
-
-      }
+      printf("【%s】",pSub->valuestring);
       
-      pSub = cJSON_GetObjectItem(pSubALL, "version");
+      
+      pSub = cJSON_GetObjectItem(pSubALL, "md5Str");
       if(NULL == pSub)
       {
           cJSON_Delete(pRoot);
           goto out;
       }
+
+      /*信息全部拿到了*/
 
       printf("【%s】",pSub->valuestring);
-      if(strstr(pSub->valuestring,"V")||strstr(pSub->valuestring,"v"))
-      p = pSub->valuestring + 1;
-      else
-      p = pSub->valuestring;
+      
+      
 
-      ver = atoi(p);
-      printf("ver【%d】",ver);
+
       
       otaType otaCfg;
       otaCfg.ver = ver;
-      config.write(CFG_OTA_CONFIG , &otaCfg,1); 
-
+      config.write(CFG_OTA_CONFIG , &otaCfg,1);
+      
+      cj_response(taskID ,0); 
+      xSemaphoreGive(xMqttOtaSemaphore);  
+      return;
       
 out:
-     cj_response(taskID ,code ); 
-     return code;
+     cj_response(taskID ,1);
+     return;
+
 }
 
 
@@ -1048,10 +1044,7 @@ int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p)
           downGupcode((char *)p->payload);
           break;
        case MQOTA:
-           if(downProgramURL((char *)p->payload)==0)
-           {
-              xSemaphoreGive(xMqttOtaSemaphore);         
-           }
+          downProgramURL((char *)p->payload);
           break;
     }
     

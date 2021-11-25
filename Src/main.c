@@ -134,7 +134,7 @@ static void MX_NVIC_Init(void);
 #if TESTOTA
 while(1)
 {
-printf("I AM FREE CODE\r\n");
+printf("I AM FREE CODE \r\n");
 sys_delay(300);
 }
 #endif

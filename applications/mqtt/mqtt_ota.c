@@ -11,11 +11,11 @@
 #include "crc32.h"
 #include "sysCfg.h"
 #include "tsl_mqtt.h"
+#include "mqtt_task.h"
 
-
-extern char              rxOtaData[2048];
+extern char              rxOtaData[4096];
 static char              *rxBuf = rxOtaData;
-#define                    OTARXBUF_SIZE    2048
+#define                    OTARXBUF_SIZE    4096
 otaRecvCmdType             ota;
 static xTaskHandle        otaTask;
 static runStatusEnum      otaRunStatus = RUN_INIT;
@@ -187,11 +187,11 @@ uint8_t ota_write_file(uint8_t *msg , uint32_t len)
              OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候 反馈不能擦\n"));
              return FALSE;
         }        
-        printf("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len );
+
     }
 
     if(dev_ota_write_flash(writeAddr , msg , len)==FALSE)OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写的时候失败了\n"));
-    OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len ));
+    OTA_DEBUG_LOG(1, ("【OTA】本地写好 在地址 0X%08X 后面写了这么长%d \n", writeAddr,len ));
     
     return TRUE;
 }
@@ -211,33 +211,33 @@ uint32_t file_tail16hex(void)
         allsteps = fileSize/ONE_FILE_LEN;
     
     lastlen = fileSize - ((allsteps-1)*ONE_FILE_LEN);
-    printf("[file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d]",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
+    printf("[file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d]\r\n",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
     
     if(lastlen >= 16)/*测试成功*/
     {
       readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]",readAddr);
+      printf("[readAddr =0X%08X]\r\n",readAddr);
       dev_ota_read_flash(readAddr , encrypt , lastlen);
       memcpy(binmd5,&encrypt[lastlen-16],16);
     }
     else if (lastlen == 0)
     {
       readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]",readAddr);
+      printf("[readAddr =0X%08X]\r\n",readAddr);
       dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
       memcpy(binmd5,&encrypt[ONE_FILE_LEN-16],16);
     }
     else/*加入lastlen是2的话 那就是14个在前面 最后2个在最后一次 先直接把这2个拿下来 在把前面的再次读出*/
     {
        readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]",readAddr);
+       printf("[readAddr =0X%08X]\r\n",readAddr);
        dev_ota_read_flash(readAddr , encrypt , lastlen);
        memcpy(&binmd5[lastlen],encrypt,lastlen);
        
        readAddr = OTA_START_ADDR + (allsteps-2)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]",readAddr);
+       printf("[readAddr =0X%08X]\r\n",readAddr);
        dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
-       memcpy(binmd5,encrypt,ONE_FILE_LEN-(16-lastlen));
+       memcpy(binmd5,&encrypt[lastlen-(16-lastlen)],(16-lastlen));
     }
     log_arry(DEBUG,"读BIN的MD5是 " ,binmd5, 16);
     uint16_t bincrc = CRC16_CCITT(binmd5,16);
@@ -283,13 +283,13 @@ uint32_t file_MD5(void)
     /*最后结束*/
     mbedtls_md5_finish(&md5,decrypt);   
     
-    printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
+    printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d\r\n",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
     log_arry(DEBUG,"结果计算MD5是:" ,decrypt, 16);
     
     
     uint16_t crc = CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
     uint16_t bincrc = file_tail16hex();
-    printf("bincrc %d,crc %d",bincrc,crc);
+    printf("bincrc %d,crc %d\r\n",bincrc,crc);
     if( bincrc  == crc)
       return crc;
     return 0;
@@ -338,9 +338,9 @@ void ota_clear_buffer( void )
     ota.fileSize = 0;
     ota.len = 0;
     ota.ver = 0;
-    ota.upgFlag = 0;
+
     memset( ota.fileKey , 0x00 , sizeof(ota.fileKey));
-    ota.writeAddr  =  OTA_START_ADDR;
+
 }
 
 void ota_init_buffer( void )
@@ -349,7 +349,7 @@ void ota_init_buffer( void )
 
     memset(&ota , 0x0 , sizeof(otaRecvCmdType));
     ota.otaStatus = CHECH_UPG_FILE;
-    ota.writeAddr  =  OTA_START_ADDR;
+ 
     config.read(CFG_OTA_CONFIG,(void **)&otaCfg);
     if( otaCfg->otaUpgMark == UPG_MARK)
     {
@@ -363,10 +363,10 @@ void ota_init_buffer( void )
     
     
 
-memcpy(ota.fileKey,"/upload/861122726.bin" ,strlen("/upload/861122726.bin")  );
+memcpy(ota.fileKey,"/upload/520360918.bin" ,strlen("/upload/520360918.bin")  );
 ota.len=       0;
-ota.fileSize=  51410;
-
+ota.fileSize=  166590;
+ota.ver=333;
 }
 
 
@@ -404,7 +404,7 @@ uint8_t ota_wait_data(uint8_t *pData , uint16_t len)
 int8_t ota_download_read_file(void)
 {
 #define ONESTEP 1024
-    uint8_t  httprequest[256];
+    uint8_t  httprequest[400];
     int httpsendLen = 0, ret = 0,len = 0,heardlen = 0 ,dataLen=0;
     char *dataPoint = NULL;
     serverAddrType *addr;
@@ -421,16 +421,16 @@ int8_t ota_download_read_file(void)
         memset(rxBuf , 0x00, sizeof(OTARXBUF_SIZE));
         socket_clear_buffer(clientId);
 
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件下载进度:%d%\n" ,  (ota.len*100)/ota.fileSize));
+        OTA_DEBUG_LOG(1, ("【OTA】文件下载进度:%d%\n" ,  (ota.len*100)/ota.fileSize));
         if (ota.len  + ONESTEP >= ota.fileSize)
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】获取数据（最后一包）, %d-%d \n" , ota.len , ota.fileSize));
+            OTA_DEBUG_LOG(1, ("【OTA】获取数据（最后一包）, %d-%d \n" , ota.len , ota.fileSize));
             httpsendLen = sprintf((char *)httprequest, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: keep-alive\r\nRange: bytes=%d-%d\r\n\r\n", ota.fileKey, addr->ip, ota.len , ota.fileSize);
             dataLen = ota.fileSize - ota.len;
         }
         else
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】获取数据（日常一包）, %d-%d \n" , ota.len ,  ota.len  + (ONESTEP-1)));
+            OTA_DEBUG_LOG(1, ("【OTA】获取数据（日常一包）, %d-%d \n" , ota.len ,  ota.len  + (ONESTEP-1)));
             httpsendLen = sprintf((char *)httprequest, "GET %s HTTP/1.1\r\nHost: %s\r\nConnection: keep-alive\r\nRange: bytes=%d-%d\r\n\r\n", ota.fileKey, addr->ip ,ota.len ,ota.len  + (ONESTEP-1));
             dataLen = ONESTEP;
         }
@@ -439,23 +439,28 @@ int8_t ota_download_read_file(void)
         ret = socket.send(clientId , httprequest , httpsendLen , 3000);
         if( ret != SOCKET_OK)
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】socket.send FAIL = %s \n", httprequest));
-            return ret;
+            OTA_DEBUG_LOG(1, ("【OTA】socket.send FAIL = %d \n", ret));
+            return SOCKER_READ_ERR;
         }
-        
+  //socket.read_buffer      
+
         ret = socket.read(clientId  , 10000);
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的长度:  %d\n", ret));
-        if (ret == 0)  
+        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的长度: [ %d]\n", ret));
+
+        if (ret < 0)  
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的长度0 读取数据失败"));
+            OTA_DEBUG_LOG(1, ("【OTA】接到消息的长度<0 socket.read读取数据失败[ %d]\n", ret));
             return SOCKER_READ_ERR;
         }
                                       
         //OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的内容【打印这个会死机 兄弟！】:%s \n" , rxBuf ));
         if( ota_check_http(rxBuf ) == FALSE)
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到返回HTTP的数据头错误\n"));
-            continue;          
+            OTA_DEBUG_LOG(1, ("【OTA】接到返回HTTP的数据头错误\n"));
+memset(httprequest, '\0', sizeof(httprequest));
+memcpy(httprequest,rxBuf,100);
+OTA_DEBUG_LOG(1, ("【%s】\n",httprequest));
+            return SOCKER_READ_ERR;          
         }
         
         //解析数据长度
@@ -464,7 +469,7 @@ int8_t ota_download_read_file(void)
         if(len == 0)
         {
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】数据长度为0 ，重新读取 , 当前接受长度=%d\n" , ota.len));
-            continue;
+            return SOCKER_READ_ERR;
         }
 
         //解析Http协议头，获取头的长度及数据起始地址
@@ -518,15 +523,16 @@ int8_t ota_download_read_file(void)
     {
         OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件接收完成\n"));
         socket.disconnect(clientId);
+        
         if( ota_ver_file() == TRUE )
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证非常好\n"));
+            OTA_DEBUG_LOG(1, ("【OTA-DONE】文件验证非常好\n"));
 
             return SOCKET_OK;
         }
         else
         {
-            OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA-DONE】文件验证糟糕白忙活了\n"));
+            OTA_DEBUG_LOG(1, ("【OTA-DONE】文件验证糟糕白忙活了\n"));
 
             ota_init_buffer();
 
@@ -554,10 +560,17 @@ int8_t ota_download_file( void )
         }break;
         case RUN_CONNECTING:
         {
+          
+            if(mqtt_network_normal() != TRUE) 
+            {
+              OTA_DEBUG_LOG(1, ("RUN_CONNECTING 当前MQTT异常 啥也不干了\n"));
+              break;
+            }
             OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】RUN_CONNECTING ota start connect server\n"));
             memset(rxBuf  , 0x00 , OTARXBUF_SIZE);
             serverAddrType *addr;         
             config.read(CFG_OTA_ADDR , (void **)&addr);
+            
             //if( (ret = socket.connect("34.73.14.154" , 80 ,rxBuf  , OTARXBUF_SIZE)) >= 0)
             //if( (ret = socket.connect("ibinhub.com" , 80 ,rxBuf  , OTARXBUF_SIZE)) >= 0)
             if( (ret = socket.connect(addr->ip , addr->port ,rxBuf  , OTARXBUF_SIZE)) >= 0)
@@ -576,7 +589,8 @@ int8_t ota_download_file( void )
         case RUN_CONNECT:
         {
 taskDISABLE_INTERRUPTS();
-            if( (ret = ota_download_read_file()) == SOCKET_OK )
+            ret = ota_download_read_file();
+            if( ret == SOCKET_OK )
             {
                 otaType otaCfg;
 
@@ -586,9 +600,15 @@ taskDISABLE_INTERRUPTS();
                 otaCfg.crc32 = ota.crc32;
                 otaCfg.fileSize = ota.fileSize;
                 otaCfg.otaUpgMark = UPG_MARK;
-                config.write(CFG_OTA_CONFIG ,&otaCfg , TRUE);
-
+                config.write(CFG_SYS_SW_VERSION ,&ota.ver , 0);
+                config.write(CFG_OTA_CONFIG     ,&otaCfg , TRUE);
                 return OTA_OK;
+            }
+            else if(ret == SOCKER_READ_ERR)
+            {
+              OTA_DEBUG_LOG(1, ("【OTA】文件下载遇到SOCKER_READ_ERR说明模组意外关闭\n"));
+            
+              ota_repert_connect();
             }
             else
             {
@@ -647,7 +667,7 @@ static void ota_task( void const *pvParameters)
 
             default:break;
         }
-        sys_delay(1000);
+        sys_delay(100);
     }
 }
 

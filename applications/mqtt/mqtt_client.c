@@ -170,7 +170,7 @@ static void mqtt_send_task( void const *pvParameters)
     {
         if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
         {
-            if( network_read_status() ==  TRUE )
+            if( mqtt_network_normal() ==  TRUE )
             {
                 //log(DEBUG,"1   time=%d\n" , HAL_GetTick() - sysRunTimerCnt);
                 if( mqtt_send_mesg(client , msg.msg , msg.len , msg.qos) == MQTT_SUCCESS) 

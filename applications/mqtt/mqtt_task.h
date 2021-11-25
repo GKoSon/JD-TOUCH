@@ -24,7 +24,7 @@ extern mqttClientType     client;
 extern uint8_t            pubTopName[64];
 
 extern void create_mqtt_task( void );
-extern uint8_t network_read_status( void );
+extern uint8_t mqtt_network_normal( void );
 extern void mqtt_set_resert( void );
 
 #endif

@@ -32,16 +32,11 @@ typedef struct
 {
     otaStatusEnum    otaStatus;
 
-    uint8_t         result;
-    uint32_t        len;
-    uint32_t        ver;
-    uint32_t        fileSize;
-    uint32_t        crc32;
-    uint32_t        id;
-    uint32_t        upgFlag;
-    uint32_t        writeAddr;
-    char           fileKey[50];
-
+    uint32_t        len;//自己计算的
+    uint32_t        ver;//版本号
+    uint32_t        fileSize;//文件长度
+    uint32_t        crc32;//MD5的简化
+    char           fileKey[50];//下载的URL
 }otaRecvCmdType;
 
 extern otaRecvCmdType  ota;

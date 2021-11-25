@@ -415,13 +415,10 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
 
         case CFG_SYS_SW_VERSION:
         {
-            cfg.parm.soft_version = *(uint16_t *)(parma);
+            cfg.parm.soft_version = *(uint32_t *)(parma);
         }break;
 
-         case CFG_SYS_OTA_VERSION:
-        {
-            cfg.otaVar.ver = *(uint32_t *)(parma);
-        }break;       
+      
         case CFG_PAIR_PWD:
         {
             memcpy(cfg.pair_pwd , parma , BLE_PASSWORD_LENGTH);

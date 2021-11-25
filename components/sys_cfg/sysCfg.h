@@ -87,7 +87,7 @@ typedef enum
     CFG_SYS_DEVICE_NUM,
     CFG_SYS_DEVICE_NAME,
     CFG_SYS_SW_VERSION,
-    CFG_SYS_OTA_VERSION,
+
     CFG_SYS_NET_TYPE,
     CFG_SYS_BLE_TYPE,
     CFG_SYS_DEVICE_FUN,
@@ -142,7 +142,7 @@ typedef struct
       uint8_t  chipId[DEVICE_CHIP_LENGTH];
       uint8_t  deviceName[DEVICE_NAME_LENG];
       uint8_t  updataTime;
-      uint16_t soft_version;
+      uint32_t soft_version;
 }SystemParmType;
 
 typedef struct

@@ -1,0 +1,37 @@
+1--制作升级的bin文件
+    修改#define     DEVICE_SW_VERSION         333[不行]
+    编译即可  它是上报MQTT的版本号 如果跑这个程序的话会看到联网以后上报的消息不同了
+    D:\git\JD-TOUCH\EWARM\Seed_STM32L471RE\Exe 拷贝到文件夹
+    执行HEX-->bin+MD5的操作
+    linux执行的 它是HEX转bin最后追加20个HEX 前面4个是len 后面16个是MD5
+    
+    
+******GKOSON FINISHED*******
+bin len =166570 = 162K
+infilelen=2730
+MD5rst:
+1B95BF3A9BA22F48A800483D959B5681
+追加完毕
+
+2--上传到平台
+长度是 166305 byte	
+MD5是  5cc38cbbb39a2286e09c333aa50d9607	
+
+3--修改代码
+memcpy(ota.fileKey,"/upload/918468202.bin" ,strlen("/upload/918468202.bin")  );
+ota.len=       0;
+ota.fileSize=  166305;
+
+开始测试
+死机出现
+
+    怀疑是一般是memcpy 数组越界这样的
+
+    定位是
+    ret = socket.send(clientId , httprequest , httpsendLen , 3000);
+    ret = socket.read(clientId  , 10000);
+    if (ret < 0)  
+    这里的if有问题 因为可能是返回负数的！！表示读失败了！
+    增加逻辑 突然断开 就再次连接 继续下载
+4--测试成功    
+    

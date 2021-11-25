@@ -24,7 +24,7 @@ void socket_bind_buffer( int8_t id , char *pData , uint16_t size)
         sockeArry[id].status =  SOCKET_INIT;
         sockeArry[id].useFlag = TRUE;
         sockeArry[id].msg = pData;
-                sockeArry[id].maxSize = size;
+        sockeArry[id].maxSize = size;
 
     }
     else
@@ -149,7 +149,7 @@ int8_t socket_write(uint8_t id ,  uint8_t *sendData , uint16_t length , uint32_t
     {
         if( ( ret = devCom->send(id , sendData , length )) == TRUE)
         {
-            //log(DEBUG , "socket %d 发送数据完成\n" , id);
+            //log(DEBUG , "[socket] %d 发送数据完成\n" , id);
             xSemaphoreGive(xSocketSemaphore);
             return SOCKET_OK;
         }
@@ -171,30 +171,47 @@ int socket_read(int8_t id , uint32_t timeout)
 
     sockeArryType *socket = socket_read_obj(id);
 
-    if(socketStatus != SOCKET_WORKING_STATUS)            return SOCKERT_STATUS_ERR;
+    if(socketStatus != SOCKET_WORKING_STATUS)
+    {
+        return SOCKERT_STATUS_ERR;
+    }
 
+    if(socket == NULL)
+    {
+        log_err("不存在这个id , id = %d\n" , id);
+        return SOCKER_READ_NOID ;
+    }
 
-    if(socket == NULL)                                  return SOCKER_READ_NOID ;
-    
-    if( socket->useFlag == FALSE)    {        log(WARN,"socket 未建立连接 id = %d\n" , id);        return SOCKET_READ_NOCON;    }
+    if( socket->useFlag == FALSE)
+    {
+        log(WARN,"[%d]socket 未建立连接 id = %d\n" ,__LINE__, id);
+        return SOCKET_READ_NOCON;
+    }
 
     while(timecnt--)
     {
         socket = socket_read_obj(id);
 
-        if(socket == NULL){log_err("不存在这个id , id = %d\n" ,       id);	return SOCKER_READ_NOID ;}
+        if(socket == NULL)
+        {
+                log_err("不存在这个id , id = %d\n" , id);
+                return SOCKER_READ_NOID ;
+        }
 
-        if( socket->useFlag == FALSE)    {log(WARN,"socket 未建立连接 id = %d\n" ,       id);	return SOCKET_READ_NOCON;}
+        if( socket->useFlag == FALSE)
+        {
+                log(WARN,"[%d]socket 未建立连接 id = %d\n" ,__LINE__, id);
+                return SOCKET_READ_NOCON;
+        }
 
         if( socket->status == SOCKET_READ )
         {
             if( socket->len > 0 )
             {
-                ret = socket->len;
-                socket->len = 0;
-                socket->status = SOCKET_INIT;
-                if(otasee)     log_arry(INFO,"socket read data" ,(uint8_t *)socket->msg ,ret);//是怎么？socket->msg  socket_bind_buffer
-                 //printf("ret =%d\r\n",ret);       
+                 ret = socket->len;
+                 socket->len = 0;
+                 socket->status = SOCKET_INIT;
+   
                  return ret;
             }
             else
@@ -211,7 +228,7 @@ int socket_read(int8_t id , uint32_t timeout)
         sys_delay(5);
     }
 
-  return SOCKET_READ_TIMEOUT;
+    return SOCKET_READ_TIMEOUT;
 }
 
 
@@ -236,7 +253,7 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
 
     if( socket->useFlag == FALSE)
     {
-        log(WARN,"socket 未建立连接 id = %d\n" , id);
+        log(WARN,"[%d]socket 未建立连接 id = %d\n" ,__LINE__, id);
         return SOCKET_READ_NOCON;
     }
 
@@ -252,14 +269,12 @@ int socket_read_data(int8_t id , uint8_t *recvData , int32_t recvLen , uint32_t 
 
         if( socket->useFlag == FALSE)
         {
-                log(WARN,"socket 未建立连接 id = %d\n" , id);
+                log(WARN,"[%d]socket 未建立连接 id = %d\n" ,__LINE__, id);
                 return SOCKET_READ_NOCON;
         }
 
         if( socket->status == SOCKET_READ )
         {
-//log(ERR,"socket read len = %d , buffer len = %d\n"  , recvLen , socket->len );
-//if(otasee)log_arry(ERR, "socket recv", (uint8_t *)socket->msg  , socket->len );
             if( socket->len <= recvLen )
             {
                 memcpy(recvData , socket->msg , socket->len);
@@ -358,7 +373,7 @@ int8_t socket_disconnect( int8_t id )
 
     if( socket->useFlag == FALSE)
     {
-        log(WARN,"socket 未建立连接 id = %d\n" , id);
+        log(WARN,"[%d]socket 未建立连接 id = %d\n" ,__LINE__, id);
         return SOCKET_READ_NOCON;
     }
 
@@ -385,13 +400,11 @@ int8_t socket_disconnect( int8_t id )
 
 }
 
-
-
-
 uint8_t socket_is_ok( void )
 {
     return (devCom->isOK());
 }
+
 void socket_close_f( void )
 {
 

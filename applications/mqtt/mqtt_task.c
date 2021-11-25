@@ -200,7 +200,7 @@ static void mqtt_task( void const *pvParameters)
     }
 }
 
-uint8_t network_read_status( void )
+uint8_t mqtt_network_normal( void )
 {
     return ((mqttRunType == GMQTT_OK ) ? TRUE : FALSE );
 }

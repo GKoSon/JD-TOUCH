@@ -320,13 +320,13 @@ void journal_add_into_card (openlogDataType *pkt )
             return ;
         }
 
-    if(network_read_status() ==  TRUE )
+    if(mqtt_network_normal() ==  TRUE )
     {
         journal_send_queue(LOG_SEND  , 0 );
     }
     else
     {
-                log(DEBUG,"MQTT离线，暂不发送，存储记录\n");
+         log(DEBUG,"MQTT离线，暂不发送，存储记录\n");
     }
 
 }
@@ -359,7 +359,7 @@ void journal_add_into_pwd(openlogDataType *pkt )
     }
 
 
-    if(network_read_status() ==  TRUE )
+    if(mqtt_network_normal() ==  TRUE )
     {
         journal_send_queue(LOG_SEND  , 0 );
     }
@@ -405,7 +405,7 @@ void journal_add_into_key( openlogDataType *pkt )
       return ;
     }
 
-    if(network_read_status() ==  TRUE )
+    if(mqtt_network_normal() ==  TRUE )
     {
       journal_send_queue(LOG_SEND  , 0 );
     }

@@ -1,0 +1,119 @@
+拷贝 BleProtocol.proto 到C:\Users\Koson.Gong\Desktop\nanopb-0.3.9.6-windows-x86\examples\simple
+然后执行
+
+start ../../generator-bin/protoc --nanopb_out=. BleProtocol.proto
+
+注意需要del第四行 也就是不要这句话//package = "com.ble.protobuf"; 出来.C.H
+
+
+
+计划只是给BleDataHandle使用
+完成第一个
+
+步骤1---
+DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
+理由
+源文件
+message DeviceOpenRequest {
+   int32 pwd = 1;    	//开门密码 
+   int32 type=2;     	//0:安装工、1:用户 2:访客
+   int64 uid=3;      	//用户标识
+   int64 timeStamp=4;  	//时间戳
+   string phoneNo=5;  	//手机号
+}
+变成
+typedef struct _DeviceOpenRequest {
+    int32_t pwd;
+    int32_t type;
+    int64_t uid;
+    int64_t timeStamp;
+    pb_callback_t phoneNo;
+/* @@protoc_insertion_point(struct:DeviceOpenRequest) */
+} DeviceOpenRequest;
+
+步骤2--
+if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )
+理由
+给出结构体 同时给对应的摸具
+
+最后
+static void Show_DeviceOpenRequest(DeviceOpenRequest *p)
+{
+  SHOWME
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】p->pwd      =%d\n",p->pwd));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】p->type     =%d\n",p->type));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】p->uid      =%d\n",p->uid));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】p->timeStamp=%lld\n",p->timeStamp));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】p->phoneNo  =%s\n",p->phoneNo));
+}
+
+uint8_t Down_DeviceOpenRequest (ProtData_T *pag,uint16_t id)
+{SHOWME
+
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
+  if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
+  {			
+    Show_DeviceOpenRequest(&A);
+
+
+
+
+
+++++
+上面的解析有问题 string 没有这个类型
+uint8_t Down_DeviceOpenRequest (ProtData_T *pag,uint16_t id)
+{SHOWME
+  uint8_t   tem[20]={0};
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
+  pb_decode_bytes(&A.phoneNo ,tem);
+  if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
+  {			
+    Show_DeviceOpenRequest(&A);
+    log_arry(ERR,"phoneNo" ,tem ,12);
+    printf("phoneNo %s" ,tem);
++++++
+完成一个回答
+
+步骤1---
+  DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
+定义一个结构体
+步骤2---
+    uint8_t pbBuf[100] , msg[256] , size = 0;
+    DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
+    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100); 
+我是把B发出去的 先把B的内存安排好 再给B赋值
+
+int UP_Return_Comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
+{
+    uint8_t pbBuf[100] , msg[256] , size = 0;
+    BytesType B1; 
+    uint8_t back[2][4]={"YES","ERR"};
+    uint8_t *p;
+    DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
+    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100);  
+
+    B.status = status;
+    
+
+    if(status==0)           p = back[0];    
+    else if(status==1)     p = back[1];
+   
+    
+    pb_add_bytes(&B1 , p , strlen((char *)p)); 
+    pb_encode_bytes(&B.reserved , &B1); 
+    
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】UP_Return_Comm=%s\n",p));
+    
+    if( pb_encode_respone(&RequestStream , DeviceCommonResponse_fields , &B) == TRUE)
+    {
+        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, idtype,pag);
+
+        btModule.send(pag ,msg,size);
+    }
+
+    return 1;
+}
+
+也就是组包的时候是int就直接赋值即可 是string的话就自己pb_encode_bytes即可

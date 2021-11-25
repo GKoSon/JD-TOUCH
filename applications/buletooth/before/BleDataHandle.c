@@ -7,13 +7,11 @@
 #include "open_log.h"
 #include "magnet.h"
 #include "buletooth.h"
-#include "esp12s.h"
+
 #include "mqtt_task.h"
 #include "timer.h"
 #include "cmd_pb.h"
-#include "TSLBleCommon.pb.h"
-#include "TSLBleUser.pb.h"
-#include "TSLBleWizard.pb.h"
+#include "BleProtocol.pb.h"
 
 
 
@@ -22,12 +20,9 @@
 
 uint8_t FTSLBLEDeviceInfoRequest            (ProtData_T *pag,uint16_t id);
 uint8_t FTSLBLEDeviceSetPWDRequest          (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceSetGUPRequest          (ProtData_T *pag,uint16_t id);
+
 uint8_t FTSLBLEDeviceSetMQTTNETRequest      (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceSetDEVNETRequest       (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceLOCKRequest            (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceSetDEVICECODERequest    (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceSetLOCATIONCODERequest  (ProtData_T *pag,uint16_t id);
+
 uint8_t FTSLBLEDeviceSetLOCKPWDRequest       (ProtData_T *pag,uint16_t id);
 
 AppHandleArryType gAppTaskArry[]={
@@ -36,19 +31,26 @@ AppHandleArryType gAppTaskArry[]={
 {0x0300 ,0x0400 , FTSLBLEDeviceSetPWDRequest},
 {0x0306 ,0x0400 , FTSLBLEDeviceSetLOCKPWDRequest},
 
-{0x0301 ,0x0400 , FTSLBLEDeviceSetGUPRequest},
+
 {0x0302 ,0x0400 , FTSLBLEDeviceSetMQTTNETRequest },
-{0x0303 ,0x0400 , FTSLBLEDeviceSetDEVNETRequest },
-{0x0304 ,0x0400 , FTSLBLEDeviceSetDEVICECODERequest },
-{0x0305 ,0x0400 , FTSLBLEDeviceSetLOCATIONCODERequest},
 
-
-{0x0500 ,0x0600 , FTSLBLEDeviceLOCKRequest },
 
 };
 
+#define BLE_DEBUG_LOG(type, message)                                           \
+do                                                                            \
+{                                                                             \
+    if (type)                                                                 \
+        printf message;                                                   \
+}                                                                             \
+while (0)
+#define BLE_DEBUG                                                     1
 
-uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len,uint16_t idtype, ProtData_T *headpag)
+/*
+组包  完成HEAD-BODY结构发出去
+*/
+
+static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len,uint16_t idtype, ProtData_T *headpag)
 {
     uint16_t size=0;
     uint16_t crc16=0;
@@ -78,6 +80,154 @@ uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len,uint16_t idty
     return size+2;
 }
 
+/********************************下行1****************************/
+
+/*
+message DeviceOpenRequest {
+   int32 pwd = 1;    	//开门密码 
+   int32 type=2;     	//0:安装工、1:用户 2:访客
+   int64 uid=3;      	//用户标识
+   int64 timeStamp=4;  	//时间戳
+   string phoneNo=5;  	//手机号
+}
+*/
+uint8_t Down_DeviceOpenRequest (ProtData_T *pag,uint16_t id)
+{SHOWME
+  uint8_t   phoneNo[20]={0};
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
+  pb_decode_bytes(&A.phoneNo ,phoneNo);
+  if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
+  {			
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pwd      =%d\n",A.pwd));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】type     =%d\n",A.type));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】uid      =%d\n",A.uid));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】timeStamp=%lld\n",A.timeStamp));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】phoneNo  =%s\n",phoneNo));
+    log_arry(ERR,"phoneNo" ,phoneNo ,12);
+    printf("phoneNo %s" ,phoneNo);
+    if(A.type==1)
+    {
+
+    } else if(A.type==2)
+    {
+        uint32_t stamp = 0;
+        stamp = rtc.read_stamp();
+        BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】A.timeStamp =%lld rtc.read_stamp()=%lld\n",A.timeStamp,stamp));
+        if( abs(stamp-A.timeStamp) < 5)
+        {
+         
+        }
+        else
+        {
+        
+        }
+     }
+    return APP_OK;
+  }
+  
+
+  return APP_ERR;
+}
+/*
+
+
+message DeviceSetDeviceNameRequest {
+        string name = 1;	//设备名称
+	string code = 2;	//设备编码
+	int32 pairPWD = 3;	//配对密码
+	int32 openPWD = 4;	//开门密码
+	int32 openDelay = 5;	// 开门延迟
+	int32 alarmDelay = 6;	// 开门报警延迟
+	int32 installPurpose = 7;	//安装用途 0:单元机  1：围墙机 2：多围墙 
+	string  mqttServer = 8; //设置mqtt server ip:port信息
+	string  ntpServer = 9;//设置ntp server ip:port信息
+	int32   isdhcp = 10;   //0:手动、1:自动
+	string  ip = 11; 	  //设备ip
+	string  gateway = 12;  //网关
+	string  mask = 13; 	  //子网掩码
+	string  dns = 14; 	  //dns
+	string  groupId = 15;  //默认通行组
+}
+
+*/
+uint8_t Down_DeviceSetDeviceNameRequest (ProtData_T *pag,uint16_t id)
+{SHOWME
+uint8_t   name[20]={0};
+uint8_t   code[20]={0};
+uint8_t   mqttServer[20]={0};
+uint8_t   ntpServer[20]={0};
+uint8_t   ip[20]={0};
+uint8_t   gateway[20]={0};
+uint8_t   mask[20]={0};
+uint8_t   dns[20]={0};
+uint8_t   groupId[20]={0};
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
+  
+  
+pb_decode_bytes(&A.name , name);
+pb_decode_bytes(&A.code , code);
+pb_decode_bytes(&A.mqttServer , mqttServer);
+pb_decode_bytes(&A.ntpServer , ntpServer);
+pb_decode_bytes(&A.ip , ip);
+pb_decode_bytes(&A.gateway , gateway);
+pb_decode_bytes(&A.mask , mask);
+pb_decode_bytes(&A.dns , dns);
+pb_decode_bytes(&A.groupId , groupId);
+
+  if(pb_decode(&requestStream, DeviceSetDeviceNameRequest_fields, &A) == TRUE )		
+  {			
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openPWD        =%d\n",A.openPWD));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openDelay      =%d\n",A.openDelay));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】alarmDelay     =%d\n",A.alarmDelay));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】installPurpose =%d\n",A.installPurpose));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mqttServer     =%s\n",mqttServer));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ntpServer      =%s\n",ntpServer));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】isdhcp         =%d\n",A.isdhcp));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
+BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】groupId        =%s\n",groupId));
+  }
+   return APP_ERR;
+}
+
+/********************************上行1****************************/
+int UP_Return_Comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
+{
+    uint8_t pbBuf[100] , msg[256] , size = 0;
+    BytesType B1; 
+    uint8_t back[2][4]={"YES","ERR"};
+    uint8_t *p;
+    DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
+    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100);  
+
+    B.status = status;
+    
+
+    if(status==0)           p = back[0];    
+    else if(status==1)     p = back[1];
+   
+    
+    pb_add_bytes(&B1 , p , strlen((char *)p)); 
+    pb_encode_bytes(&B.reserved , &B1); 
+    
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】UP_Return_Comm=%s\n",p));
+    
+    if( pb_encode_respone(&RequestStream , DeviceCommonResponse_fields , &B) == TRUE)
+    {
+        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, idtype,pag);
+
+        btModule.send(pag ,msg,size);
+    }
+
+    return 1;
+}
 
 uint8_t BleApplicationHandle(ProtData_T *pag)
 { 
@@ -119,35 +269,8 @@ void BleDataProcess(ProtData_T *sorpag)
 
 
 
-//í¨ó???′e
 int BLEWIZ_return_comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
 {
-    uint8_t pbBuf[100] , msg[256] , size = 0;
-    BytesType B1; 
-    uint8_t back[3][5]={"YES","E-ERR","E-PWD"};
-    uint8_t *p;
-    TslBLEProto_TSLBLEDeviceCommonResponse    result = TslBLEProto_TSLBLEDeviceCommonResponse_init_zero; 
-    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100);  
-
-    result.status = status;
-    
-
-    if(status==0)          p = back[0];    
-    else if(status==1)     p = back[1];
-    else if(status==2)     p = back[2];  
-    
-    pb_add_bytes(&B1 , p , strlen((char *)p)); 
-
-    pb_encode_bytes(&result.reserved , &B1); 
-    
-    log(DEBUG,"BLEWIZ_return_comm BLE ACK   [%s]\r\n , " ,p);
-    
-    if( pb_encode_respone(&RequestStream , TslBLEProto_TSLBLEDeviceCommonResponse_fields , &result) == TRUE)
-    {
-        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, idtype,pag);
-
-        btModule.send(pag ,msg,size);
-    }
 
     return 1;
 }
@@ -158,8 +281,8 @@ int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
     uint8_t pbBuf[256] , msg[256] , size = 0;
 
     //_DeviceInfo *devinfo;
-    TslBLEProto_TSLBLEDeviceInfoResponse    result = TslBLEProto_TSLBLEDeviceInfoResponse_init_zero; 
-    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 256);  
+    //TslBLEProto_TSLBLEDeviceInfoResponse    result = TslBLEProto_TSLBLEDeviceInfoResponse_init_zero; 
+    //pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 256);  
 
    // result.security = config.read(BLE_PAIR_PWD ,NULL);
     
@@ -175,109 +298,41 @@ int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
     //pb_add_bytes(&B6 , SHType.codedev       ,11);    
     //pb_add_bytes(&B7 , SHType.codelocation  ,11); 
     
-    pb_encode_bytes(&result.sn ,                &B1);
-    pb_encode_bytes(&result.manufacturers ,     &B2);   
-    pb_encode_bytes(&result.dev_name ,          &B3);
-    pb_encode_bytes(&result.software_version ,  &B4);
-    pb_encode_bytes(&result.hardware_version ,  &B5);
-    pb_encode_bytes(&result.device_code ,       &B6);
-    pb_encode_bytes(&result.location_code ,     &B7);
+    //pb_encode_bytes(&result.sn ,                &B1);
+    //pb_encode_bytes(&result.manufacturers ,     &B2);   
+    //pb_encode_bytes(&result.dev_name ,          &B3);
+    //pb_encode_bytes(&result.software_version ,  &B4);
+    //pb_encode_bytes(&result.hardware_version ,  &B5);
+    //pb_encode_bytes(&result.device_code ,       &B6);
+    //pb_encode_bytes(&result.location_code ,     &B7);
 
-    if( pb_encode_respone(&RequestStream , TslBLEProto_TSLBLEDeviceInfoResponse_fields , &result) == TRUE)
-    {
+    //if( pb_encode_respone(&RequestStream , TslBLEProto_TSLBLEDeviceInfoResponse_fields , &result) == TRUE)
+    //{
         //printf("RequestStream.bytes_written=0X%02X && idtype=%04x\r\n",RequestStream.bytes_written,idtype);
-        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written ,idtype,pag);
+        //size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written ,idtype,pag);
         //log_arry(DEBUG,"MSG "  ,msg ,size);
         btModule.send(pag ,msg,size);
-    }
+   // }
 
     return 1;
 }
 
 uint8_t FTSLBLEDeviceInfoRequest (ProtData_T *pag,uint16_t id)
 {SHOWME
-  uint32_t pwd=0;
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceInfoRequest	A = TslBLEProto_TSLBLEDeviceInfoRequest_init_zero; 
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceInfoRequest_fields, &A) == TRUE )		
-  {			
-   // pwd= config.read(BLE_PAIR_PWD ,NULL);
-    //printf("\r\n A.security = %d\r\n",A.security);
-    //printf("\r\n pwd = %d\r\n",pwd);
-    if(A.security == pwd )
-    {
-      BLEWIZ_return_info(pag,id);
-      return APP_OK;
-    }
-    else
-    {
-      BLEWIZ_return_comm(pag,2,id);
-      return APP_PWD_ERR;
-    }
-  }
-   
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
+
 
 }
 uint8_t FTSLBLEDeviceSetPWDRequest (ProtData_T *pag,uint16_t id)
 {SHOWME
-  uint32_t pwd=0;
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetPWDRequest	A = TslBLEProto_TSLBLEDeviceSetPWDRequest_init_zero; 
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetPWDRequest_fields, &A) == TRUE )		
-  {			
-    printf("\r\n set new pwd = %d\r\n",A.security);
-    pwd=A.security;
-    //config.write(BLE_PAIR_PWD , &pwd,1);
-    BLEWIZ_return_comm(pag,0,id);
-    return APP_OK;
-  }
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
+
 }
 
 uint8_t FTSLBLEDeviceSetLOCKPWDRequest (ProtData_T *pag,uint16_t id)
 {SHOWME
-  uint32_t pwd=0;
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetLOCKPWDRequest	A = TslBLEProto_TSLBLEDeviceSetLOCKPWDRequest_init_zero; 
-  if(pb_decode(&requestStream,TslBLEProto_TSLBLEDeviceSetLOCKPWDRequest_fields , &A) == TRUE )		
-  {			
-    printf("\r\n set new door pwd = %d\r\n",A.pwd);
-    pwd=A.pwd;
-    //config.write(BLE_DOOR_PWD , &pwd,1);
-    BLEWIZ_return_comm(pag,0,id);
-    return APP_OK;
-  }
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
-}
-
-
-uint8_t FTSLBLEDeviceSetGUPRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-  uint8_t   tem[23],  defgup[11];
-  memset(tem,0,sizeof(tem));
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetGUPRequest	A = TslBLEProto_TSLBLEDeviceSetGUPRequest_init_zero; 
-
-  pb_decode_bytes(&A.groupid ,        tem);
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetGUPRequest_fields, &A) == TRUE )	
-  {
-    
-    log(ERR,"tem = %s \n" ,tem); 
-    G_strsTobytes(tem,defgup,22);
-    log_arry(ERR,"FTSLBLEDeviceSetGUPRequest defgup" ,defgup ,11);
-    //config.write(CFG_SYS_DEFGUP_CODE , defgup,1);
-    BLEWIZ_return_comm(pag,0,id);
-    return APP_OK;
-  }
-  
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
 
 }
+
+
  
 void ip_port_handle(uint8_t *  sor)
 {
@@ -304,11 +359,11 @@ uint8_t FTSLBLEDeviceSetMQTTNETRequest (ProtData_T *pag,uint16_t id)
   uint8_t   tem[50];
   memset(tem,0,sizeof(tem));
 
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetMQTTNETRequest	A = TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_init_zero; 
-  pb_decode_bytes(&A.ipport ,        tem);
+ // pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+ // TslBLEProto_TSLBLEDeviceSetMQTTNETRequest	A = TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_init_zero; 
+  //pb_decode_bytes(&A.ipport ,        tem);
 
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_fields, &A) == TRUE )	
+  //if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_fields, &A) == TRUE )	
   {
     printf("FTSLBLEDeviceSetMQTTNETRequest=%s\r\n",tem);
 
@@ -323,45 +378,8 @@ uint8_t FTSLBLEDeviceSetMQTTNETRequest (ProtData_T *pag,uint16_t id)
 }
 
 
-
-void dev_net_handle(uint8_t (*a)[16],uint8_t isdhcp)
-{
-
-
-}
-
-
-uint8_t FTSLBLEDeviceSetDEVNETRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-  uint8_t   tem[4][16];
-  memset(tem,0,sizeof(tem));
-
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetDEVNETRequest	A = TslBLEProto_TSLBLEDeviceSetDEVNETRequest_init_zero; 
-  pb_decode_bytes(&A.ip ,         tem[0]);
-  pb_decode_bytes(&A.msk ,        tem[1]);
-  pb_decode_bytes(&A.gw ,         tem[2]);
-  pb_decode_bytes(&A.dns ,        tem[3]);
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetDEVNETRequest_fields, &A) == TRUE )	
-  {
-    //for(char i=0;i<4;i++)
-    //{ printf("tem=%s\r\n",tem[i]);    log_arry(ERR,"tem"       ,tem[i] ,16);  }
-
-    dev_net_handle(tem,A.isdhcp);
-
-    BLEWIZ_return_comm(pag,0,id);
-    
-    //xSemaphoreGive(xBleUpdateNetSemaphore);//FINISH
-    
-    return APP_OK;
-  }
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
-
-}  
-
 #include "swipeTag.h"
-void ble_door_log(TslBLEProto_TSLBLEDeviceLOCKRequest	*A)
+void ble_door_log(DeviceOpenRequest	*A)
 {
   openlogDataType	logData;         
   tagBufferType     tag;
@@ -369,14 +387,13 @@ void ble_door_log(TslBLEProto_TSLBLEDeviceLOCKRequest	*A)
   memset(&logData , 0x00 , sizeof(openlogDataType));
   memset(&tag ,     0x00 , sizeof(tagBufferType));
   
-//′óμ?±￡′??ò?ü ??è￥journal_add_into_card
   logData.type =  OPENLOG_FORM_CARD;
   logData.length = 1;
-//D?μ?·????ò?ü  
+ 
   tag.type= TAG_SHANGHAI_CARD;
   tag.tagPower=BLE_CARD;
   tag.UIDLength=8;
-  memcpy(tag.UID , (uint8_t *)"12345678" , 8);// // memcpy(tag.UID , (uint8_t *)&A->uid , 10);
+  memcpy(tag.UID , (uint8_t *)"12345678" , 8);
   
   
   memcpy(logData.data , (uint8_t *)&tag , sizeof(tagBufferType)); 
@@ -384,99 +401,4 @@ void ble_door_log(TslBLEProto_TSLBLEDeviceLOCKRequest	*A)
   
   //journal_add_into_card   SAVE
   //journal_puck_string     TX
-}
-
-uint8_t FTSLBLEDeviceLOCKRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceLOCKRequest	A = TslBLEProto_TSLBLEDeviceLOCKRequest_init_zero; 
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceLOCKRequest_fields, &A) == TRUE )		
-  {			
-    printf("\r\n type??1--°2×°1¤ 2--ó??§ 3--·??í?? = %d\r\n",A.type);
-    printf("\r\n security = %d\r\n",A.security);
-    printf("\r\n uid = %lld\r\n",A.uid);
-    printf("\r\n timeStamp = %lld\r\n",A.timeStamp);
-   // printf("\r\n config.read(BLE_PAIR_PWD* BLE_DOOR_PWD-ok ,NULL) = %d\r\n", config.read(BLE_DOOR_PWD ,NULL)); 
-    if(A.type==1)
-    {
-     // if(A.security ==  config.read(BLE_DOOR_PWD ,NULL)  )
-     // {open_door(); BLEWIZ_return_comm(pag,0,id);}
-     // else
-     // {BLEWIZ_return_comm(pag,2,id);}
-    }
-    if(A.type==2)
-    {
-        uint32_t stamp = 0;
-        stamp = rtc.read_stamp();
-        log(ERR,"BLEê±??=%lld   éè±?μ±?°ê±??′á=%u\n" , A.timeStamp,stamp);
-        if( abs(stamp-A.timeStamp) < 5)
-        {
-         {open_door(); BLEWIZ_return_comm(pag,0,id);ble_door_log(&A);}
-        }
-        else
-        {log(ERR,"ê±??òì3￡\n"); }
-     }
-    return APP_OK;
-  }
-  
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
-}
-
-
-uint8_t FTSLBLEDeviceSetDEVICECODERequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-  uint8_t   tem[30];
-  memset(tem,0,sizeof(tem));
- 
-  
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetDEVICECODERequest	A = TslBLEProto_TSLBLEDeviceSetDEVICECODERequest_init_zero; 
-  
-  pb_decode_bytes(&A.code ,        tem);
-  
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetDEVICECODERequest_fields, &A) == TRUE )		
-  {			
-    log_arry(ERR,"FTSLBLEDeviceSetDEVICECODERequest" ,tem ,11);
-    //memcpy( SHType.codedev ,      tem     ,11);    
-    //config.write(CFG_SYS_SHANGHAI,&SHType , TRUE);
-    BLEWIZ_return_comm(pag,0,id);
-    return APP_OK;
-  }
-  
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
-}
-
-
-uint8_t FTSLBLEDeviceSetLOCATIONCODERequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-  uint8_t   tem[30];
-  memset(tem,0,sizeof(tem));
-  
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
-  TslBLEProto_TSLBLEDeviceSetLOCATIONCODERequest	A = TslBLEProto_TSLBLEDeviceSetLOCATIONCODERequest_init_zero; 
-  
-    
-  pb_decode_bytes(&A.code ,        tem);
-  if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetLOCATIONCODERequest_fields, &A) == TRUE )		
-  {			
-    log_arry(ERR,"FTSLBLEDeviceSetLOCATIONCODERequest" ,tem ,11);
-      
-   // memcpy( SHType.codelocation  ,tem,     11);
-    
-    //memset(&SHType.gup,0,(sizeof(_SHType) - offsetof(_SHType,gup)));
-    
-    BLEWIZ_return_comm(pag,0,id);
-    
-    //config.write(CFG_SYS_SHANGHAI,&SHType , TRUE);
-    
-    set_clear_flash( FLASH_PERMI_LIST_BIT|FLASH_PWD_BIT );
-    
-    return APP_OK;
-  }
-  
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;
 }

@@ -2270,22 +2270,10 @@
             <group>
                 <name>model</name>
                 <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleCommon.pb.c</name>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\BleProtocol.pb.c</name>
                 </file>
                 <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleCommon.pb.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleUser.pb.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleUser.pb.h</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleWizard.pb.c</name>
-                </file>
-                <file>
-                    <name>$PROJ_DIR$\..\applications\buletooth\model\TSLBleWizard.pb.h</name>
+                    <name>$PROJ_DIR$\..\applications\buletooth\model\BleProtocol.pb.h</name>
                 </file>
             </group>
         </group>

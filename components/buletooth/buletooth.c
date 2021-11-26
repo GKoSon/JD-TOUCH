@@ -89,9 +89,9 @@ char is_crc_ok( ProtData_T *opag )
 	size = 5 + pag.POS1415_len;
 
     
-    pag.POS1415_len = exchangeBytes( pag.POS1415_len);
-    pag.POS2122T =    exchangeBytes( pag.POS2122T);
-    pag.POS2324L =    exchangeBytes( pag.POS2324L);
+    //pag.POS1415_len = exchangeBytes( pag.POS1415_len);
+    //pag.POS2122T =    exchangeBytes( pag.POS2122T);
+    //pag.POS2324L =    exchangeBytes( pag.POS2324L);
     
     memset(fb , 0 ,  sizeof(fb));
     memcpy(fb , &pag ,size );

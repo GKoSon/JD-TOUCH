@@ -188,9 +188,7 @@ void IP4ARRToStr(unsigned char *arr, char *str);
 void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len);
 
 void GIPStringtoarry(unsigned char *sor,unsigned char *arr);
-
-uint16_t  exchangeBytes(uint16_t value);
-
+uint8_t mycrc8(uint8_t *ps1,uint8_t uLen);
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen) ;
 
 uint32_t Beint(uint8_t *arry,uint8_t Len);

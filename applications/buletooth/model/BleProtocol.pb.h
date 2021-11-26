@@ -14,6 +14,7 @@
 extern "C" {
 #endif
 
+#define A9USED          0
 /* Struct definitions */
 typedef struct _DeviceSipInfoRequest {
     pb_callback_t centerSip;
@@ -106,7 +107,9 @@ typedef struct _DeviceSetDeviceNameRequest {
 /* Struct field encoding specification for nanopb */
 extern const pb_field_t DeviceOpenRequest_fields[6];
 extern const pb_field_t DeviceSetDeviceNameRequest_fields[16];
+#if A9USED
 extern const pb_field_t DeviceSipInfoRequest_fields[8];
+#endif
 extern const pb_field_t DeviceCommonResponse_fields[3];
 
 /* Maximum encoded size of messages (where known) */

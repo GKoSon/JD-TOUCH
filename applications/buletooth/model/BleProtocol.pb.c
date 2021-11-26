@@ -38,6 +38,7 @@ const pb_field_t DeviceSetDeviceNameRequest_fields[16] = {
     PB_LAST_FIELD
 };
 
+#if A9USED
 const pb_field_t DeviceSipInfoRequest_fields[8] = {
     PB_FIELD(  1, STRING  , SINGULAR, CALLBACK, FIRST, DeviceSipInfoRequest, centerSip, centerSip, 0),
     PB_FIELD(  2, STRING  , SINGULAR, CALLBACK, OTHER, DeviceSipInfoRequest, sipServer, centerSip, 0),
@@ -48,7 +49,7 @@ const pb_field_t DeviceSipInfoRequest_fields[8] = {
     PB_FIELD(  7, STRING  , SINGULAR, CALLBACK, OTHER, DeviceSipInfoRequest, sipPwdSpare, sipAccountSpare, 0),
     PB_LAST_FIELD
 };
-
+#endif
 const pb_field_t DeviceCommonResponse_fields[3] = {
     PB_FIELD(  1, INT32   , SINGULAR, STATIC  , FIRST, DeviceCommonResponse, status, status, 0),
     PB_FIELD(  2, STRING  , SINGULAR, CALLBACK, OTHER, DeviceCommonResponse, reserved, status, 0),

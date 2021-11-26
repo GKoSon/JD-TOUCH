@@ -7,8 +7,6 @@
 uint32_t    sysDebugFlag = 0xFF;
 
 
-char otasee   = 0;
-
 /*时间*/
 /*控制*/
 /*黑白名单*/
@@ -101,21 +99,16 @@ unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen)
   return (wCRCin) ;  
 }
 
-
-uint16_t  exchangeBytes(uint16_t value)
+uint8_t mycrc8(uint8_t *ps1,uint8_t uLen)
 {
-
-    uint16_t tmp_value = 0;
-    uint8_t *index_1, *index_2;
-
-    index_1 = (uint8_t *)&tmp_value;
-    index_2 = (uint8_t *)&value;
-
-    *index_1     = *(index_2+1);
-    *(index_1+1) = *index_2;
-
-    return tmp_value;
-
+  uint8_t i_crc=0,i;
+  
+  for(i=0;i<uLen;i++)
+  {
+        i_crc ^=*(ps1++);
+  }
+  printf("mycrc8=%02X\r\n",i_crc);
+  return i_crc;
 }
 
 

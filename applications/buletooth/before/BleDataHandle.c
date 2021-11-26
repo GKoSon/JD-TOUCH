@@ -64,9 +64,9 @@ static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len,uint16
 
     size = len+9;
     
-    pag->POS1415_len = exchangeBytes( pag->POS1415_len);
-    pag->POS2122T =    exchangeBytes( pag->POS2122T);
-    pag->POS2324L =    exchangeBytes( pag->POS2324L);
+   // pag->POS1415_len = exchangeBytes( pag->POS1415_len);
+   // pag->POS2122T =    exchangeBytes( pag->POS2122T);
+   // pag->POS2324L =    exchangeBytes( pag->POS2324L);
 
     memcpy(pag->POS25V,msg,len );
 

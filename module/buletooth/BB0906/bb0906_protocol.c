@@ -214,9 +214,9 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
                       }
                       else
                       {
-                          pag[ch].POS1415_len =    exchangeBytes(  pag[ch].POS1415_len);//全包长度 设定值
-                          pag[ch].POS2122T    =    exchangeBytes(  pag[ch].POS2122T);
-                          pag[ch].POS2324L    =    exchangeBytes(  pag[ch].POS2324L);//小包 不管
+                          //pag[ch].POS1415_len =    exchangeBytes(  pag[ch].POS1415_len);//全包长度 设定值
+                         // pag[ch].POS2122T    =    exchangeBytes(  pag[ch].POS2122T);
+                          //pag[ch].POS2324L    =    exchangeBytes(  pag[ch].POS2324L);//小包 不管
 
                           pag[ch].POS25Vlen   =     BleModuleAppData.Msg.DatLength - 9;//POS25Vlen 包含了CRC
                           

@@ -103,19 +103,6 @@ uint64_t assemble_id( tagBufferType *tag)
     
 }
 
-uint8_t tag_calc_crc8(uint8_t *ps1,uint8_t uLen)
-{
-  uint8_t i_crc=0,i;
-  
-  for(i=0;i<uLen;i++)
-  {
-        i_crc ^=*(ps1++);
-  }
-  printf("tag_calc_crc8=%02X\r\n",i_crc);
-  return i_crc;
-}
-
-
 void tag_calc_crc16(uint8_t ucdata,uint16_t *pwcrc)
 {
       uint16_t x=*pwcrc;
@@ -262,18 +249,18 @@ uint8_t checkcrcerr(shanghaicardtype *p)
 {
     uint8_t *data = (uint8_t *)p;
     uint16_t crc16=0;
-    if(p->head.crc       != tag_calc_crc8(&data[0] ,15))
+    if(p->head.crc       != mycrc8(&data[0] ,15))
         return 1;
     
-    if(p->body[0].endtime[0]!=0  && p->body[0].crc    != tag_calc_crc8(&data[16],14))
+    if(p->body[0].endtime[0]!=0  && p->body[0].crc    != mycrc8(&data[16],14))
         return 1;
-    if(p->body[1].endtime[0]!=0  && p->body[1].crc    != tag_calc_crc8(&data[31],15))
+    if(p->body[1].endtime[0]!=0  && p->body[1].crc    != mycrc8(&data[31],15))
         return 1;
-    if(p->body[2].endtime[0]!=0  && p->body[2].crc    != tag_calc_crc8(&data[47],15))
+    if(p->body[2].endtime[0]!=0  && p->body[2].crc    != mycrc8(&data[47],15))
         return 1;
-    if(p->body[3].endtime[0]!=0  && p->body[3].crc    != tag_calc_crc8(&data[63],15))
+    if(p->body[3].endtime[0]!=0  && p->body[3].crc    != mycrc8(&data[63],15))
         return 1;
-    if(p->body[4].endtime[0]!=0  && p->body[4].crc    != tag_calc_crc8(&data[79],15))
+    if(p->body[4].endtime[0]!=0  && p->body[4].crc    != mycrc8(&data[79],15))
         return 1;
     printf("[CARD]CRC8 OK\r\n");
     for(char i=0; i<96; i++)

@@ -139,7 +139,6 @@ typedef struct
 }buletoothDriveType;
 
 
-
 extern buletoothDriveType btModule;
 extern void bluetooth_drv_init( void );
 #endif

@@ -80,8 +80,54 @@ static void MX_NVIC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+/******************************测试1 交换顺序************************/
+uint16_t  exchangeBytes(uint16_t value)
+{
 
+    uint16_t tmp_value = 0;
+    uint8_t *index_1, *index_2;
 
+    index_1 = (uint8_t *)&tmp_value;
+    index_2 = (uint8_t *)&value;
+
+    *index_1     = *(index_2+1);
+    *(index_1+1) = *index_2;
+
+    return tmp_value;
+
+}
+
+void ExchangeBytes(void)
+{
+    #define uint16_t_CHANGE_BIT_MODE(x)     (((x>>8)&0x00ff)| ((x << 8)&0xff00))
+
+    uint16_t flag = 0XABCD;
+
+    flag = exchangeBytes( flag);
+       
+    printf("exchangeBytes:0X%04X uint16_t_CHANGE_BIT_MODE:0X%04X\r\n",flag,uint16_t_CHANGE_BIT_MODE(flag));   
+}
+/******************************测试2 什么叫做CRC8************************/
+/*
+1---0和任何数疑惑都等于任何数
+2---A和A疑惑等于0[A可以是string]
+
+*/
+
+void test_crc8(void)
+{
+  uint8_t A=0XAB,B=0XAB;
+
+  printf("A^B=%02X\r\n",A^B);
+
+  char AA[21]={"110101001001003102001"};
+  char BB[21]={"110101001001003102001"};
+  uint8_t AAACRC=mycrc8((uint8_t*)&AA,21);
+  uint8_t BBBCRC=mycrc8((uint8_t*)&BB,21);
+  printf("AAACRC=%c\r\n",AAACRC);
+  printf("BBBCRC=%c\r\n",BBBCRC);
+  printf("AAACRC^BBBCRC=%d\r\n",AAACRC^BBBCRC);
+}
 
 /* USER CODE END PFP */
 
@@ -129,7 +175,8 @@ static void MX_NVIC_Init(void);
 
     /* USER CODE BEGIN 2 */
     serial_console_init();
-
+    ExchangeBytes();
+    test_crc8();
     /* USER CODE END 2 */
 #if TESTOTA
 while(1)

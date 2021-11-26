@@ -213,10 +213,11 @@ extern cfgTaskType    config;
 
 /*唯一一个设备码 21 来自安装工
 同行组 来自MQTT平台*/
+
 #define GUPMAX 10
 typedef struct
 {
-    uint16_t      md5;//计划修改这里是 uint8_t 但是编译失败 对齐
+    uint16_t      md5;
     uint8_t       cnt;
     uint8_t       code[GUPMAX][11];
 }GupType;
@@ -228,5 +229,6 @@ typedef struct
 }_SHType;
 
 extern void show_SH(_SHType *p);
+
 #endif
 

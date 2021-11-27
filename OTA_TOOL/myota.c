@@ -461,6 +461,8 @@ char memcpydown(void* Bytes,void* Strings,char len)
 //#define OUTPUT_BIN_NAME "1.bin"
 const char * INPUT_HEX_NAME = "1.hex";
 const char * OUTPUT_BIN_NAME ="1.bin";
+const char * OUTPUT_ZIP_NAME ="zip.bin";
+const char * OUTPUT_HEADZIP_NAME ="headzip.bin";
 void hex2bin(void)
 {
 	FILE *fp1,*fp2; 
@@ -699,7 +701,7 @@ void Nzip2zip(void)
 {
 	uint8_t	data2buf[50*4096];//因为最大是50个4K的文件 
 	FILE *fpin   =  NULL;
-	FILE *fpout  =  fopen("out.zip", "wb");
+	FILE *fpout  =  fopen(OUTPUT_ZIP_NAME, "wb");
 	int i =0;
 	for(i=0;i<all_bin_num;i++)
 	{
@@ -716,8 +718,8 @@ void Nzip2zip(void)
 void Zip_Head_Handle(void)
 {
 	uint8_t	i,data2buf[200*1024];
-	FILE *fpolddel  =  fopen("out.zip",        "rb");
-	FILE *fpnewout  =  fopen("headout.zip",    "wb");
+	FILE *fpolddel  =  fopen(OUTPUT_ZIP_NAME,        "rb");
+	FILE *fpnewout  =  fopen(OUTPUT_HEADZIP_NAME,    "wb");
 	//fwrite(every_zip_len, sizeof(char), 50*2, fpnewout);//此时把压缩后的bin文件在头部写入这个数组！
 	fwrite(&wCRCin,       sizeof(uint16_t), 1,           fpnewout);
 	fwrite(&all_bin_num,  sizeof(uint16_t), 1,           fpnewout);
@@ -730,6 +732,18 @@ void Zip_Head_Handle(void)
 	fwrite(data2buf, sizeof(char), allziplen, fpnewout);	
 	fclose(fpolddel);
     fclose(fpnewout);
+}
+
+void Show_Head(void)
+{
+    uint8_t	i;
+    printf("展示前面50个U16\r\n");
+    FILE *fpnewout  =  fopen(OUTPUT_HEADZIP_NAME,    "rb");
+	uint16_t	buf[50];
+	fread (buf, sizeof(uint16_t), 50, fpnewout);
+	for(i=0;i<50;i++)
+	printf("%d-0X%04X\r\n",i,buf[i]);
+	fclose(fpnewout);
 }
 /*验证全局CRC16 和分布CRC16 是否相等 JAMES*/
 void Test_crc16(void)
@@ -762,6 +776,7 @@ int main(int argc,char **argv)
 	/*在ZIP头部写入特征表*/
 	Zip_Head_Handle();
 	Test_crc16();
+	Show_Head();
 	printf("******GKOSON FINISHED*******\r\n");
 	//getchar();
 	char i;

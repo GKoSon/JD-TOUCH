@@ -196,54 +196,7 @@ uint8_t ota_write_file(uint8_t *msg , uint32_t len)
     return TRUE;
 }
 
- #define ONE_FILE_LEN       FLASH_SPI_BLOCKSIZE
-uint32_t file_tail16hex(void)
-{
-    uint8_t binmd5[16];
-    int allsteps,lastlen;
-    uint32_t readAddr = OTA_START_ADDR;  
-    unsigned char *encrypt = fb;
-/*读出文件的最后16个*/   
-    uint32_t fileSize = ota.fileSize;
-    if( (fileSize)%ONE_FILE_LEN !=0)
-        allsteps = fileSize/ONE_FILE_LEN+1;
-    else
-        allsteps = fileSize/ONE_FILE_LEN;
-    
-    lastlen = fileSize - ((allsteps-1)*ONE_FILE_LEN);
-    printf("[file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d]\r\n",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
-    
-    if(lastlen >= 16)/*测试成功*/
-    {
-      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]\r\n",readAddr);
-      dev_ota_read_flash(readAddr , encrypt , lastlen);
-      memcpy(binmd5,&encrypt[lastlen-16],16);
-    }
-    else if (lastlen == 0)
-    {
-      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]\r\n",readAddr);
-      dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
-      memcpy(binmd5,&encrypt[ONE_FILE_LEN-16],16);
-    }
-    else/*加入lastlen是2的话 那就是14个在前面 最后2个在最后一次 先直接把这2个拿下来 在把前面的再次读出*/
-    {
-       readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]\r\n",readAddr);
-       dev_ota_read_flash(readAddr , encrypt , lastlen);
-       memcpy(&binmd5[lastlen],encrypt,lastlen);
-       
-       readAddr = OTA_START_ADDR + (allsteps-2)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]\r\n",readAddr);
-       dev_ota_read_flash(readAddr , encrypt , ONE_FILE_LEN);
-       memcpy(binmd5,&encrypt[lastlen-(16-lastlen)],(16-lastlen));
-    }
-    log_arry(DEBUG,"读BIN的MD5是 " ,binmd5, 16);
-    uint16_t bincrc = CRC16_CCITT(binmd5,16);
-
-    return bincrc;
-}
+#define ONE_FILE_LEN       FLASH_SPI_BLOCKSIZE
 
 #include "mbedtls/md5.h"
 uint32_t file_MD5(void)
@@ -256,7 +209,7 @@ uint32_t file_MD5(void)
     unsigned char decrypt[16];
     mbedtls_md5_context md5;
     mbedtls_md5_starts(&md5);  
-    uint32_t fileSize = ota.fileSize - 20;/*最后4个len+16个MD5需要放弃*/
+    uint32_t fileSize = ota.fileSize ;
     /*全部的file分割为多少个ONE_FILE_LEN*/  
     if( (fileSize)%ONE_FILE_LEN !=0)
         allsteps = fileSize/ONE_FILE_LEN+1;
@@ -288,11 +241,11 @@ uint32_t file_MD5(void)
     
     
     uint16_t crc = CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
-    uint16_t bincrc = file_tail16hex();
-    printf("bincrc %d,crc %d\r\n",bincrc,crc);
-    if( bincrc  == crc)
-      return crc;
-    return 0;
+
+
+
+     return crc;
+
 }
 
 
@@ -300,12 +253,10 @@ uint32_t file_MD5(void)
 uint8_t ota_ver_file( void )
 {
 
-    uint32_t crc32 = file_MD5();
-
-    if( crc32 )
+    if( ota.crc32 == file_MD5() )
     {
-        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】文件校验正确\n" ));
-        ota.crc32=  crc32;
+        OTA_DEBUG_LOG(1, ("【OTA】文件校验正确\n" ));
+
         return TRUE;
     }
 
@@ -363,10 +314,18 @@ void ota_init_buffer( void )
     
     
 
-memcpy(ota.fileKey,"/upload/520360918.bin" ,strlen("/upload/520360918.bin")  );
+memcpy(ota.fileKey,"/upload/250636169.bin" ,strlen("/upload/250636169.bin")  );
 ota.len=       0;
-ota.fileSize=  166590;
-ota.ver=333;
+
+ota.fileSize=  46504;
+
+ota.ver=444;
+
+char md5[33]={"c71c1e6880af4ec0bbb6026eaa14a9e5"};
+uint8_t Md5[16]={0};
+G_strsTobytes(md5,Md5,32);
+ota.crc32=CRC16_CCITT(Md5,16);
+log_arry(DEBUG,"平台计算MD5是" ,Md5, 16);
 }
 
 

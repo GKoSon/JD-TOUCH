@@ -7,6 +7,8 @@
 #define        SPI_FLASH_USER_START_ADDR       0X0    //0x1000      //一页做cfg
 #define        SPI_FLASH_USER_INFO_ADDR        0X1000//0x2000      //后面开始自己使用
 #define        OTA_START_ADDR                  0x180000    //1.5M start
+#define        OTA_ZIP_START_ADDR              0x180000    //1.5M start
+#define        OTA_HEX_START_ADDR              0x1B2000    //200k最大
 #define        ERR_START_ADDR                  0x300000//2M start
 #define        ERR_END_ADDR                    SPI_FLASH_MAX_SIZE
 

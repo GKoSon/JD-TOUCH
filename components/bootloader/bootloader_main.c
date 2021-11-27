@@ -96,6 +96,427 @@ void MX_NVIC_Init(void);
 extern void spi_flash_init( void );
 /* USER CODE BEGIN 0 */
 
+/*开源*/ 
+#define uint8_t  unsigned char
+#define uint16_t unsigned short
+#define uint32_t unsigned int
+#define uint64_t unsigned long long
+
+#define FASTLZ_VERSION 0x000100
+#define FASTLZ_VERSION_MAJOR     0
+#define FASTLZ_VERSION_MINOR     0
+#define FASTLZ_VERSION_REVISION  0
+#define FASTLZ_VERSION_STRING "0.1.0"
+ 
+int fastlz_compress(const void* input, int length, void* output);
+ 
+int fastlz_decompress(const void* input, int length, void* output, int maxout); 
+ 
+int fastlz_compress_level(int level, const void* input, int length, void* output);
+ 
+ 
+#if !defined(FASTLZ__COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR)
+ 
+/*
+ * Always check for bound when decompressing.
+ * Generally it is best to leave it defined.
+ */
+#define FASTLZ_SAFE
+ 
+/*
+ * Give hints to the compiler for branch prediction optimization.
+ */
+#if defined(__GNUC__) && (__GNUC__ > 2)
+#define FASTLZ_EXPECT_CONDITIONAL(c)    (__builtin_expect((c), 1))
+#define FASTLZ_UNEXPECT_CONDITIONAL(c)  (__builtin_expect((c), 0))
+#else
+#define FASTLZ_EXPECT_CONDITIONAL(c)    (c)
+#define FASTLZ_UNEXPECT_CONDITIONAL(c)  (c)
+#endif
+ 
+/*
+ * Use inlined functions for supported systems.
+ */
+#if defined(__GNUC__) || defined(__DMC__) || defined(__POCC__) || defined(__WATCOMC__) || defined(__SUNPRO_C)
+#define FASTLZ_INLINE inline
+#elif defined(__BORLANDC__) || defined(_MSC_VER) || defined(__LCC__)
+#define FASTLZ_INLINE __inline
+#else 
+#define FASTLZ_INLINE
+#endif
+ 
+/*
+ * Prevent accessing more than 8-bit at once, except on x86 architectures.
+ */
+#if !defined(FASTLZ_STRICT_ALIGN)
+#define FASTLZ_STRICT_ALIGN
+#if defined(__i386__) || defined(__386)  /* GNU C, Sun Studio */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__i486__) || defined(__i586__) || defined(__i686__) /* GNU C */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(_M_IX86) /* Intel, MSVC */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__386)
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(_X86_) /* MinGW */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__I86__) /* Digital Mars */
+#undef FASTLZ_STRICT_ALIGN
+#endif
+#endif
+ 
+/*
+ * FIXME: use preprocessor magic to set this on different platforms!
+ */
+typedef unsigned char  flzuint8;
+typedef unsigned short flzuint16;
+typedef unsigned int   flzuint32;
+ 
+/* prototypes */
+int fastlz_compress(const void* input, int length, void* output);
+int fastlz_compress_level(int level, const void* input, int length, void* output);
+int fastlz_decompress(const void* input, int length, void* output, int maxout);
+ 
+#define MAX_COPY       32
+#define MAX_LEN       264  /* 256 + 8 */
+#define MAX_DISTANCE 8192
+ 
+#if !defined(FASTLZ_STRICT_ALIGN)
+#define FASTLZ_READU16(p) *((const flzuint16*)(p)) 
+#else
+#define FASTLZ_READU16(p) ((p)[0] | (p)[1]<<8)
+#endif
+ 
+#define HASH_LOG  10
+#define HASH_SIZE (1<< HASH_LOG)
+#define HASH_MASK  (HASH_SIZE-1)
+#define HASH_FUNCTION(v,p) { v = FASTLZ_READU16(p); v ^= FASTLZ_READU16(p+1)^(v>>(16-HASH_LOG));v &= HASH_MASK; }
+ 
+ 
+ 
+ 
+FASTLZ_INLINE int fastlz1_compress(const void* input, int length, void* output)
+{
+ 
+  const flzuint8* ip = (const flzuint8*) input;
+  const flzuint8* ip_bound = ip + length - 2;
+  const flzuint8* ip_limit = ip + length - 12;
+  flzuint8* op = (flzuint8*) output;
+ 
+  const flzuint8* htab[HASH_SIZE];
+ 
+  const flzuint8** hslot;
+  flzuint32 hval;
+ 
+  flzuint32 copy;
+ 
+  /* sanity check */
+  if(FASTLZ_UNEXPECT_CONDITIONAL(length < 4))
+  {
+    if(length)
+    {
+      /* create literal copy only */
+      *op++ = length-1;
+      ip_bound++;
+      while(ip <= ip_bound)
+        *op++ = *ip++;
+      return length+1;
+    }
+    else
+      return 0;
+  }
+ 
+  /* initializes hash table */
+for (hslot = htab; hslot < htab + HASH_SIZE; hslot++)
+    *hslot = ip;
+ 
+ 
+  /* we start with literal copy */
+  copy = 2;
+  *op++ = MAX_COPY-1;
+  *op++ = *ip++;
+  *op++ = *ip++;
+ 
+  /* main loop */
+  while(FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit))
+  {
+    const flzuint8* ref;
+    flzuint32 distance;
+ 
+    /* minimum match length */
+    flzuint32 len = 3;
+ 
+    /* comparison starting-point */
+    const flzuint8* anchor = ip;
+ 
+ 
+ 
+    /* find potential match */
+    HASH_FUNCTION(hval,ip);
+    hslot = htab + hval;
+    ref = htab[hval];
+ 
+    /* calculate distance to the match */
+    distance = anchor - ref;
+ 
+    /* update hash table */
+    *hslot = anchor;
+ 
+    /* is this a match? check the first 3 bytes */
+    if(distance==0 || 
+ 
+    (distance >= MAX_DISTANCE) ||
+ 
+    *ref++ != *ip++ || *ref++!=*ip++ || *ref++!=*ip++)
+      goto literal;
+ 
+ 
+    /* last matched byte */
+    ip = anchor + len;
+ 
+    /* distance is biased */
+    distance--;
+ 
+    if(!distance)
+    {
+      /* zero distance means a run */
+      flzuint8 x = ip[-1];
+      while(ip < ip_bound)
+        if(*ref++ != x) break; else ip++;
+    }
+    else
+    for(;;)
+    {
+      /* safe because the outer check against ip limit */
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      while(ip < ip_bound)
+        if(*ref++ != *ip++) break;
+      break;
+    }
+ 
+    /* if we have copied something, adjust the copy count */
+    if(copy)
+      /* copy is biased, '0' means 1 byte copy */
+      *(op-copy-1) = copy-1;
+    else
+      /* back, to overwrite the copy count */
+      op--;
+ 
+    /* reset literal counter */
+    copy = 0;
+ 
+    /* length is biased, '1' means a match of 3 bytes */
+    ip -= 3;
+    len = ip - anchor;
+ 
+ 
+    if(FASTLZ_UNEXPECT_CONDITIONAL(len > MAX_LEN-2))
+      while(len > MAX_LEN-2)
+      {
+        *op++ = (7 << 5) + (distance >> 8);
+        *op++ = MAX_LEN - 2 - 7 -2; 
+        *op++ = (distance & 255);
+        len -= MAX_LEN-2;
+      }
+ 
+    if(len < 7)
+    {
+      *op++ = (len << 5) + (distance >> 8);
+      *op++ = (distance & 255);
+    }
+    else
+    {
+      *op++ = (7 << 5) + (distance >> 8);
+      *op++ = len - 7;
+      *op++ = (distance & 255);
+    }
+ 
+ 
+    /* update the hash at match boundary */
+    HASH_FUNCTION(hval,ip);
+    htab[hval] = ip++;
+    HASH_FUNCTION(hval,ip);
+    htab[hval] = ip++;
+ 
+    /* assuming literal copy */
+    *op++ = MAX_COPY-1;
+ 
+    continue;
+ 
+    literal:
+      *op++ = *anchor++;
+      ip = anchor;
+      copy++;
+      if(FASTLZ_UNEXPECT_CONDITIONAL(copy == MAX_COPY))
+      {
+        copy = 0;
+        *op++ = MAX_COPY-1;
+      }
+  }
+ 
+  /* left-over as literal copy */
+  ip_bound++;
+  while(ip <= ip_bound)
+  {
+    *op++ = *ip++;
+    copy++;
+    if(copy == MAX_COPY)
+    {
+      copy = 0;
+      *op++ = MAX_COPY-1;
+    }
+  }
+ 
+  /* if we have copied something, adjust the copy length */
+  if(copy)
+    *(op-copy-1) = copy-1;
+  else
+    op--;
+ 
+ 
+ 
+  return op - (flzuint8*)output;
+}
+ 
+static FASTLZ_INLINE int fastlz1_decompress(const void* input, int length, void* output, int maxout)
+{
+  const flzuint8* ip = (const flzuint8*) input;
+  const flzuint8* ip_limit  = ip + length;
+  flzuint8* op = (flzuint8*) output;
+  flzuint8* op_limit = op + maxout;
+  flzuint32 ctrl = (*ip++) & 31;
+  int loop = 1;
+ 
+  do
+  {
+    const flzuint8* ref = op;
+    flzuint32 len = ctrl >> 5;
+    flzuint32 ofs = (ctrl & 31) << 8;
+ 
+    if(ctrl >= 32)
+    {
+ 
+      len--;
+      ref -= ofs;
+      if (len == 7-1)
+ 
+        len += *ip++;
+      ref -= *ip++;
+ 
+      
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(op + len + 3 > op_limit))
+        return 0;
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(ref-1 < (flzuint8 *)output))
+        return 0;
+ 
+ 
+      if(FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit))
+        ctrl = *ip++;
+      else
+        loop = 0;
+ 
+      if(ref == op)
+      {
+        /* optimize copy for a run */
+        flzuint8 b = ref[-1];
+        *op++ = b;
+        *op++ = b;
+        *op++ = b;
+        for(; len; --len)
+          *op++ = b;
+      }
+      else
+      {
+#if !defined(FASTLZ_STRICT_ALIGN)
+        const flzuint16* p;
+        flzuint16* q;
+#endif
+        /* copy from reference */
+        ref--;
+        *op++ = *ref++;
+        *op++ = *ref++;
+        *op++ = *ref++;
+ 
+#if !defined(FASTLZ_STRICT_ALIGN)
+        /* copy a byte, so that now it's word aligned */
+        if(len & 1)
+        {
+          *op++ = *ref++;
+          len--;
+        }
+ 
+        /* copy 16-bit at once */
+        q = (flzuint16*) op;
+        op += len;
+        p = (const flzuint16*) ref;
+        for(len>>=1; len > 4; len-=4)
+        {
+          *q++ = *p++;
+          *q++ = *p++;
+          *q++ = *p++;
+          *q++ = *p++;
+        }
+        for(; len; --len)
+          *q++ = *p++;
+#else
+        for(; len; --len)
+          *op++ = *ref++;
+#endif
+      }
+    }
+    else
+    {
+      ctrl++;
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(op + ctrl > op_limit))
+        return 0;
+      if (FASTLZ_UNEXPECT_CONDITIONAL(ip + ctrl > ip_limit))
+        return 0;
+ 
+ 
+      *op++ = *ip++; 
+      for(--ctrl; ctrl; ctrl--)
+        *op++ = *ip++;
+ 
+      loop = FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit);
+      if(loop)
+        ctrl = *ip++;
+    }
+  }
+  while(FASTLZ_EXPECT_CONDITIONAL(loop));
+ 
+  return op - (flzuint8*)output;
+}
+ 
+ 
+int fastlz_compress(const void* input, int length, void* output)
+{
+    return fastlz1_compress(input, length, output);
+}
+ 
+int fastlz_decompress(const void* input, int length, void* output, int maxout)
+{
+    return fastlz1_decompress(input, length, output, maxout);
+}
+ 
+int fastlz_compress_level(int level, const void* input, int length, void* output)
+{
+  return 0;
+}
+ 
+#else /* !defined(FASTLZ_COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR) */
+ 
+#endif /* !defined(FASTLZ_COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR) */
+/*开源*/
 
 void console_getchar(uint8_t ch)
 {
@@ -119,67 +540,160 @@ void timer_isr( void )
 
 }
 
-uint32_t file_tail16hex(void)
+uint8_t buf[4096] @(0x10000000);
+//https://blog.csdn.net/weixin_42381351/article/details/103492766
+void FLASH_BufferRead_RANG( uint32_t ReadAddr,uint8_t* pBuffer, uint16_t NumByteToRead)
 {
-#define ONE_FILE_LEN 512
-    uint8_t binmd5[16];
-    int allsteps,lastlen;
-    uint32_t readAddr = OTA_START_ADDR;  
-    unsigned char encrypt[ONE_FILE_LEN];
-/*读出文件的最后16个*/   
-    uint32_t fileSize = cfg.otaVar.fileSize;
-    if( (fileSize)%ONE_FILE_LEN !=0)
-        allsteps = fileSize/ONE_FILE_LEN+1;
-    else
-        allsteps = fileSize/ONE_FILE_LEN;
-    
-    lastlen = fileSize - ((allsteps-1)*ONE_FILE_LEN);
-    printf("【file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d】",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
-    
-    if(lastlen >= 16)/*测试成功*/
-    {
-      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]",readAddr);
-      flash.read(readAddr , encrypt , lastlen);
-      memcpy(binmd5,&encrypt[lastlen-16],16);
-    }
-    else if (lastlen == 0)
-    {
-      readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN; 
-      printf("[readAddr =0X%08X]",readAddr);
-      flash.read(readAddr , encrypt , ONE_FILE_LEN);
-      memcpy(binmd5,&encrypt[ONE_FILE_LEN-16],16);
-    }
-    else/*加入lastlen是2的话 那就是14个在前面 最后2个在最后一次 先直接把这2个拿下来 在把前面的再次读出*/
-    {
-       readAddr = OTA_START_ADDR + (allsteps-1)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]",readAddr);
-       flash.read(readAddr , encrypt , lastlen);
-       memcpy(&binmd5[lastlen],encrypt,lastlen);
+    uint32_t i,p1Addr,p2Addr,p1len,p2len,p1lenno,p2lenno;
+    uint8_t  status=0;
+    //static uint8_t buf[4096];
        
-       readAddr = OTA_START_ADDR + (allsteps-2)*ONE_FILE_LEN;
-       printf("[readAddr =0X%08X]",readAddr);
-       flash.read(readAddr , encrypt , ONE_FILE_LEN);
-       memcpy(binmd5,encrypt,ONE_FILE_LEN-(16-lastlen));
+    if(NumByteToRead>4096){printf("--------NOW NOT---------\r\n");return;}
+    for(i=0;i<2049;i++)//电子表格 一共有2049个PAGE
+    {
+        p1Addr = i*4096;
+        p2Addr = p1Addr + 4096;
+        if(ReadAddr==p1Addr){printf("--------RIGHT GOOG A PAGE---------\r\n");status=1;break;}
+        if( (ReadAddr<p2Addr)&& (ReadAddr>p1Addr)){/*printf("-------NEED TWO PAGE-----\r\n");*/status=2;break;}
     }
-    log_arry(DEBUG,"读BIN的MD5是:" ,binmd5, 16);
-    uint16_t bincrc = CRC16_CCITT(binmd5,16);
+    if(status==0){printf("---------FUCK---------\r\n");return;}
+ 
+    if(status==1)
+    {flash.read(ReadAddr,pBuffer,NumByteToRead);return;}
+    if(status==2)
+    {
+        p1lenno = ReadAddr - p1Addr;
+        p1len = 4096 - p1lenno;
+        if(NumByteToRead  > p1len)
+        {
+            p2len = NumByteToRead - p1len;
+            p2lenno = 4096 - p2len;
+ 
+            flash.read(p1Addr,buf,4096);
+            memcpy(pBuffer,       &buf[p1lenno],  p1len);
+ 
+            flash.read(p2Addr,buf,4096);
+            memcpy(&pBuffer[p1len],buf,           p2len);
+ 
+            //printf("-----TWO READ OK[%d][%d][%d][%d]----\r\n",p1lenno,p1len,p2len,p2lenno);
+        }
+        else
+        {
+            flash.read(p1Addr,buf,4096);
+            memcpy(pBuffer,       &buf[p1lenno],  NumByteToRead);
+            //printf("------ONE PAG OK-----\r\n");
+        }
+    }
+}
 
-    return bincrc;
+
+uint16_t outlen[50]={0};
+uint8_t  totalcnt=0;
+uint32_t hexlen =0;
+uint16_t bincrc16 ;
+uint8_t write[4096]    @(0x10001000);
+uint8_t read[4096]     @(0x10002000);
+void zip2hex(void)
+{
+    uint16_t lenmark[50],*plenmark=NULL;
+
+    uint8_t  i=0;
+    uint32_t addrpagefrom=0,addrpageto=0;
+
+    memset(read,0,4096);
+    addrpagefrom = OTA_ZIP_START_ADDR+i*4096;  
+    flash.read(addrpagefrom,read,50*2);   
+    plenmark = (uint16_t *)&read;
+    bincrc16 = plenmark[0];
+    uint16_t zipnum   = plenmark[1];
+    for(i=0;i<zipnum;i++)
+    {  
+        lenmark[i] = plenmark[i+2]; 
+        
+        printf("lenmark[%d]=%d\r\n",i,lenmark[i]);
+    }
+    totalcnt = zipnum;
+
+    printf("MAX SESIGN 50 NOW WE HAVE :%d\r\n",totalcnt);
+ 
+    //开始挨个解压
+    uint8_t must2 = totalcnt%2 ? totalcnt+1 :totalcnt;
+    printf("must2=%d totalcnt=%d\r\n",must2,totalcnt);
+    addrpagefrom += (2* (1+1+totalcnt)); 
+    for(i=0;i<totalcnt;i++)
+    {
+        memset(read,0,4096);//ZIP
+        memset(write,0,4096);//HEX
+        FLASH_BufferRead_RANG(addrpagefrom,read,lenmark[i]);
+        outlen[i] = fastlz_decompress(read, lenmark[i],write, 4096); 
+       //对的 if(i==0)  for(uint8_t j=0;j<20;j++)printf("0X%02X-0X%02X " , read[j],write[j]);//printf("addrpagefrom =%08X   %08X  %08X",addrpagefrom,(uint32_t*)&read[0],(uint32_t*)&write[0]);
+        printf("outlen[%d]=%d\r\n",i,outlen[i]);
+        addrpagefrom += lenmark[i]; 
+///save///
+        addrpageto   = OTA_HEX_START_ADDR+i*4096;
+        flash.earse(addrpageto);/*卧槽*/
+        flash.write(addrpageto, write,  4096 );
+        hexlen += outlen[i];
+    }
+        printf("hexlen[%d]\r\n",hexlen);
+}
+
+
+unsigned short wCRCin = 0x0000;
+unsigned short CRC16_CCITT_ONE(unsigned char *puchMsg, unsigned int usDataLen)  
+{  
+  
+  unsigned short wCPoly = 0x1021;  
+  unsigned char wChar = 0;  
+  int i;
+  while (usDataLen--)     
+  {  
+        wChar = *(puchMsg++);  
+ 
+        wCRCin ^= (wChar << 8);  
+        for(i = 0;i < 8;i++)  
+        {  
+          if(wCRCin & 0x8000)  
+            wCRCin = (wCRCin << 1) ^ wCPoly;  
+          else  
+            wCRCin = wCRCin << 1;  
+        }  
+  }  
+  
+  return (wCRCin) ;  
+}
+
+
+uint16_t get_bin_crc16(void)
+{
+
+    uint32_t addrpagefrom=0;
+ 
+    for(uint8_t i=0;i<totalcnt;i++)
+    {
+        addrpagefrom = OTA_HEX_START_ADDR+i*4096;
+        memset(read,0,4096);
+        flash.read(addrpagefrom,read,outlen[i]);
+        CRC16_CCITT_ONE((uint8_t*)&read,outlen[i]);
+        for(uint8_t j=0;j<20;j++)printf("0X%02X " , read[j]);
+        log(WARN,"get_bin_crc16 addrpagefrom=0X%08X , outlen = %d\n" , addrpagefrom , outlen[i]);
+    }
+    
+    return wCRCin;
+
 }
 
 uint8_t ota_ver_file( void )
 {
-  
-    uint32_t crc32 = file_tail16hex();
-
-    if( crc32 == cfg.otaVar.crc32)
+    zip2hex();
+    wCRCin=0;
+    if( bincrc16 == get_bin_crc16())
     {
-        log(WARN,"文件校验正确，calc CRC=%d , get crc = %d\n" , crc32 , cfg.otaVar.crc32);
+        log(WARN,"文件校验正确，bincrc16=0X%04X , get_bin_crc16 = 0X%04X\n" , bincrc16 , wCRCin);
         return TRUE;
     }
 
-    log(ERR,"文件校验失败，calc CRC=%d, get crc = %d\n" , crc32 , cfg.otaVar.crc32);
+    log(WARN,"文件校验错误，bincrc16=0X%04X , get_bin_crc16 = 0X%04X\n" , bincrc16 , wCRCin);
 
     
     return FALSE;
@@ -432,17 +946,17 @@ static uint32_t FLASH_Write(uint32_t destination, uint32_t *p_source, uint32_t l
 int8_t bootload_download_to_flash( void )
 {
     uint32_t baseAddr = APPLICATION_ADDRESS;
-    uint32_t readAddr = OTA_START_ADDR;
+    uint32_t readAddr = OTA_HEX_START_ADDR;//需要修改
     uint32_t ramsource , len =0;
-    
+    cfg.otaVar.fileSize = hexlen;//需要修改
     uint8_t buff[1024]; 
-
+printf("---- :%d  %0x\r\n",hexlen,readAddr);
     FLASH_Erase();
     
     for( len = 0;  len < cfg.otaVar.fileSize; len += 1024 )
     {
-	flash.read(readAddr+len , buff , 1024);
-        
+        flash.read(readAddr+len , buff , 1024);
+        if(len == 0)printf("%08x",(uint32_t*)&buff[0]);
         ramsource = (uint32_t)&buff;
         
         if( FLASH_Write(baseAddr+len ,  (uint32_t*) ramsource , 256) != FLASHIF_OK)
@@ -566,7 +1080,7 @@ int main(void)
   serial_console_init();
   spi_flash_init();
   log(DEBUG,"\n");
-  log(DEBUG,"********************* 2021 Copyright by koson boot********************* \n");
+  log(DEBUG,"********************* 2021 Copyright boot********************* \n");
   log(DEBUG,"引导系统系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
   log(DEBUG,"检查是否是需要升级应用程序\n");
   bootloader_iap();
@@ -712,9 +1226,9 @@ int fputc(int ch, FILE *f)
         serial.putc(console_port,'\r');
     }
     
-	serial.putc(console_port, ch);
+    serial.putc(console_port, ch);
     
-	return ch;
+    return ch;
 }
 
 uint16_t osGetCPUUsage(void)

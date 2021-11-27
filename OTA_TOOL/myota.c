@@ -2,7 +2,428 @@
 #include <string.h>
 #include <stdlib.h>//free函数
 
+/*开源*/ 
+#define uint8_t  unsigned char
+#define uint16_t unsigned short
+#define uint32_t unsigned int
+#define uint64_t unsigned long long
 
+#define FASTLZ_VERSION 0x000100
+#define FASTLZ_VERSION_MAJOR     0
+#define FASTLZ_VERSION_MINOR     0
+#define FASTLZ_VERSION_REVISION  0
+#define FASTLZ_VERSION_STRING "0.1.0"
+ 
+int fastlz_compress(const void* input, int length, void* output);
+ 
+int fastlz_decompress(const void* input, int length, void* output, int maxout); 
+ 
+int fastlz_compress_level(int level, const void* input, int length, void* output);
+ 
+ 
+#if !defined(FASTLZ__COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR)
+ 
+/*
+ * Always check for bound when decompressing.
+ * Generally it is best to leave it defined.
+ */
+#define FASTLZ_SAFE
+ 
+/*
+ * Give hints to the compiler for branch prediction optimization.
+ */
+#if defined(__GNUC__) && (__GNUC__ > 2)
+#define FASTLZ_EXPECT_CONDITIONAL(c)    (__builtin_expect((c), 1))
+#define FASTLZ_UNEXPECT_CONDITIONAL(c)  (__builtin_expect((c), 0))
+#else
+#define FASTLZ_EXPECT_CONDITIONAL(c)    (c)
+#define FASTLZ_UNEXPECT_CONDITIONAL(c)  (c)
+#endif
+ 
+/*
+ * Use inlined functions for supported systems.
+ */
+#if defined(__GNUC__) || defined(__DMC__) || defined(__POCC__) || defined(__WATCOMC__) || defined(__SUNPRO_C)
+#define FASTLZ_INLINE inline
+#elif defined(__BORLANDC__) || defined(_MSC_VER) || defined(__LCC__)
+#define FASTLZ_INLINE __inline
+#else 
+#define FASTLZ_INLINE
+#endif
+ 
+/*
+ * Prevent accessing more than 8-bit at once, except on x86 architectures.
+ */
+#if !defined(FASTLZ_STRICT_ALIGN)
+#define FASTLZ_STRICT_ALIGN
+#if defined(__i386__) || defined(__386)  /* GNU C, Sun Studio */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__i486__) || defined(__i586__) || defined(__i686__) /* GNU C */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(_M_IX86) /* Intel, MSVC */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__386)
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(_X86_) /* MinGW */
+#undef FASTLZ_STRICT_ALIGN
+#elif defined(__I86__) /* Digital Mars */
+#undef FASTLZ_STRICT_ALIGN
+#endif
+#endif
+ 
+/*
+ * FIXME: use preprocessor magic to set this on different platforms!
+ */
+typedef unsigned char  flzuint8;
+typedef unsigned short flzuint16;
+typedef unsigned int   flzuint32;
+ 
+/* prototypes */
+int fastlz_compress(const void* input, int length, void* output);
+int fastlz_compress_level(int level, const void* input, int length, void* output);
+int fastlz_decompress(const void* input, int length, void* output, int maxout);
+ 
+#define MAX_COPY       32
+#define MAX_LEN       264  /* 256 + 8 */
+#define MAX_DISTANCE 8192
+ 
+#if !defined(FASTLZ_STRICT_ALIGN)
+#define FASTLZ_READU16(p) *((const flzuint16*)(p)) 
+#else
+#define FASTLZ_READU16(p) ((p)[0] | (p)[1]<<8)
+#endif
+ 
+#define HASH_LOG  10
+#define HASH_SIZE (1<< HASH_LOG)
+#define HASH_MASK  (HASH_SIZE-1)
+#define HASH_FUNCTION(v,p) { v = FASTLZ_READU16(p); v ^= FASTLZ_READU16(p+1)^(v>>(16-HASH_LOG));v &= HASH_MASK; }
+ 
+ 
+ 
+ 
+FASTLZ_INLINE int fastlz1_compress(const void* input, int length, void* output)
+{
+ 
+  const flzuint8* ip = (const flzuint8*) input;
+  const flzuint8* ip_bound = ip + length - 2;
+  const flzuint8* ip_limit = ip + length - 12;
+  flzuint8* op = (flzuint8*) output;
+ 
+  const flzuint8* htab[HASH_SIZE];
+ 
+  const flzuint8** hslot;
+  flzuint32 hval;
+ 
+  flzuint32 copy;
+ 
+  /* sanity check */
+  if(FASTLZ_UNEXPECT_CONDITIONAL(length < 4))
+  {
+    if(length)
+    {
+      /* create literal copy only */
+      *op++ = length-1;
+      ip_bound++;
+      while(ip <= ip_bound)
+        *op++ = *ip++;
+      return length+1;
+    }
+    else
+      return 0;
+  }
+ 
+  /* initializes hash table */
+for (hslot = htab; hslot < htab + HASH_SIZE; hslot++)
+    *hslot = ip;
+ 
+ 
+  /* we start with literal copy */
+  copy = 2;
+  *op++ = MAX_COPY-1;
+  *op++ = *ip++;
+  *op++ = *ip++;
+ 
+  /* main loop */
+  while(FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit))
+  {
+    const flzuint8* ref;
+    flzuint32 distance;
+ 
+    /* minimum match length */
+    flzuint32 len = 3;
+ 
+    /* comparison starting-point */
+    const flzuint8* anchor = ip;
+ 
+ 
+ 
+    /* find potential match */
+    HASH_FUNCTION(hval,ip);
+    hslot = htab + hval;
+    ref = htab[hval];
+ 
+    /* calculate distance to the match */
+    distance = anchor - ref;
+ 
+    /* update hash table */
+    *hslot = anchor;
+ 
+    /* is this a match? check the first 3 bytes */
+    if(distance==0 || 
+ 
+    (distance >= MAX_DISTANCE) ||
+ 
+    *ref++ != *ip++ || *ref++!=*ip++ || *ref++!=*ip++)
+      goto literal;
+ 
+ 
+    /* last matched byte */
+    ip = anchor + len;
+ 
+    /* distance is biased */
+    distance--;
+ 
+    if(!distance)
+    {
+      /* zero distance means a run */
+      flzuint8 x = ip[-1];
+      while(ip < ip_bound)
+        if(*ref++ != x) break; else ip++;
+    }
+    else
+    for(;;)
+    {
+      /* safe because the outer check against ip limit */
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      if(*ref++ != *ip++) break;
+      while(ip < ip_bound)
+        if(*ref++ != *ip++) break;
+      break;
+    }
+ 
+    /* if we have copied something, adjust the copy count */
+    if(copy)
+      /* copy is biased, '0' means 1 byte copy */
+      *(op-copy-1) = copy-1;
+    else
+      /* back, to overwrite the copy count */
+      op--;
+ 
+    /* reset literal counter */
+    copy = 0;
+ 
+    /* length is biased, '1' means a match of 3 bytes */
+    ip -= 3;
+    len = ip - anchor;
+ 
+ 
+    if(FASTLZ_UNEXPECT_CONDITIONAL(len > MAX_LEN-2))
+      while(len > MAX_LEN-2)
+      {
+        *op++ = (7 << 5) + (distance >> 8);
+        *op++ = MAX_LEN - 2 - 7 -2; 
+        *op++ = (distance & 255);
+        len -= MAX_LEN-2;
+      }
+ 
+    if(len < 7)
+    {
+      *op++ = (len << 5) + (distance >> 8);
+      *op++ = (distance & 255);
+    }
+    else
+    {
+      *op++ = (7 << 5) + (distance >> 8);
+      *op++ = len - 7;
+      *op++ = (distance & 255);
+    }
+ 
+ 
+    /* update the hash at match boundary */
+    HASH_FUNCTION(hval,ip);
+    htab[hval] = ip++;
+    HASH_FUNCTION(hval,ip);
+    htab[hval] = ip++;
+ 
+    /* assuming literal copy */
+    *op++ = MAX_COPY-1;
+ 
+    continue;
+ 
+    literal:
+      *op++ = *anchor++;
+      ip = anchor;
+      copy++;
+      if(FASTLZ_UNEXPECT_CONDITIONAL(copy == MAX_COPY))
+      {
+        copy = 0;
+        *op++ = MAX_COPY-1;
+      }
+  }
+ 
+  /* left-over as literal copy */
+  ip_bound++;
+  while(ip <= ip_bound)
+  {
+    *op++ = *ip++;
+    copy++;
+    if(copy == MAX_COPY)
+    {
+      copy = 0;
+      *op++ = MAX_COPY-1;
+    }
+  }
+ 
+  /* if we have copied something, adjust the copy length */
+  if(copy)
+    *(op-copy-1) = copy-1;
+  else
+    op--;
+ 
+ 
+ 
+  return op - (flzuint8*)output;
+}
+ 
+static FASTLZ_INLINE int fastlz1_decompress(const void* input, int length, void* output, int maxout)
+{
+  const flzuint8* ip = (const flzuint8*) input;
+  const flzuint8* ip_limit  = ip + length;
+  flzuint8* op = (flzuint8*) output;
+  flzuint8* op_limit = op + maxout;
+  flzuint32 ctrl = (*ip++) & 31;
+  int loop = 1;
+ 
+  do
+  {
+    const flzuint8* ref = op;
+    flzuint32 len = ctrl >> 5;
+    flzuint32 ofs = (ctrl & 31) << 8;
+ 
+    if(ctrl >= 32)
+    {
+ 
+      len--;
+      ref -= ofs;
+      if (len == 7-1)
+ 
+        len += *ip++;
+      ref -= *ip++;
+ 
+      
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(op + len + 3 > op_limit))
+        return 0;
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(ref-1 < (flzuint8 *)output))
+        return 0;
+ 
+ 
+      if(FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit))
+        ctrl = *ip++;
+      else
+        loop = 0;
+ 
+      if(ref == op)
+      {
+        /* optimize copy for a run */
+        flzuint8 b = ref[-1];
+        *op++ = b;
+        *op++ = b;
+        *op++ = b;
+        for(; len; --len)
+          *op++ = b;
+      }
+      else
+      {
+#if !defined(FASTLZ_STRICT_ALIGN)
+        const flzuint16* p;
+        flzuint16* q;
+#endif
+        /* copy from reference */
+        ref--;
+        *op++ = *ref++;
+        *op++ = *ref++;
+        *op++ = *ref++;
+ 
+#if !defined(FASTLZ_STRICT_ALIGN)
+        /* copy a byte, so that now it's word aligned */
+        if(len & 1)
+        {
+          *op++ = *ref++;
+          len--;
+        }
+ 
+        /* copy 16-bit at once */
+        q = (flzuint16*) op;
+        op += len;
+        p = (const flzuint16*) ref;
+        for(len>>=1; len > 4; len-=4)
+        {
+          *q++ = *p++;
+          *q++ = *p++;
+          *q++ = *p++;
+          *q++ = *p++;
+        }
+        for(; len; --len)
+          *q++ = *p++;
+#else
+        for(; len; --len)
+          *op++ = *ref++;
+#endif
+      }
+    }
+    else
+    {
+      ctrl++;
+ 
+      if (FASTLZ_UNEXPECT_CONDITIONAL(op + ctrl > op_limit))
+        return 0;
+      if (FASTLZ_UNEXPECT_CONDITIONAL(ip + ctrl > ip_limit))
+        return 0;
+ 
+ 
+      *op++ = *ip++; 
+      for(--ctrl; ctrl; ctrl--)
+        *op++ = *ip++;
+ 
+      loop = FASTLZ_EXPECT_CONDITIONAL(ip < ip_limit);
+      if(loop)
+        ctrl = *ip++;
+    }
+  }
+  while(FASTLZ_EXPECT_CONDITIONAL(loop));
+ 
+  return op - (flzuint8*)output;
+}
+ 
+ 
+int fastlz_compress(const void* input, int length, void* output)
+{
+    return fastlz1_compress(input, length, output);
+}
+ 
+int fastlz_decompress(const void* input, int length, void* output, int maxout)
+{
+    return fastlz1_decompress(input, length, output, maxout);
+}
+ 
+int fastlz_compress_level(int level, const void* input, int length, void* output)
+{
+  return 0;
+}
+ 
+#else /* !defined(FASTLZ_COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR) */
+ 
+#endif /* !defined(FASTLZ_COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR) */
+/*开源*/
+	
 //完成'4'-->4  ‘A’-->10
 unsigned char str2byte(unsigned char dData)
 {
@@ -36,17 +457,24 @@ char memcpydown(void* Bytes,void* Strings,char len)
 	return j;
 }
 
+//#define INPUT_HEX_NAME "1.hex"
+//#define OUTPUT_BIN_NAME "1.bin"
+const char * INPUT_HEX_NAME = "1.hex";
+const char * OUTPUT_BIN_NAME ="1.bin";
 void hex2bin(void)
 {
 	FILE *fp1,*fp2; 
 	unsigned int lSize=0;
-	char *name = "1.bin";
+	//char *name = "1.bin";
+	const char *name = OUTPUT_BIN_NAME;
 	unsigned char ch,start=0;
 	unsigned char buf[44]={0},i=0,len=0,addr,type;
 	unsigned char bin[16]={0},j=0;
 	
 
-	fp1 = fopen("1.hex", "r");
+	//fp1 = fopen("1.hex", "r");
+	fp1 = fopen(INPUT_HEX_NAME, "r");
+	
 	if (NULL == fp1){ printf("NULL == fp1 no find 1.hex"); return ;}
 
 	fp2 = fopen(name, "wb");
@@ -113,26 +541,91 @@ void hex2bin(void)
 	printf("******1.hex->1.bin*******\r\n");
 }
 
+unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen)  
+{  
+  unsigned short wCRCin = 0x0000;  
+  unsigned short wCPoly = 0x1021;  
+  unsigned char wChar = 0;  
+  int i;
+  while (usDataLen--)     
+  {  
+        wChar = *(puchMsg++);  
+ 
+        wCRCin ^= (wChar << 8);  
+        for(i = 0;i < 8;i++)  
+        {  
+          if(wCRCin & 0x8000)  
+            wCRCin = (wCRCin << 1) ^ wCPoly;  
+          else  
+            wCRCin = wCRCin << 1;  
+        }  
+  }  
+  
+  return (wCRCin) ;  
+}
 
 
+unsigned short wCRCin = 0x0000;
+unsigned short CRC16_CCITT_ONE(unsigned char *puchMsg, unsigned int usDataLen)  
+{  
+  
+  unsigned short wCPoly = 0x1021;  
+  unsigned char wChar = 0;  
+  int i;
+  while (usDataLen--)     
+  {  
+        wChar = *(puchMsg++);  
+ 
+        wCRCin ^= (wChar << 8);  
+        for(i = 0;i < 8;i++)  
+        {  
+          if(wCRCin & 0x8000)  
+            wCRCin = (wCRCin << 1) ^ wCPoly;  
+          else  
+            wCRCin = wCRCin << 1;  
+        }  
+  }  
+  
+  return (wCRCin) ;  
+}
+
+
+uint16_t all_bin_num = 0;
+uint16_t every_bin_len[50]={0};
+uint16_t every_zip_len[50]={0};
+char every_bin_name[50][20]={0};
+char every_zip_name[50][20]={0};
+
+int get_filelen(char *filename)
+{
+	FILE *fptarget; 
+	int  lSize=0;
+	fptarget = fopen(filename, "rb");
+	fseek(fptarget,0,SEEK_END);//光标到尾巴
+    lSize = ftell(fptarget);//光标的位置就是长度了
+	fclose(fptarget);
+
+	return lSize;
+}
 void bin2Nbin(void)
 {
-    #define SIZEONE (1024*4)
+    #define SIZEONE (4096)
 	FILE *fptarget; 
 	unsigned char ch,cnt,i;
 	int  lSize=0,lastlen=0;
-	char name[40]={0};
+	char name[20]={0};
 	char buffer[SIZEONE]={0};
-	fptarget = fopen("1.bin", "rb");
+	fptarget = fopen(OUTPUT_BIN_NAME, "rb");
 	//https://blog.csdn.net/a6472953/article/details/7190112
 	fseek(fptarget,0,SEEK_END);//光标到尾巴
     lSize = ftell(fptarget);//光标的位置就是长度了
 	fclose(fptarget);
 	cnt =  lSize%SIZEONE ? (lSize/SIZEONE +1) :lSize/SIZEONE ;
+
 	lastlen = lSize - (SIZEONE*(cnt-1));
-    printf("target 1.bin len =%d to be %d is numbered %d[last one is not %d is %d]\n",lSize,SIZEONE,cnt,SIZEONE,lastlen);
-	
-	fptarget = fopen("1.bin", "rb");
+    printf("target %s len =%d to be %d is numbered %d[last one is not %d is %d]\n",OUTPUT_BIN_NAME,lSize,SIZEONE,cnt,SIZEONE,lastlen);
+
+	fptarget = fopen(OUTPUT_BIN_NAME, "rb");
 	FILE *fp; 
 	for( i=0;i<cnt-1;i++)
 	{	
@@ -142,6 +635,7 @@ void bin2Nbin(void)
 	    fread (buffer, sizeof(char), SIZEONE, fptarget);
 		fwrite(buffer, sizeof(char), SIZEONE, fp);
 		fclose(fp);
+CRC16_CCITT_ONE((uint8_t*)&buffer,SIZEONE);
 		//free(fp);//这句话非常重要 否则就第一个bin文件是好的
 	}
 
@@ -151,21 +645,109 @@ void bin2Nbin(void)
 	fread (buffer, sizeof(char), lastlen, fptarget);
 	fwrite(buffer, sizeof(char), lastlen, fp);
 	fclose(fp);
+CRC16_CCITT_ONE((uint8_t*)&buffer,lastlen);
 	//free(fp);//这句话非常重要 否则就第一个bin文件是好的
 	
 	printf("******1.bin->N.bin*******\n");
+
 	for( i=0;i<cnt;i++)
 	{	
-
+        memset(name,0,sizeof(name));
 		sprintf(name,"NO-%02d.bin",i);
-		fp = fopen(name, "rb");
-		fseek(fp,0,SEEK_END);//光标到尾巴
-    	lSize = ftell(fp);//光标的位置就是长度了
-		fclose(fp);
-		//free(fp);
-        printf("NO-%02d.bin len =%d  is  %d\n",i,lSize);
+    	lSize = get_filelen(name);
+        printf("file %s len =%d ",name,lSize);
+	    every_bin_len[i]=lSize;//////// 全局
+		memcpy (every_bin_name[i],name,strlen(name));//////// 全局
+		sprintf(every_zip_name[i],"%s%s",name,".zip");
+		printf("[BINfile %s ZIPfile =%s]\n",every_bin_name[i],every_zip_name[i]);
 	}
+	all_bin_num=cnt;//////// 全局
+	printf("******done*********\r\n");
 	return;
+}
+/*给出一个bin文件名字 + 该文件的长度我制作一个zip 返回该ZIP的长度*/
+/*前面已经保证了bin文件长度是4096 除了最后一个*/
+int bin2zip(char *binname,int inlen,char *zipname)
+{
+	#define INLEN  4096
+
+	uint8_t indata[INLEN]={0};
+	uint8_t outdata[INLEN+512]={0};
+
+	FILE *fpBIN  = fopen(binname, "rb");
+	FILE *fpZIP  = fopen(zipname, "wb");
+ 
+	fread (indata, sizeof(char), inlen, fpBIN);
+	int outlen = fastlz_compress(indata,inlen,outdata);
+	printf("inlen=%d -- outlen=%d [%d]\r\n",inlen,outlen,outlen*100/inlen);
+	fwrite(outdata, sizeof(char), outlen, fpZIP);
+
+    fclose(fpZIP);
+	fclose(fpBIN);
+
+	return outlen;
+}
+
+void Nbin2Nzip(void)
+{
+	int i = 0;
+	for(i = 0 ; i < all_bin_num;i++)
+       every_zip_len[i] = bin2zip(every_bin_name[i],every_bin_len[i],every_zip_name[i]);
+}
+
+void Nzip2zip(void)
+{
+	uint8_t	data2buf[50*4096];//因为最大是50个4K的文件 
+	FILE *fpin   =  NULL;
+	FILE *fpout  =  fopen("out.zip", "wb");
+	int i =0;
+	for(i=0;i<all_bin_num;i++)
+	{
+		memset(data2buf,0,sizeof(data2buf));
+		fpin = fopen(every_zip_name[i],  "rb");
+		fread (data2buf, sizeof(char), every_zip_len[i], fpin);
+		fwrite(data2buf, sizeof(char), every_zip_len[i], fpout);	
+		fclose(fpin);
+	}
+    fclose(fpout);
+}
+
+
+void Zip_Head_Handle(void)
+{
+	uint8_t	i,data2buf[200*1024];
+	FILE *fpolddel  =  fopen("out.zip",        "rb");
+	FILE *fpnewout  =  fopen("headout.zip",    "wb");
+	//fwrite(every_zip_len, sizeof(char), 50*2, fpnewout);//此时把压缩后的bin文件在头部写入这个数组！
+	fwrite(&wCRCin,       sizeof(uint16_t), 1,           fpnewout);
+	fwrite(&all_bin_num,  sizeof(uint16_t), 1,           fpnewout);
+	fwrite(every_zip_len, sizeof(uint16_t), all_bin_num, fpnewout);//此时把压缩后的bin文件在头部写入这个数组！
+	memset(data2buf,0,200*1024);
+	int	allziplen=0;//展示一下压缩效果 打印出来
+    for(i=0; i<all_bin_num; i++) allziplen+=every_zip_len[i];
+  
+	fread (data2buf, sizeof(char), allziplen, fpolddel);
+	fwrite(data2buf, sizeof(char), allziplen, fpnewout);	
+	fclose(fpolddel);
+    fclose(fpnewout);
+}
+/*验证全局CRC16 和分布CRC16 是否相等 JAMES*/
+void Test_crc16(void)
+{
+	int  lSize=0;
+	FILE *fp = fopen(OUTPUT_BIN_NAME, "rb");
+	fseek(fp,0,SEEK_END);//光标到尾巴
+    lSize = ftell(fp);//光标的位置就是长度了
+	fclose(fp);
+
+	uint8_t	i,data2buf[50*4096];
+	fp  =  fopen(OUTPUT_BIN_NAME,     "rb");
+	memset(data2buf,0,200*1024);
+	fread (data2buf, sizeof(char), lSize, fp);
+    printf("JAMES ALL FILE[%d]crc16=%04X\r\n",	lSize,CRC16_CCITT(data2buf,lSize));	
+	fclose(fp);
+
+	printf("JAMES ALL FILE crc16=%04X\r\n",	wCRCin);
 }
 int main(int argc,char **argv)
 {
@@ -173,10 +755,20 @@ int main(int argc,char **argv)
     hex2bin();
     /*完成1.bin-->N个bin 前面都是4K最后一个不确定*/
     bin2Nbin();
-	/*完成N个bin 每个都压缩一次*/
-	
+	/*完成N个bin 每个都压缩一次【一个多少个bin？每个bin多大？前面函数做的全局变量】*/
+	Nbin2Nzip();
+	/*完成N个ZIP 合并为1个zip【多少个zip？前面bin数目一样的 全局变量】*/
+	Nzip2zip();
+	/*在ZIP头部写入特征表*/
+	Zip_Head_Handle();
+	Test_crc16();
 	printf("******GKOSON FINISHED*******\r\n");
-	getchar();
-
+	//getchar();
+	char i;
+	for(i=0;i<all_bin_num;i++)
+    {
+		remove(every_zip_name[i]);
+		remove(every_bin_name[i]);
+	}
 	return 1;
 }

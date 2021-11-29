@@ -8,13 +8,12 @@
 
 
 
-#define     DEVICE_SW_VERSION         100
+#define     DEVICE_SW_VERSION         999
 
 
 #define    DEVICE_TYPE                0x06
 
 
-#define DEVICE_NUM                      217  
 
 /* 
  *  设备蓝牙名称，设备名称编码4个ASCII+设备MAC地址
@@ -83,8 +82,8 @@ typedef enum
     CFG_SYS_OPEN_TIME,
     CFG_SYS_CHIP_ID,
     CFG_SYS_HW_VERSION,  
-    CFG_SYS_DEVICE_TYPE,
-    CFG_SYS_DEVICE_NUM,
+
+
     CFG_SYS_DEVICE_NAME,
     CFG_SYS_SW_VERSION,
 
@@ -132,8 +131,8 @@ typedef struct
       uint8_t support_net_types;//入网方式  TSLNetType_TSLGPRS 3种
       uint8_t support_ble_types;//蓝牙 0--BM77 1--0906
       uint8_t lock_mode;//0 1 2 三种 标识安装在哪儿 涉及开门权限
-      uint8_t device_type;//写死的 6 设备类型 没有意义
-      uint8_t deviceNum;    //写死的217 设备编号 没有意义 BLE给安装工的
+
+
       
       uint8_t  alarm_time; //开门
       uint16_t delay_time;//开门

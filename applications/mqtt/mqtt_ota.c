@@ -393,7 +393,7 @@ int8_t ota_download_read_file(void)
         memset(rxBuf , 0x00, sizeof(OTARXBUF_SIZE));
         socket_clear_buffer(clientId);
 
-        OTA_DEBUG_LOG(1, ("【OTA】文件下载进度:%d%\n" ,  (ota.len*100)/ota.fileSize));
+        OTA_DEBUG_LOG(1, ("【OTA】文件下载进度:%d\n" ,  (ota.len*100)/ota.fileSize));
         if (ota.len  + ONESTEP >= ota.fileSize)
         {
             OTA_DEBUG_LOG(1, ("【OTA】获取数据（最后一包）, %d-%d \n" , ota.len , ota.fileSize));
@@ -414,8 +414,6 @@ int8_t ota_download_read_file(void)
             OTA_DEBUG_LOG(1, ("【OTA】socket.send FAIL = %d \n", ret));
             return SOCKER_READ_ERR;
         }
-  //socket.read_buffer      
-
         ret = socket.read(clientId  , 10000);
         OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】接到消息的长度: [ %d]\n", ret));
 
@@ -429,9 +427,9 @@ int8_t ota_download_read_file(void)
         if( ota_check_http(rxBuf ) == FALSE)
         {
             OTA_DEBUG_LOG(1, ("【OTA】接到返回HTTP的数据头错误\n"));
-memset(httprequest, '\0', sizeof(httprequest));
-memcpy(httprequest,rxBuf,100);
-OTA_DEBUG_LOG(1, ("【%s】\n",httprequest));
+            memset(httprequest, '\0', sizeof(httprequest));
+            memcpy(httprequest,rxBuf,100);
+            OTA_DEBUG_LOG(1, ("【%s】\n",httprequest));
             return SOCKER_READ_ERR;          
         }
         

@@ -572,7 +572,7 @@ type OtaDown struct {
 }
 
 
-{"taskID":"11e3e0a27cc311eb91bc784f437b55ee","data":{"fileUrl":"http://139.9.66.72:17100/starline/headzip.bin","md5Str":"2d5b4efd001049a67f7cd5e1e5da4c66"}} 
+{"taskID":"11e3e0a27cc311eb91bc784f437b55ee","data":{"fileUrl":"http://139.9.66.72:17100/starline/headzip.bin","md5str":"2d5b4efd001049a67f7cd5e1e5da4c66","size":142430,"version":"1.0.0"}} 
 
 */
 
@@ -686,7 +686,8 @@ otaCfg.fileSize=pSub->valueint;
       }
 
 printf("¡¾%s¡¿",pSub->valuestring);
-sprintf((char *)&otaCfg.ver,"%d",pSub->valuestring);
+
+otaCfg.ver=InterVer(pSub->valuestring);
 printf("¡¾%d¡¿",otaCfg.ver);
           
       

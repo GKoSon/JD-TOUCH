@@ -263,9 +263,9 @@ void sysCfg_set_default( void )
       uint8_t DeafultPwd[BLE_PASSWORD_LENGTH] ={0X12,0x34,0x56};
 
       cfg.mark = DEFAULT_MARK;
-      cfg.parm.deviceNum = DEVICE_NUM;
+
       cfg.parm.lock_mode = DEVICD_MODE;   
-      cfg.parm.device_type = DEVICE_TYPE;
+
       cfg.parm.delay_time = OPEN_DELAY;
 
       ///////////INFO
@@ -377,8 +377,8 @@ void sysCfg_print( void )
       log(INFO,"********************* 2021 Copyright ********************* \n");
       log(DEBUG,"系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
       log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));
-      log(DEBUG,"设备编号 = [%d]\n",cfg.parm.deviceNum);
-      log(DEBUG,"设备类型 = [%d]\n",cfg.parm.device_type);
+
+
 
       
       log(ERR,"设备模式 =[%d][安装位置 0:门口机单元门禁 ,1:楼栋门禁 ,2: 围墙机小区门禁]\n" ,cfg.parm.lock_mode);
@@ -437,17 +437,15 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             
         }break;
 
-
-
         case CFG_BLE_MAC:
         {
             memcpy(cfg.ble.ble_mac , parma , BLE_MAC_LENGTH);
         }break;
+        
         case CFG_BLE_VERSION:
         {
             cfg.ble.ble_version = *(uint32_t *)(parma);
         }break;
-
 
         case CFG_SYS_OPEN_TIME:
         {
@@ -465,8 +463,6 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             cfg.parm.lock_mode = *(uint8_t *)(parma);
             log(DEBUG,"设置设备类型 = %d \n" , cfg.parm.lock_mode);
         }break;
-
-
         
         case CFG_SYS_MAGNET_STATUS:
         {
@@ -511,11 +507,13 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             cfg.parm.updataTime = *(uint8_t *)(parma);
             log(DEBUG,"设备同步时间状态=%d\n" , cfg.parm.updataTime);
         }break;
+        
          case CFG_CLEAR_RESTORE_FLAG:
         {
             uint32_t bit = *(uint32_t *)(parma);
             cfg.sysRestoreFlag &= ~bit;
         }break;
+        
         case CFG_SET_RESTORE_FLAG:
         {
             uint32_t bit = *(uint32_t *)(parma);
@@ -526,21 +524,21 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         
 case CFG_SYS_SHANGHAI:
 {
-chip_flash_earse(DSYS_DIANMA_ADDR);
-if(parma==NULL)
-{
-printf("clean\n\n");
-return true;
-}
-if(true==chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
-{
-  printf("\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
-return true;
-}
-else
-{
-printf("\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
-return false;
+  chip_flash_earse(DSYS_DIANMA_ADDR);
+  if(parma==NULL)
+  {
+  printf("clean\n\n");
+  return true;
+  }
+  if(true==chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
+  {
+    printf("\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
+  return true;
+  }
+  else
+  {
+  printf("\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
+  return false;
 }
 }break;  
         case CFG_NOTHING:
@@ -571,12 +569,12 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             data = cfg.parm.filterSynced;
         }break;
 
-
         case CFG_PAIR_PWD:
         {
             *parma = cfg.pair_pwd;
             data = BLE_PASSWORD_LENGTH;
         }break;
+        
         case CFG_USER_PWD:
         {
            *parma = cfg.user_pwd;
@@ -588,8 +586,6 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             *parma = cfg.ble.ble_mac;
         }break;
               
-
-
         case CFG_BLE_VERSION:
         {
             data = cfg.ble.ble_version;
@@ -605,24 +601,17 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             *parma = &cfg.parm.chipId;
         }break;
-        case CFG_SYS_DEVICE_TYPE:
-        {
-            data = cfg.parm.device_type;
-        }break;
-        case CFG_SYS_DEVICE_NUM:
-        {
-            data = cfg.parm.deviceNum;
-        }break;
-        
+  
         case CFG_SYS_DEVICE_NAME:
-    {
+        {
             *parma = cfg.parm.deviceName;
-    }break;
+        }break;
 
         case CFG_SYS_SW_VERSION:
         {
             data = cfg.parm.soft_version;
         }break;
+        
         case CFG_SYS_NET_TYPE:
         {
             data = cfg.parm.support_net_types;
@@ -641,17 +630,18 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.parm.lock_mode;
         }break;
-
  
         case CFG_SYS_MAGNET_STATUS:
         {
              data = cfg.parm.magnet_status;
         }break;
+        
         case CFG_NET_ADDR:
         {
              *parma = &cfg.server.net;
 
         }break;
+        
         case CFG_OTA_ADDR:
         {
              *parma = &cfg.server.otanet;
@@ -683,10 +673,12 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             *parma = &cfg.mqtt.mqttClientId;
         }break;
+        
         case CFG_MQTT_USERNAME:
         {
             *parma = &cfg.mqtt.mqttUserName;
         }break;
+        
         case CFG_MQTT_USERPWD:
         {
             *parma = &cfg.mqtt.mqttUserPwd;
@@ -696,10 +688,12 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {      
             *parma = &cfg.parm.deviceName[4];
         }break;
+        
         case CFG_MQTT_DC:
         {      
             *parma = SHType.deviceCode;
         }break;
+        
         case CFG_PRO_PWD:
         {
             static uint8_t proj_pwd[7];
@@ -707,8 +701,6 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
             G_1byteTo2str(proj_pwd,cfg.pair_pwd,3);
             *parma = proj_pwd;
         }break;
-        
-
              
         case CFG_SET_RESTORE_FLAG:
         {
@@ -722,16 +714,16 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         
 case CFG_SYS_SHANGHAI:
 {
-if(true==chip_flash_read( DSYS_DIANMA_ADDR ,(uint8_t *)&SHType ,sizeof(_SHType)))
-{       
-printf("\r\n*******CFG_SYS_SHANGHAI READ ok %d********\r\n",sizeof(_SHType));
-return true;
-}
-else
-{
-printf("\r\n*******CFG_SYS_SHANGHAI READ fail********\r\n");
-return false;
-}
+  if(true==chip_flash_read( DSYS_DIANMA_ADDR ,(uint8_t *)&SHType ,sizeof(_SHType)))
+  {       
+  printf("\r\nCFG_SYS_SHANGHAI READ ok %dr\n",sizeof(_SHType));
+  return true;
+  }
+  else
+  {
+  printf("\r\nCFG_SYS_SHANGHAI READ failr\n");
+  return false;
+  }
 }break; 
         
         

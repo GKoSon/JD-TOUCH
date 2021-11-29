@@ -177,7 +177,7 @@ static void mqtt_task( void const *pvParameters)
                     sys_delay(10);
                     timer.start(mqttKEEPAliveBLUE);
                     mqttRunType = GMQTT_FILTER;
-                    startota();
+                    //startota();
                 break;  
                 
        case GMQTT_FILTER:

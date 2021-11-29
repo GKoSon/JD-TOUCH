@@ -607,8 +607,6 @@ taskENABLE_INTERRUPTS();
 static void ota_task( void const *pvParameters)
 {
 
-
-
     for( ; ; )
     {
         switch(ota.otaStatus)
@@ -618,8 +616,8 @@ static void ota_task( void const *pvParameters)
                 
                 if( xSemaphoreTake( xMqttOtaSemaphore, portMAX_DELAY ) == pdTRUE )
                 {
-                        ota_init_buffer();
-                        ota.otaStatus = DOWMLOAD_FILE;
+                      ota_init_buffer();
+                      ota.otaStatus = DOWMLOAD_FILE;
                 }
                 OTA_DEBUG_LOG(OTA_DEBUG, ("¡¾OTA¡¿------CHECH_UPG_FILE SLEEPING---------\n")); 
             }break;  

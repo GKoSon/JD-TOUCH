@@ -95,6 +95,15 @@ void MX_NVIC_Init(void);
 
 extern void spi_flash_init( void );
 /* USER CODE BEGIN 0 */
+#define DEBUG_LOG(type, message)                                           \
+do                                                                            \
+{                                                                             \
+    if (type)                                                                 \
+        printf message;                                                   \
+}                                                                             \
+while (0)
+#define LOG_DEBUG                                                      0
+#define INFO_DEBUG                                                     1
 
 /*开源*/ 
 #define uint8_t  unsigned char
@@ -522,6 +531,7 @@ void console_getchar(uint8_t ch)
 {
 
 }
+
 void serial_console_init( void )
 {
     console_port = serial.open("serial1");
@@ -546,7 +556,6 @@ void FLASH_BufferRead_RANG( uint32_t ReadAddr,uint8_t* pBuffer, uint16_t NumByte
 {
     uint32_t i,p1Addr,p2Addr,p1len,p2len,p1lenno,p2lenno;
     uint8_t  status=0;
-    //static uint8_t buf[4096];
        
     if(NumByteToRead>4096){printf("--------NOW NOT---------\r\n");return;}
     for(i=0;i<2049;i++)//电子表格 一共有2049个PAGE
@@ -593,10 +602,12 @@ uint32_t hexlen =0;
 uint16_t bincrc16 ;
 uint8_t write[4096]    @(0x10001000);
 uint8_t read[4096]     @(0x10002000);
+
 void zip2hex(void)
 {
+    DEBUG_LOG(INFO_DEBUG, ("KOSON 开始解压文件\r\n"));
+    
     uint16_t lenmark[50],*plenmark=NULL;
-
     uint8_t  i=0;
     uint32_t addrpagefrom=0,addrpageto=0;
 
@@ -606,36 +617,31 @@ void zip2hex(void)
     plenmark = (uint16_t *)&read;
     bincrc16 = plenmark[0];
     uint16_t zipnum   = plenmark[1];
+    DEBUG_LOG(INFO_DEBUG, ("KOSON totalcnt zip=%d\r\n",zipnum));
     for(i=0;i<zipnum;i++)
     {  
         lenmark[i] = plenmark[i+2]; 
-        
-        printf("lenmark[%d]=%d\r\n",i,lenmark[i]);
+        DEBUG_LOG(INFO_DEBUG, ("KOSON lenmark[%d]=%d\r\n",i,lenmark[i]));
     }
     totalcnt = zipnum;
 
-    printf("MAX SESIGN 50 NOW WE HAVE :%d\r\n",totalcnt);
- 
     //开始挨个解压
-    uint8_t must2 = totalcnt%2 ? totalcnt+1 :totalcnt;
-    printf("must2=%d totalcnt=%d\r\n",must2,totalcnt);
-    addrpagefrom += (2* (1+1+totalcnt)); 
+    addrpagefrom += (2* (1+1+totalcnt)); /*一个U16是CRC 一个U16是数目 N个U16是数目的数值*/
     for(i=0;i<totalcnt;i++)
     {
         memset(read,0,4096);//ZIP
         memset(write,0,4096);//HEX
         FLASH_BufferRead_RANG(addrpagefrom,read,lenmark[i]);
         outlen[i] = fastlz_decompress(read, lenmark[i],write, 4096); 
-       //对的 if(i==0)  for(uint8_t j=0;j<20;j++)printf("0X%02X-0X%02X " , read[j],write[j]);//printf("addrpagefrom =%08X   %08X  %08X",addrpagefrom,(uint32_t*)&read[0],(uint32_t*)&write[0]);
-        printf("outlen[%d]=%d\r\n",i,outlen[i]);
+        DEBUG_LOG(INFO_DEBUG, ("KOSON outlen[%d]=%d\r\n",i,outlen[i]));
         addrpagefrom += lenmark[i]; 
-///save///
         addrpageto   = OTA_HEX_START_ADDR+i*4096;
         flash.earse(addrpageto);/*卧槽*/
         flash.write(addrpageto, write,  4096 );
         hexlen += outlen[i];
     }
-        printf("hexlen[%d]\r\n",hexlen);
+
+    DEBUG_LOG(INFO_DEBUG, ("KOSON hexlen=%d\r\n",hexlen));
 }
 
 
@@ -675,8 +681,7 @@ uint16_t get_bin_crc16(void)
         memset(read,0,4096);
         flash.read(addrpagefrom,read,outlen[i]);
         CRC16_CCITT_ONE((uint8_t*)&read,outlen[i]);
-        for(uint8_t j=0;j<20;j++)printf("0X%02X " , read[j]);
-        log(WARN,"get_bin_crc16 addrpagefrom=0X%08X , outlen = %d\n" , addrpagefrom , outlen[i]);
+        DEBUG_LOG(LOG_DEBUG, ("KOSON addrpagefrom=0X%08X , outlen = %d\n" , addrpagefrom , outlen[i]));
     }
     
     return wCRCin;
@@ -686,6 +691,7 @@ uint16_t get_bin_crc16(void)
 uint8_t ota_ver_file( void )
 {
     zip2hex();
+    
     wCRCin=0;
     if( bincrc16 == get_bin_crc16())
     {
@@ -948,15 +954,15 @@ int8_t bootload_download_to_flash( void )
     uint32_t baseAddr = APPLICATION_ADDRESS;
     uint32_t readAddr = OTA_HEX_START_ADDR;//需要修改
     uint32_t ramsource , len =0;
-    cfg.otaVar.fileSize = hexlen;//需要修改
+    cfg.otaVar.fileSize = hexlen;//需要修改 因为ZIP是APP写的 比较小
     uint8_t buff[1024]; 
-printf("---- :%d  %0x\r\n",hexlen,readAddr);
+
     FLASH_Erase();
     
     for( len = 0;  len < cfg.otaVar.fileSize; len += 1024 )
     {
         flash.read(readAddr+len , buff , 1024);
-        if(len == 0)printf("%08x",(uint32_t*)&buff[0]);
+       // if(len == 0)printf("%08x",(uint32_t*)&buff[0]);//看看对不对
         ramsource = (uint32_t)&buff;
         
         if( FLASH_Write(baseAddr+len ,  (uint32_t*) ramsource , 256) != FLASHIF_OK)

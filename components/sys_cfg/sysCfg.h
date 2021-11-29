@@ -148,6 +148,7 @@ typedef struct
 typedef struct
 {
     uint32_t        otaUpgMark;
+    
     uint32_t        ver;
     uint32_t        fileSize;
     uint32_t        crc32;
@@ -155,7 +156,7 @@ typedef struct
 
 
 
-void show_OTA(otaType *p);
+void show_OTA(void);
 
 typedef struct
 {

@@ -239,12 +239,9 @@ uint32_t file_MD5(void)
     printf("file_MD5文件长度是%d,分成的小块是每块长度%d,得到%d个整块+最后长度是%d\r\n",fileSize,ONE_FILE_LEN,allsteps-1,lastlen);
     log_arry(DEBUG,"结果计算MD5是:" ,decrypt, 16);
     
-    
     uint16_t crc = CRC16_CCITT(decrypt,16);/*把最后16个HEX算一下 丢出去*/
 
-
-
-     return crc;
+    return crc;
 
 }
 
@@ -310,22 +307,36 @@ void ota_init_buffer( void )
             NEVERSHOW
           
     }
-    
-    
-    
+/*挨个赋值*/    
 
-memcpy(ota.fileKey,"/upload/250636169.bin" ,strlen("/upload/250636169.bin")  );
+/*1*/  
+char *fileKey;
+config.read(CFG_OTA_URL , (void **)&fileKey); 
+memcpy(ota.fileKey,fileKey ,strlen(fileKey)  );
+printf("ota.fileKey ---------%s------------\r\n",ota.fileKey);
+//memcpy(ota.fileKey,"/upload/1487627177.bin" ,strlen("/upload/1487627177.bin")  );
+ 
+
+
+/*2*/     
 ota.len=       0;
 
-ota.fileSize=  46504;
+/*3*/  
+ota.fileSize= otaCfg->fileSize;
+//ota.fileSize=  142430;
 
-ota.ver=444;
+/*4*/  
+ota.ver=otaCfg->ver;
 
-char md5[33]={"c71c1e6880af4ec0bbb6026eaa14a9e5"};
-uint8_t Md5[16]={0};
-G_strsTobytes(md5,Md5,32);
-ota.crc32=CRC16_CCITT(Md5,16);
-log_arry(DEBUG,"平台计算MD5是" ,Md5, 16);
+//ota.ver=444;
+
+/*5*/  
+ota.crc32=otaCfg->crc32;
+//char md5[33]={"2d5b4efd001049a67f7cd5e1e5da4c66"};
+//uint8_t Md5[16]={0};
+//G_strsTobytes(md5,Md5,32);
+//ota.crc32=CRC16_CCITT(Md5,16);
+//log_arry(DEBUG,"平台计算MD5是" ,Md5, 16);
 }
 
 
@@ -369,6 +380,8 @@ int8_t ota_download_read_file(void)
     serverAddrType *addr;
     config.read(CFG_OTA_ADDR , (void **)&addr);
     
+
+    
     while (ota.len  < ota.fileSize)
     {
         ret = 0 ;
@@ -394,7 +407,7 @@ int8_t ota_download_read_file(void)
             dataLen = ONESTEP;
         }
         
-        //OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】准备发送 %s\n" , httprequest));
+        OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】准备发送 %s\n" , httprequest));
         ret = socket.send(clientId , httprequest , httpsendLen , 3000);
         if( ret != SOCKET_OK)
         {
@@ -596,7 +609,7 @@ taskENABLE_INTERRUPTS();
 static void ota_task( void const *pvParameters)
 {
 
-    ota_init_buffer();
+
 
     for( ; ; )
     {
@@ -607,6 +620,7 @@ static void ota_task( void const *pvParameters)
                 
                 if( xSemaphoreTake( xMqttOtaSemaphore, portMAX_DELAY ) == pdTRUE )
                 {
+                        ota_init_buffer();
                         ota.otaStatus = DOWMLOAD_FILE;
                 }
                 OTA_DEBUG_LOG(OTA_DEBUG, ("【OTA】------CHECH_UPG_FILE SLEEPING---------\n")); 

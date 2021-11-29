@@ -130,9 +130,10 @@
         <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.130.13" 0 0 1 "" 0 "" 0</Bp2>
         <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\buletooth\before\btTask.c}.41.17" 0 0 1 "" 0 "" 0</Bp3>
         <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\module\buletooth\BB0906\bb0906_protocol.c}.178.15" 0 0 1 "" 0 "" 0</Bp4>
-        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\components\sys_cfg\sysCfg.c}.812.1" 0 0 1 "" 0 "" 0</Bp5>
-        <Bp6>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.973.1" 0 0 1 "" 0 "" 0</Bp6>
-        <Count>7</Count>
+        <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\components\sys_cfg\sysCfg.c}.807.1" 0 0 1 "" 0 "" 0</Bp5>
+        <Bp6>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.972.1" 0 0 1 "" 0 "" 0</Bp6>
+        <Bp7>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.707.1" 0 0 1 "" 0 "" 0</Bp7>
+        <Count>8</Count>
     </Breakpoints2>
     <Aliases>
         <Count>0</Count>

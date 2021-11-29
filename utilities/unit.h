@@ -181,13 +181,13 @@ uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len);
 
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
 #define GGMIN(A,B) (A)>(B)?B:A
-void IPStrTO4ARR(unsigned char *arr,unsigned char *str);
+
 
 void IP4ARRToStr(unsigned char *arr, char *str);
 
 void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len);
 
-void GIPStringtoarry(unsigned char *sor,unsigned char *arr);
+
 uint8_t mycrc8(uint8_t *ps1,uint8_t uLen);
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen) ;
 
@@ -201,4 +201,8 @@ extern char topicPath1[GMAX_LEN_TOPIC];
 extern char topicPath2[GMAX_LEN_TOPIC];
 extern char topicPath3[GMAX_LEN_TOPIC];
 extern char topicPath4[GMAX_LEN_TOPIC];
+
+void StringVer(char *s,uint32_t u) ;
+
+uint32_t InterVer(char *s);
 #endif

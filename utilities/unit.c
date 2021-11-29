@@ -356,16 +356,6 @@ void soft_system_resert( const char *funs )
 
 
 
-//"192.168.1.2"--->192,168,1,2
-void IPStrTO4ARR(unsigned char *arr,unsigned char *str)
-{
-
-    int Arr[4];
-    sscanf((const char*)str,"%d.%d.%d.%d",&Arr[0],&Arr[1],&Arr[2],&Arr[3]);
-    for(char i=0;i<4;i++)
-        arr[i]=Arr[i];
-
-}
 //Íê³É'4'-->4  ¡®A¡¯-->10
 unsigned char G_strTobyte(unsigned char dData)
 {
@@ -405,14 +395,23 @@ void IP4ARRToStr(unsigned char *arr, char *str)
     sprintf(str,"%d.%d.%d.%d",arr[0],arr[1],arr[2],arr[3]);
 }
 
-void GIPStringtoarry(unsigned char *sor,unsigned char *arr)
-{
-    int Arr[4];
-    if(strstr((const char *)sor,"."))
-    {
-      sscanf((const char*)sor,"%d.%d.%d.%d",&Arr[0],&Arr[1],&Arr[2],&Arr[3]);
-      for(char i=0;i<4;i++)
-          arr[i]=Arr[i];
-    }
 
+
+
+//123->"1.2.3"
+void StringVer(char *s,uint32_t u) 
+{
+    int Arr[3];
+    Arr[0]= u/100;
+    Arr[1]= (u/10) - 10*(Arr[0]);
+    Arr[2]= u%10;
+    sprintf(s,"%d.%d.%d",Arr[0],Arr[1],Arr[2]);
+}
+
+//"1.2.3"->123
+uint32_t InterVer(char *s)
+{
+    int Arr[3];
+    sscanf((const char*)s,"%d.%d.%d",&Arr[0],&Arr[1],&Arr[2]);
+    return Arr[0]*100 + Arr[1]*10 + Arr[2];
 }

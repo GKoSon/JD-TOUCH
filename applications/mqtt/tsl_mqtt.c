@@ -570,18 +570,21 @@ type OtaDown struct {
 		Md5Str		string 		`json:"md5Str"`				//	文件md5值
 	} `json:"data"`
 }
+
+
+{"taskID":"11e3e0a27cc311eb91bc784f437b55ee","data":{"fileUrl":"http://139.9.66.72:17100/starline/headzip.bin","md5Str":"2d5b4efd001049a67f7cd5e1e5da4c66"}} 
+
 */
 
 void downProgramURL(char *pJson)
 {
       SHOWME 
-
-      uint32_t port = 0,ver=0;
+      otaType otaCfg;
       char *p = NULL;
-      char url[64];
+      char url[100]={0};
       cJSON * pRoot = cJSON_Parse(pJson);
       cJSON * pSub  = NULL;
-      
+      char i;
       
       if(NULL == pRoot) 
       {
@@ -615,8 +618,40 @@ void downProgramURL(char *pJson)
           goto out;
       }
       printf("【%s】",pSub->valuestring);
-      
-      
+      memcpy(url,pSub->valuestring,strlen(pSub->valuestring));
+ 
+
+
+serverAddrType ip_port;
+if(p = strstr ((const char*)url,"//"))
+p+=2;
+
+for( i=0;i<strlen(p);i++)
+{
+  if(p[i]==':')
+   {
+     p[i]='\0';
+       break;
+   }
+}
+memcpy(ip_port.ip,p,strlen(p));
+
+p[i]=':';
+p = strstr ((const char*)p,":");
+++p;
+ip_port.port = atoi(p);
+
+
+config.write(CFG_OTA_ADDR ,&ip_port,0);
+
+
+
+
+p = strstr ((const char*)p,"/");
+config.write(CFG_OTA_URL ,p,0);
+
+
+
       pSub = cJSON_GetObjectItem(pSubALL, "md5Str");
       if(NULL == pSub)
       {
@@ -624,20 +659,47 @@ void downProgramURL(char *pJson)
           goto out;
       }
 
-      /*信息全部拿到了*/
+
 
       printf("【%s】",pSub->valuestring);
-      
+
+uint8_t Md5[16]={0};
+G_strsTobytes(pSub->valuestring,Md5,32);
+otaCfg.crc32=CRC16_CCITT(Md5,16);      
       
 
-
+      pSub = cJSON_GetObjectItem(pSubALL, "size");
+      if(NULL == pSub)
+      {
+          cJSON_Delete(pRoot);
+          goto out;
+      }
+      printf("【%d】",pSub->valueint);
+otaCfg.fileSize=pSub->valueint;
       
-      otaType otaCfg;
-      otaCfg.ver = ver;
+      
+      pSub = cJSON_GetObjectItem(pSubALL, "version");
+      if(NULL == pSub)
+      {
+          cJSON_Delete(pRoot);
+          goto out;
+      }
+
+printf("【%s】",pSub->valuestring);
+sprintf((char *)&otaCfg.ver,"%d",pSub->valuestring);
+printf("【%d】",otaCfg.ver);
+          
+      
+
+       /*信息全部拿到了的话 就保存起来*/
+
+
       config.write(CFG_OTA_CONFIG , &otaCfg,1);
       
       cj_response(taskID ,0); 
+      show_OTA();
       xSemaphoreGive(xMqttOtaSemaphore);  
+      
       return;
       
 out:

@@ -262,15 +262,74 @@ void device_set_default( char flag )
       soft_system_resert(__func__);
     }
 }
+
+
+#include <stdlib.h>
 void startota(void)
 {
   printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");
+#if 0
 
   serverAddrType ip_port;
   memcpy(ip_port.ip,"ibinhub.com",strlen("ibinhub.com"));
   ip_port.port = 80;
   config.write(CFG_OTA_ADDR ,&ip_port,1);
+#endif
+char url[]={"http://139.9.66.72:17100/starline/headzip.bin"};
+char valuestring[32]={"2d5b4efd001049a67f7cd5e1e5da4c66"};
+char ver[]={"1.6.3"};
+serverAddrType ip_port;
+char *p = NULL;
+char i;
+otaType otaCfg;
 
+if(p = strstr ((const char*)url,"//"))
+p+=2;
+
+for( i=0;i<strlen(p);i++)
+{
+  if(p[i]==':')
+   {
+     p[i]='\0';
+       break;
+   }
+}
+memcpy(ip_port.ip,p,strlen(p));
+
+
+p[i]=':';
+p = strstr ((const char*)p,":");
+++p;
+ip_port.port = atoi(p);
+
+
+config.write(CFG_OTA_ADDR ,&ip_port,0);
+
+p = strstr ((const char*)p,"/");
+//memcpy(otaurl,p,strlen(p))
+config.write(CFG_OTA_URL ,p,0);
+
+
+
+
+uint8_t Md5[16]={0};
+G_strsTobytes(valuestring,Md5,32);
+otaCfg.crc32=CRC16_CCITT(Md5,16);      
+      
+
+
+otaCfg.fileSize=142430;
+      
+      
+otaCfg.ver=InterVer(ver);
+          
+      
+
+   /*信息全部拿到了的话 就保存起来*/
+
+
+  config.write(CFG_OTA_CONFIG , &otaCfg,1);
+  show_OTA();    
   xSemaphoreGive(xMqttOtaSemaphore);
   
   printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");

@@ -424,6 +424,21 @@ int fastlz_compress_level(int level, const void* input, int length, void* output
 #endif /* !defined(FASTLZ_COMPRESSOR) && !defined(FASTLZ_DECOMPRESSOR) */
 /*开源*/
 	
+
+
+
+
+#define DEBUG_LOG(type, message)                                           \
+do                                                                            \
+{                                                                             \
+    if (type)                                                                 \
+        printf message;                                                   \
+}                                                                             \
+while (0)
+#define ERR_DEBUG                                                      1
+#define INFO_DEBUG                                                     1
+#define LOG_DEBUG                                                      0
+
 //完成'4'-->4  ‘A’-->10
 unsigned char str2byte(unsigned char dData)
 {
@@ -540,7 +555,7 @@ void hex2bin(void)
 	fclose(fp2);
     //free(fp1);
 	//free(fp2)
-	printf("******1.hex->1.bin*******\r\n");
+	DEBUG_LOG(INFO_DEBUG, ("******1.hex->1.bin*******\r\n"));
 }
 
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen)  
@@ -597,7 +612,7 @@ uint16_t every_bin_len[50]={0};
 uint16_t every_zip_len[50]={0};
 char every_bin_name[50][20]={0};
 char every_zip_name[50][20]={0};
-
+uint32_t allbinlen = 0;
 int get_filelen(char *filename)
 {
 	FILE *fptarget; 
@@ -623,10 +638,9 @@ void bin2Nbin(void)
     lSize = ftell(fptarget);//光标的位置就是长度了
 	fclose(fptarget);
 	cnt =  lSize%SIZEONE ? (lSize/SIZEONE +1) :lSize/SIZEONE ;
-
+allbinlen = lSize;
 	lastlen = lSize - (SIZEONE*(cnt-1));
-    printf("target %s len =%d to be %d is numbered %d[last one is not %d is %d]\n",OUTPUT_BIN_NAME,lSize,SIZEONE,cnt,SIZEONE,lastlen);
-
+  DEBUG_LOG(LOG_DEBUG, ("target %s len =%d to be %d is numbered %d[last one is not %d is %d]\n",OUTPUT_BIN_NAME,lSize,SIZEONE,cnt,SIZEONE,lastlen));
 	fptarget = fopen(OUTPUT_BIN_NAME, "rb");
 	FILE *fp; 
 	for( i=0;i<cnt-1;i++)
@@ -650,21 +664,23 @@ CRC16_CCITT_ONE((uint8_t*)&buffer,SIZEONE);
 CRC16_CCITT_ONE((uint8_t*)&buffer,lastlen);
 	//free(fp);//这句话非常重要 否则就第一个bin文件是好的
 	
-	printf("******1.bin->N.bin*******\n");
 
+    DEBUG_LOG(INFO_DEBUG, ("******1.bin->N.bin*******\r\n"));
 	for( i=0;i<cnt;i++)
 	{	
         memset(name,0,sizeof(name));
 		sprintf(name,"NO-%02d.bin",i);
     	lSize = get_filelen(name);
-        printf("file %s len =%d ",name,lSize);
-	    every_bin_len[i]=lSize;//////// 全局
+        DEBUG_LOG(LOG_DEBUG, ("file %s len =%d ",name,lSize));
+        every_bin_len[i]=lSize;//////// 全局
 		memcpy (every_bin_name[i],name,strlen(name));//////// 全局
 		sprintf(every_zip_name[i],"%s%s",name,".zip");
-		printf("[BINfile %s ZIPfile =%s]\n",every_bin_name[i],every_zip_name[i]);
+		DEBUG_LOG(LOG_DEBUG, ("[BINfile %s ZIPfile =%s]\n",every_bin_name[i],every_zip_name[i]));
+
 	}
 	all_bin_num=cnt;//////// 全局
-	printf("******done*********\r\n");
+
+    DEBUG_LOG(INFO_DEBUG, ("******bin2Nbin*******\r\n"));
 	return;
 }
 /*给出一个bin文件名字 + 该文件的长度我制作一个zip 返回该ZIP的长度*/
@@ -681,12 +697,12 @@ int bin2zip(char *binname,int inlen,char *zipname)
  
 	fread (indata, sizeof(char), inlen, fpBIN);
 	int outlen = fastlz_compress(indata,inlen,outdata);
-	printf("inlen=%d -- outlen=%d [%d]\r\n",inlen,outlen,outlen*100/inlen);
-	fwrite(outdata, sizeof(char), outlen, fpZIP);
+	DEBUG_LOG(LOG_DEBUG, ("inlen=%d -- outlen=%d [%d]\r\n",inlen,outlen,outlen*100/inlen));
+    fwrite(outdata, sizeof(char), outlen, fpZIP);
 
     fclose(fpZIP);
 	fclose(fpBIN);
-
+    DEBUG_LOG(INFO_DEBUG, ("******bin2zip*******\r\n"));
 	return outlen;
 }
 
@@ -695,6 +711,7 @@ void Nbin2Nzip(void)
 	int i = 0;
 	for(i = 0 ; i < all_bin_num;i++)
        every_zip_len[i] = bin2zip(every_bin_name[i],every_bin_len[i],every_zip_name[i]);
+    DEBUG_LOG(INFO_DEBUG, ("******Nbin2Nzip*******\r\n"));
 }
 
 void Nzip2zip(void)
@@ -723,11 +740,14 @@ void Zip_Head_Handle(void)
 	//fwrite(every_zip_len, sizeof(char), 50*2, fpnewout);//此时把压缩后的bin文件在头部写入这个数组！
 	fwrite(&wCRCin,       sizeof(uint16_t), 1,           fpnewout);
 	fwrite(&all_bin_num,  sizeof(uint16_t), 1,           fpnewout);
+
 	fwrite(every_zip_len, sizeof(uint16_t), all_bin_num, fpnewout);//此时把压缩后的bin文件在头部写入这个数组！
+
 	memset(data2buf,0,200*1024);
-	int	allziplen=0;//展示一下压缩效果 打印出来
+	int	allziplen=0;
     for(i=0; i<all_bin_num; i++) allziplen+=every_zip_len[i];
   
+  DEBUG_LOG(INFO_DEBUG, ("allziplen=%d allbinlen=%d [%d]\r\n",allziplen,allbinlen,(allziplen*100)/allbinlen));
 	fread (data2buf, sizeof(char), allziplen, fpolddel);
 	fwrite(data2buf, sizeof(char), allziplen, fpnewout);	
 	fclose(fpolddel);
@@ -737,12 +757,17 @@ void Zip_Head_Handle(void)
 void Show_Head(void)
 {
     uint8_t	i;
-    printf("展示前面50个U16\r\n");
+    printf("Show_Head\r\n");
+    DEBUG_LOG(INFO_DEBUG, ("******Show_Head*******\r\n"));
     FILE *fpnewout  =  fopen(OUTPUT_HEADZIP_NAME,    "rb");
 	uint16_t	buf[50];
 	fread (buf, sizeof(uint16_t), 50, fpnewout);
-	for(i=0;i<50;i++)
-	printf("%d-0X%04X\r\n",i,buf[i]);
+
+    DEBUG_LOG(INFO_DEBUG, ("1--CRC16    =0X%04X\r\n",buf[0]));
+    DEBUG_LOG(INFO_DEBUG, ("2--numofzips=%d\r\n",buf[1]));
+    for(i=0;i<buf[1];i++)
+      DEBUG_LOG(INFO_DEBUG, ("【%d】lenofzip=0X%04X \r\n",i,buf[i]));
+
 	fclose(fpnewout);
 }
 /*验证全局CRC16 和分布CRC16 是否相等 JAMES*/

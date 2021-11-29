@@ -332,14 +332,21 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
       SHOWME  SHOWME  SHOWME
 }
 
-void show_OTA(otaType *p)
+void show_OTA(void)
 {
     log(INFO,"\n********************* ******show_OTA******  ********************* \n");
 
-    printf("**************otaUpgMark:%d\n",p->otaUpgMark);
-    printf("*********************ver:%d\n",p->ver);
-    printf("****************fileSize:%d\n",p->fileSize);
-    printf("*******************crc32:%d\n",p->crc32);
+    printf("**************otaUpgMark:%d\n",cfg.otaVar.otaUpgMark);
+    printf("*********************ver:%d\n",cfg.otaVar.ver);
+    printf("****************fileSize:%d\n",cfg.otaVar.fileSize);
+    printf("*******************crc32:0X%04X\n",cfg.otaVar.crc32);
+    
+    printf("******************otaurl:%s\n",cfg.server.otaurl);
+    
+    
+    printf("******************otanet:%d\n",cfg.server.otanet.port);
+    printf("******************otanet:%s\n",cfg.server.otanet.ip);
+    //log_arry10(DEBUG,"otanet" ,cfg.server.otanet.ip , 4);//十进制打印 我们已经彻底放弃ip用4个int
     log(INFO,"\n********************* ******show_OTA******  ********************* \n");
 }
 
@@ -469,17 +476,20 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
 
         case CFG_NET_ADDR:
         {
+             memset(&cfg.server.net,0,sizeof(serverAddrType));
              memcpy(&cfg.server.net , parma , sizeof(serverAddrType));
         }break;
 
         case CFG_OTA_ADDR:
         {
+             memset(&cfg.server.otanet,0,sizeof(serverAddrType));
              memcpy(&cfg.server.otanet , parma , sizeof(serverAddrType));
         }break;
         case CFG_OTA_URL:
         {
              memset(&cfg.server.otaurl,0,64);
              memcpy(&cfg.server.otaurl , parma , GMIN(64,strlen((char*)parma)));
+             printf("CFG_OTA_URL[%s]\r\n",cfg.server.otaurl);
         }break;
         case CFG_OTA_CONFIG:
         {

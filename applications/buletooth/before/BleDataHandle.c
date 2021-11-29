@@ -343,7 +343,7 @@ void ip_port_handle(uint8_t *  sor)
     p+=2;
   else
     p = (char *)sor;
-  GIPStringtoarry((uint8_t *)p,ip_port.ip);
+  //GIPStringtoarry((uint8_t *)p,ip_port.ip);
 
   p = strstr ((const char*)p,":");
   ++p;

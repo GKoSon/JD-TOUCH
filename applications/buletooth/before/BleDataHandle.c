@@ -7,7 +7,6 @@
 #include "open_log.h"
 #include "magnet.h"
 #include "buletooth.h"
-
 #include "mqtt_task.h"
 #include "timer.h"
 #include "cmd_pb.h"
@@ -18,21 +17,11 @@
 //extern _SHType SHType;
 
 
-uint8_t FTSLBLEDeviceInfoRequest            (ProtData_T *pag,uint16_t id);
-uint8_t FTSLBLEDeviceSetPWDRequest          (ProtData_T *pag,uint16_t id);
+uint8_t FTSLBLEDeviceInfoRequest            (BleProtData *pag);
 
-uint8_t FTSLBLEDeviceSetMQTTNETRequest      (ProtData_T *pag,uint16_t id);
-
-uint8_t FTSLBLEDeviceSetLOCKPWDRequest       (ProtData_T *pag,uint16_t id);
 
 AppHandleArryType gAppTaskArry[]={
-{0x0100 ,0x0200 , FTSLBLEDeviceInfoRequest  },
-
-{0x0300 ,0x0400 , FTSLBLEDeviceSetPWDRequest},
-{0x0306 ,0x0400 , FTSLBLEDeviceSetLOCKPWDRequest},
-
-
-{0x0302 ,0x0400 , FTSLBLEDeviceSetMQTTNETRequest },
+{0x0100 , FTSLBLEDeviceInfoRequest  },
 
 
 };
@@ -46,38 +35,39 @@ do                                                                            \
 while (0)
 #define BLE_DEBUG                                                     1
 
+
+
+void show_BleProtData(BleProtData *p)
+{
+  
+  BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
+  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:ID---0X%02X----\r\n",p->id.data));
+  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:CMD---0X%02X----\r\n",p->cmd));
+  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:SEQ---0X%02X----\r\n",p->num.data));
+  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:LEN---0X%02X----\r\n",p->len));
+
+  log_arry(DEBUG,"---DATA---" ,p->body ,p->len);
+  //printf("---------0X%02X----\r\n",p->alllen);
+}
+
 /*
 组包  完成HEAD-BODY结构发出去
 */
 
-static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len,uint16_t idtype, ProtData_T *headpag)
+static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len, BleProtData *in)
 {
-    uint16_t size=0;
-    uint16_t crc16=0;
-    ProtData_T *pag=(ProtData_T *)out;
+uint16_t size=0;
 
-    memcpy(pag,headpag,3);
-    
-    pag->POS1415_len =len+4;//T+L?TCRC
-    pag->POS2122T =idtype;
-    pag->POS2324L = len;
+BleProtData *pag=(BleProtData *)out;
 
-    size = len+9;
-    
-   // pag->POS1415_len = exchangeBytes( pag->POS1415_len);
-   // pag->POS2122T =    exchangeBytes( pag->POS2122T);
-   // pag->POS2324L =    exchangeBytes( pag->POS2324L);
-
-    memcpy(pag->POS25V,msg,len );
-
-    crc16 =  crc16_ccitt(out ,size);
-   // printf(" crc16_ccitt(out ,size)=%04x\r\n",crc16);     //http://www.ip33.com/crc.html     XMODEM
-
-    out[size] =   (crc16&0XFF00)>>8; 
-    out[size+1] =  crc16&0X00FF;
-    
-    
-    return size+2;
+pag->id.data = in->id.data;
+pag->cmd = 0x01;
+pag->num.data = 0x10;
+pag->len = len;
+size = pag->len +4;
+memcpy(pag->body,msg,len );
+show_BleProtData(pag);
+return size;
 }
 
 /********************************下行1****************************/
@@ -91,10 +81,10 @@ message DeviceOpenRequest {
    string phoneNo=5;  	//手机号
 }
 */
-uint8_t Down_DeviceOpenRequest (ProtData_T *pag,uint16_t id)
+uint8_t Down_DeviceOpenRequest (BleProtData *pag)
 {SHOWME
   uint8_t   phoneNo[20]={0};
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  pb_istream_t requestStream ;// pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
   DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
   pb_decode_bytes(&A.phoneNo ,phoneNo);
   if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
@@ -151,7 +141,7 @@ message DeviceSetDeviceNameRequest {
 }
 
 */
-uint8_t Down_DeviceSetDeviceNameRequest (ProtData_T *pag,uint16_t id)
+uint8_t Down_DeviceSetDeviceNameRequest (BleProtData *pag)
 {SHOWME
 uint8_t   name[20]={0};
 uint8_t   code[20]={0};
@@ -162,7 +152,7 @@ uint8_t   gateway[20]={0};
 uint8_t   mask[20]={0};
 uint8_t   dns[20]={0};
 uint8_t   groupId[20]={0};
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  pb_istream_t requestStream ;//pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
   DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
   
   
@@ -198,7 +188,7 @@ BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】groupId        =%s\n",groupId));
 }
 
 /********************************上行1****************************/
-int UP_Return_Comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
+int UP_Return_Comm( BleProtData *pag, uint8_t status ,uint16_t type )
 {
     uint8_t pbBuf[100] , msg[256] , size = 0;
     BytesType B1; 
@@ -221,44 +211,40 @@ int UP_Return_Comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
     
     if( pb_encode_respone(&RequestStream , DeviceCommonResponse_fields , &B) == TRUE)
     {
-        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, idtype,pag);
+        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, pag);
 
-        btModule.send(pag ,msg,size);
+        btModule.send(pag->hdr.FormAddr ,pag->hdr.Handle, msg,size);
     }
 
     return 1;
 }
 
-uint8_t BleApplicationHandle(ProtData_T *pag)
+uint8_t BleDataHandleDetails(BleProtData *pag)
 { 
     uint8_t idx =0 ;
-    //show_ProtData(pag);
+    show_BleProtData(pag);
     for(idx = 0; idx < sizeof (gAppTaskArry) / sizeof (gAppTaskArry[0]); idx++)
     {
-        if( pag->POS2122T == gAppTaskArry[idx].Rxid)
+        if( pag->cmd == gAppTaskArry[idx].Rxid)
         {
             log(INFO,"Bt receive command TYPE = 0X%04X\r\n" ,  gAppTaskArry[idx].Rxid);
-            return (gAppTaskArry[idx].EventHandlerFn(pag,gAppTaskArry[idx].Txid));               
+           // return (gAppTaskArry[idx].EventHandlerFn(pag,gAppTaskArry[idx].Txid));               
         }
     }
-    log(DEBUG,"This command TYP has no register. cmd = %x.\r\n" ,pag->POS2122T );
+    
+    UP_Return_Comm(pag,0,1);
+    log(DEBUG,"This command TYP has no register. cmd = %x.\r\n" ,pag->cmd );
     return APP_ERR;
 }
 
-static uint8_t BleAppDataDecry(ProtData_T *sorpag ,  ProtData_T *despag){ return APP_OK;}
-
-void BleDataProcess(ProtData_T *sorpag)
+void BleDataHandle(BleProtData *sorpag)
 {
-    ProtData_T   pag;
+    BleProtData   pag;
 
-    memset(&pag , 0x00 ,   sizeof(ProtData_T));
-    memcpy(&pag , sorpag , sizeof(ProtData_T));      
-    if( BleAppDataDecry(sorpag,&pag) != APP_OK)
-    {    
-        beep.write(BEEP_ALARM);   
-        return ;
-    }
-    if( BleApplicationHandle(&pag) != APP_OK)
+    memset(&pag , 0x00 ,   sizeof(BleProtData));
+    memcpy(&pag , sorpag , sizeof(BleProtData));      
+
+    if( BleDataHandleDetails(&pag) != APP_OK)
     {      
         beep.write(BEEP_ALARM);   
         return ;
@@ -269,16 +255,12 @@ void BleDataProcess(ProtData_T *sorpag)
 
 
 
-int BLEWIZ_return_comm( ProtData_T *pag, uint8_t status ,uint16_t idtype )
-{
 
-    return 1;
-}
 
 //2é?ˉ??á?
-int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
-{
-    uint8_t pbBuf[256] , msg[256] , size = 0;
+//int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
+//{
+    //uint8_t pbBuf[256] , msg[256] , size = 0;
 
     //_DeviceInfo *devinfo;
     //TslBLEProto_TSLBLEDeviceInfoResponse    result = TslBLEProto_TSLBLEDeviceInfoResponse_init_zero; 
@@ -289,7 +271,7 @@ int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
    // config.read(BLE_DEV_INFO , (void **)&devinfo );
    // result.dev_type = devinfo->dev_type;
     //show_DeviceInfo(devinfo);
-    BytesType B1,B2,B3,B4,B5,B6,B7;    
+    //BytesType B1,B2,B3,B4,B5,B6,B7;    
     //pb_add_bytes(&B1 , devinfo->sn , strlen((char *)devinfo->sn));   
     //pb_add_bytes(&B2 , manufacturers , strlen((char *)manufacturers)); 
     //pb_add_bytes(&B3 , devinfo->dev_name , strlen((char *)devinfo->dev_name));    
@@ -311,28 +293,17 @@ int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
         //printf("RequestStream.bytes_written=0X%02X && idtype=%04x\r\n",RequestStream.bytes_written,idtype);
         //size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written ,idtype,pag);
         //log_arry(DEBUG,"MSG "  ,msg ,size);
-        btModule.send(pag ,msg,size);
+       // btModule.send(pag ,msg,size);
    // }
 
-    return 1;
-}
+   // return 1;
+//}
 
-uint8_t FTSLBLEDeviceInfoRequest (ProtData_T *pag,uint16_t id)
+uint8_t FTSLBLEDeviceInfoRequest (BleProtData *pag)
 {SHOWME
 
 
 }
-uint8_t FTSLBLEDeviceSetPWDRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-
-}
-
-uint8_t FTSLBLEDeviceSetLOCKPWDRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-
-}
-
-
  
 void ip_port_handle(uint8_t *  sor)
 {
@@ -354,29 +325,6 @@ void ip_port_handle(uint8_t *  sor)
 
 }
          
-uint8_t FTSLBLEDeviceSetMQTTNETRequest (ProtData_T *pag,uint16_t id)
-{SHOWME
-  uint8_t   tem[50];
-  memset(tem,0,sizeof(tem));
-
- // pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
- // TslBLEProto_TSLBLEDeviceSetMQTTNETRequest	A = TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_init_zero; 
-  //pb_decode_bytes(&A.ipport ,        tem);
-
-  //if(pb_decode(&requestStream, TslBLEProto_TSLBLEDeviceSetMQTTNETRequest_fields, &A) == TRUE )	
-  {
-    printf("FTSLBLEDeviceSetMQTTNETRequest=%s\r\n",tem);
-
-    ip_port_handle(tem);
-    
-    BLEWIZ_return_comm(pag,0,id);
-    
-    return APP_OK;
-  }
-  BLEWIZ_return_comm(pag,1,id);
-  return APP_ERR;  
-}
-
 
 #include "swipeTag.h"
 void ble_door_log(DeviceOpenRequest	*A)

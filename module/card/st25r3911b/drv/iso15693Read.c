@@ -27,9 +27,9 @@ uint8_t st25ReadISO15693Data( uint8_t Address , uint8_t Length ,uint8_t *Respone
     err = iso15693ReadMultipleBlocks(&iso15693Cards,0, 32, &resFlags,readBuffer, 128, &readLen  );
     if (ERR_NONE == err)
     {
-        //log(INFO,"Read leng = %d\n" , readLen);
-        //log_arry(DEBUG,"Read Data:" , readBuffer , readLen);
-        if(readLen > Length )
+        log(INFO,"Read leng = %d\n" , readLen);//127
+        log_arry(DEBUG,"Read Data:" , readBuffer , readLen);
+        if(readLen >= Length )
         {
             memcpy( Respone , readBuffer , Length);
         }

@@ -310,20 +310,21 @@ uint8_t A[98]={
 uint8_t B[8]={0x57,0x74,0x8A,0xA8,0x06,0x23,0x02,0xE0};
 uint8_t tag_read_15693_data( tagBufferType *tag ) 
 {
-    uint8_t tag_buffer[98];//16*6+2=98 ALL DATA
+    uint8_t tag_buffer[128];
     shanghaicardtype *p=NULL;
-    memset(tag_buffer , 0x00 , 98);
+    memset(tag_buffer , 0x00 , 128);
 
-    if( tagComp->iso15693_read_data(0 , 98 ,tag_buffer) == FALSE)
+    if( tagComp->iso15693_read_data(0 , (98+13),tag_buffer) == FALSE)
     {   
 
 //memcpy(tag_buffer,A,98);
 //memcpy(tag->UID,B,8);
-      log_arry(DEBUG,"tag_buffer" ,tag_buffer , 98 );
+      
+      memcpy(tag->buffer , tag_buffer , 98);/*放弃前面13个无效HEX*/
+      
+      log_arry(DEBUG,"tag->buffer" ,tag->buffer , 98 );
 
-      Decryptionr(tag_buffer,tag->UID,tag->buffer);
-
-      memcpy(&tag->buffer[64],&tag_buffer[64],98-64);
+      Decryptionr(tag->buffer,tag->UID,tag->buffer);
 
       log_arry(DEBUG,"tag->buffer" ,tag->buffer , 98 ); 
 

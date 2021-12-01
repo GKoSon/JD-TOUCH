@@ -22,15 +22,13 @@ typedef enum
 typedef struct _AppHandleArry
 {
     uint16_t Rxid;
-    uint16_t Txid;
-    uint8_t (*EventHandlerFn)( ProtData_T *pag ,uint16_t ackid);
+    uint8_t (*EventHandlerFn)( BleProtData *pag);
 }AppHandleArryType;
 
 
                               
 void creat_buletooth_task( void );
-void BleDataProcess(ProtData_T *pag);
-
+void BleDataHandle(BleProtData *pag);
 ////////////////////////////////////////////////////                                          
                                           
 #endif

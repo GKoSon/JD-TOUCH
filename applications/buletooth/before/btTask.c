@@ -36,11 +36,24 @@ void ble_data_process( void const *pvParameters)
     {
         if( xSemaphoreTake( xBtSemaphore, 1000 ) == pdTRUE )
         {
-            for(uint8_t i = 0 ; i < BLE_CONNECT_MAX_NUM ; i++)
+#if 0 
+          for(uint8_t i = 0 ; i < BLE_CONNECT_MAX_NUM ; i++)
             {
                 if(pag[i].hdr.WriteType == 0xFF)
                 {  
                     BleDataProcess(&pag[i]);
+                    ble_easyclear_buffer(i);
+                    task_keep_alive(TASK_BT_BIT); 
+                }
+            }
+#endif    
+          
+          
+            for(uint8_t i = 0 ; i < BLE_CONNECT_MAX_NUM ; i++)
+            {
+                if(ble_app[i].alllen == 0xFF)
+                {  
+                    BleDataHandle(&ble_app[i]);
                     ble_easyclear_buffer(i);
                     task_keep_alive(TASK_BT_BIT); 
                 }

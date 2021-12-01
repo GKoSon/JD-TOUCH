@@ -10,14 +10,14 @@ BleModuleAppDateType     BleModuleAppData;
 void ble_clear_buffer( void )
 {
     memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
-    memset(pag ,0x00 , 4*sizeof(ProtData_T));
+    
     //ble_cleal_timer();
 }
 
 void ble_easyclear_buffer( char i )
 {
     memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
-    memset(&pag[i] , 0x00 , sizeof(ProtData_T));
+    //memset(&pag[i] , 0x00 , sizeof(ProtData_T));
    // ble_cleal_timer();
 }
 
@@ -55,6 +55,13 @@ msb                             lsb
 |        Payload Checksum       | byte N   
 +-------------------------------+ 
 */
+
+void all_printf(void *p,int len)
+{
+  uint8_t *d = (uint8_t *)p;
+  for(int i=0;i<len;i++)
+    printf("%02X-",d[i]);
+}
 void BleReceiveUsartByteHandle( uint8_t ucData)
 {
     char i=0;
@@ -175,59 +182,15 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
         case DATA_TRANS:
         {   
               
-              for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
-              {
-                      if(aiot_strcmp(BleModuleAppData.Msg.hdr.FormAddr,pag[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
-                      {
-                        
-                        if(pag[i].hdr.WriteType!=0XFF)
-                        {
-                          
-                              memcpy(pag[i].POS25V + pag[i].POS25Vlen,    BleModuleAppData.Msg.Data  , BleModuleAppData.Msg.DatLength );
-                              pag[i].POS25Vlen += BleModuleAppData.Msg.DatLength;
-   
 
-                              if(pag[i].POS25Vlen +2  >= pag[i].POS1415_len)
-                              {
-                                SHOWME 
-                                pag[i].hdr.WriteType=0XFF; 
-                                release_sig();
-                             
-                              }
-                        }
-                        else
-                        { memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));NEVERSHOW}
-                        
-                        i=100;
-                        break;
-                     }
-              }/*第一次过来这个for进去马上出来  因为if进不去的 此时pag全是0* 所以第一次就是进下面的*/
-              if( i == BLEMODE_PHONE_MAX)
-              {
-                      memset( &pag[ch]      ,0 ,sizeof(ProtData_T));
-                      memcpy( &pag[ch].hdr  ,&BleModuleAppData.Msg.hdr  ,sizeof(AppDataHeardType));
-                      memcpy( &pag[ch]      ,&BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
+all_printf(&BleModuleAppData,sizeof(BleModuleAppData));
+
+                      memset( &ble_app[0]      ,0 ,sizeof(BleProtData));
                       
-                      if( pag[ch].POS11_head != 0XAA )
-                      {
-                        NEVERSHOW ble_clear_buffer();break;
-                      }
-                      else
-                      {
-                          //pag[ch].POS1415_len =    exchangeBytes(  pag[ch].POS1415_len);//全包长度 设定值
-                         // pag[ch].POS2122T    =    exchangeBytes(  pag[ch].POS2122T);
-                          //pag[ch].POS2324L    =    exchangeBytes(  pag[ch].POS2324L);//小包 不管
-
-                          pag[ch].POS25Vlen   =     BleModuleAppData.Msg.DatLength - 9;//POS25Vlen 包含了CRC
-                          
-                        
-                          if(pag[ch].POS25Vlen + 4 == pag[ch].POS1415_len + 2)
-                          { pag[ch].hdr.WriteType=0XFF; release_sig();}
-                                                     
-                           ch = (ch + 1)% BLEMODE_PHONE_MAX ;
-                      }
-              }
-              
+                      memcpy( &ble_app[0].hdr  ,&BleModuleAppData.Msg.hdr  ,sizeof(AppDataHeardType));
+                      memcpy( &ble_app[0] ,&BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
+                      ble_app[0].alllen = 0xFF;
+        release_sig();      
               
           memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
                     

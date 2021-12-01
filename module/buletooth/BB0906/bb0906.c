@@ -406,7 +406,7 @@ uint8_t ble_write_msg(uint8_t *ptAddr , uint8_t *ptSenddata , uint8_t uLegnth , 
     uint16_t Seq=0;
     uint8_t uRt = FALSE;
 
-    log(DEBUG,"[BLE]ble_write_msg %d %s\n" , uLegnth,ptSenddata);
+    //log(DEBUG,"[BLE]ble_write_msg %d %s\n" , uLegnth,ptSenddata);
 
     memcpy(PackBuff , (void const *)ptAddr , 6);
     Seq+=6;

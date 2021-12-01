@@ -164,8 +164,6 @@ void log_arry(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigne
         else if(level == DEBUG)
         printf("\033[0;37m");
         printf("[#]");
-        printf("[%d%]" , osGetCPUUsage());
-        printf_time();
         printf("%s :  [" , pst);
         for(unsigned int i = 0 ; i < leng ; i++)
         {
@@ -189,8 +187,6 @@ void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsig
         else if(level == DEBUG)
         printf("\033[0;37m");
         printf("[#]");
-        printf("[%d%]" , osGetCPUUsage());
-        printf_time();
         printf("%s :  [" , pst);
         for(unsigned int i = 0 ; i < leng ; i++)
         {

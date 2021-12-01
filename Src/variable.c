@@ -20,4 +20,4 @@ SystemConfigType                            cfg@(0x10002800);
 char 			        rxOtaData[4096]@(0x10003000);
 
 char	                 mqttSocketBuffer[2048]@(0x10004000);
-ProtData_T                               pag[2]@(0x10004800);
+BleProtData                              ble_app[2]@(0x10004800);

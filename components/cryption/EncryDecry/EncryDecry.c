@@ -237,9 +237,9 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
   unsigned char key[8]={0},tem[16]={0},tem2[16]={0};
   unsigned char uckey64[8][8],ucMw[8][8];
   /*维持原UID*/
-  //for(i=0;i<8;i++) key[i]=Key[i];
+  for(i=0;i<8;i++) key[i]=Key[i];
   /*翻转*/
-  for(i=0;i<8;i++) key[i]=Key[7-i];
+  //for(i=0;i<8;i++) key[i]=Key[7-i];
   /*翻转*/
   //memcpy_up(tem,Key,8);
   //for(i=0;i<16;i++) tem2[i]=tem[15-i];

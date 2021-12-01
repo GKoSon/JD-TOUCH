@@ -5,81 +5,71 @@
 #include "magnet.h"
 #include "bsp_rtc.h"
 #include "unit.h"
-
 #include "beep.h"
 
 
 
-#include "BleDataHandle.h"
+extern _SHType SHType; 
 
-//extern _SHType SHType; 
-
-uint8_t tag_verify_group(shanghaicardtype *p)
+uint8_t tag_verify_group1(shanghaicardtype *p)
 {
-#if 0
-  
-  
-  
-  
-  uint16_t cardshort[5];
-  memset(cardshort,0,5);
-  for(i=0;i<5;i++)
-    cardshort = CRC16_CCITT(p->body[i].group,11);
-  
-  
-  
     uint8_t i,j,level=0;
-    uint8_t *defgup=NULL;
-
-
-   // config.read(CFG_SYS_DEFGUP_CODE , (void **)&defgup);
 
     for(i=0;i<5;i++)
 	{
 		if( p->body[i].crc)
 		{
 			level = p->body[i].power;
-			printf("level = p->p->body[i].power=%d\r\n",level);		
-
-			if(is_arr_same(defgup,p->body[i].group,11))
-                        {printf("??¨¨?¡Á¨¦¡À¨¨??3¨¦1|\n"); return TAG_SUCESS;}  
-
-			printf("??¨¨?¡Á¨¦¡À¨¨??¨º¡ì¡ã¨¹\n");
+			printf("level = p->p->body[%d].power=%d\r\n",i,level);		
 			
-			
-		}
-	}  
-
-    //printf("%d\r\n",SHType.gup.cnt);
-    for(i=0;i<5;i++)
-	{
-		if( p->body[i].crc)
-		{
-			level = p->body[i].power;
-			printf("level = p->p->body[i].power=%d\r\n",level);		
-			
-			for(j=0;j<SHType.gup.cnt;j++)/*????¦Ì?gid*/ 
+			for(j=0;j<SHType.gup.cnt;j++)
 			{
-				if(is_arr_same(SHType.gup.code[j],p->body[i].group,11))
+				if(aiot_strcmp(SHType.gup.code[j],p->body[i].group,11))
                                 {
-                                   log_err("¨ª?DD¡Á¨¦¡À¨¨??OK ?a??\r\n");
+                                   log_err("¡¾CARD¡¿YES!\r\n");
                                    return TAG_SUCESS;  
                                 }
-				printf("¡À?¡ä?¡À¨¨??[?¡§¡ä?%d]#####[¨ª¡§DD¡Á¨¦¡ä?%d]",i,j);
+				log_err("¡¾CARD¡¿¡¾card %d¡¿¡¾device %d¡¿\r\n",i,j);
 			} 
 			
 		}
 	}
-    printf("¨ª?DD¡Á¨¦¡À¨¨??¨º¡ì¡ã¨¹\n");
   return  TAG_COMM_ERR;
-#endif
+
 }
-uint8_t Gtag_verify_time(shanghaicardtype *p)
+uint8_t tag_verify_group2(shanghaicardtype *p)
+{
+    uint8_t i,j,devicegupcode[22],cardgupcode[22];
+
+    for(i=0;i<5;i++)
+	{
+		if( p->body[i].crc)
+		{
+			
+			for(j=0;j<SHType.gup.cnt;j++)
+			{
+                                memcpy_up(devicegupcode,SHType.gup.code[j],11);  
+                                memcpy_up(cardgupcode,p->body[i].group,11);
+				if(aiot_strcmp(devicegupcode,cardgupcode,15))
+                                {
+                                   log_err("¡¾CARD¡¿YES!\r\n");
+                                   return TAG_SUCESS;  
+                                }
+				log_err("¡¾CARD¡¿¡¾card %d¡¿¡¾device %d¡¿\r\n",i,j);
+			} 
+			
+		}
+	}
+  return  TAG_COMM_ERR;
+
+}
+
+
+uint8_t tag_verify_time(shanghaicardtype *p)
 {
     uint8_t t[3]={0},i;
     uint32_t DateInCard,DateInSys;
-    rtcTimeType time;
-    
+    rtcTimeType time;  
     rtc.read_time(&time);
     
     DateInSys=(time.year<<16)|(time.mon<<8)|time.day; 
@@ -91,11 +81,11 @@ uint8_t Gtag_verify_time(shanghaicardtype *p)
 	  memcpy(t,p->body[i].endtime,3);
 
 	  DateInCard=( bcd_to_bin(t[0])<<16 | bcd_to_bin(t[1])<<8 | bcd_to_bin(t[2]));
-
+          /*make a flag*/
 	  p->body[i].crc = (DateInCard >= DateInSys )?1:0;
 	  
-        printf("sys :%X--%X--%X  <-pk->  card:%X--%X--%X\n",time.year,time.mon,time.day,p->body[i].endtime[0],p->body[i].endtime[1],p->body[i].endtime[2]);
-        printf("DateInCard::%X\tDateInSys::%X\n",DateInCard,DateInSys);
+         printf("sys :%X--%X--%X  <-----pk----->  card:%X--%X--%X\n",time.year,time.mon,time.day,p->body[i].endtime[0],p->body[i].endtime[1],p->body[i].endtime[2]);
+         printf("DateInSys:%X  <-----pk-----> DateInCard:%X\n",DateInSys,DateInCard);
       }
     }
     
@@ -106,43 +96,52 @@ uint8_t Gtag_verify_time(shanghaicardtype *p)
     
     if(p->head.crc ==0)
     {
-           printf("?¨´¡À???¨®D¨º¡À??OK¦Ì?¡Á¨¦\r\n");
+           printf("¡¾CARD¡¿All time FAILED\r\n");
 	   return 1;
     }
-    printf("¨®D¨º¡À??OK¦Ì?¡Á¨¦ ¨°??e¨®D%d??\r\n", p->head.crc);
+    printf("¡¾CARD¡¿time ok ! gup have %d info\r\n", p->head.crc);
     return 0;
 }
-
 
 uint8_t tag_shanghai_user_process( tagBufferType *tag)
 {
   
     SHOWME
-    shanghaicardtype *p = (shanghaicardtype *)tag->buffer;
-    
-    if(Gtag_verify_time(p ))
-    {
+    shanghaicardtype *p = (shanghaicardtype *)tag->buffer;    
+    if(tag_verify_time(p))
         return TAG_TIME_ERR;
+    if(tag->tagPower==MANAGENT_TAG)
+    {
+        log_err("¡¾CARD¡¿This is man card [15same]!\r\n");
+        return tag_verify_group2(p);
     }
-    
-    return tag_verify_group(p);
+    uint8_t deviceLockMode = config.read(CFG_SYS_LOCK_MODE , NULL);
+    if(deviceLockMode==1)
+    {
+        log_err("¡¾CARD¡¿This is menkouji [22same]!\r\n");
+        return tag_verify_group1(p);
+    } 
+    else //if(deviceLockMode==2)
+    {
+
+        log_err("¡¾CARD¡¿This is weiqiangji [15same]!\r\n");
+        return tag_verify_group2(p);
+    } 
 
 }
 
-
-
 uint8_t tag_shanghai_card_process( tagBufferType *tag)
 {
-    log_err("tag_shanghai_card_process, POWER = %02X\n ??2-USER_TAG 3-MANAGENT_TAG 4-TEMP_TAG 8-CONFIG_TAG??" , tag->tagPower);
+    log_err("tag_shanghai_card_process, POWER = %d(2-USER_TAG 3-MANAGENT_TAG 4-TEMP_TAG 8-CONFIG_TAG)\r\n" , tag->tagPower);
     
     
     switch(tag->tagPower)
     {
-        case TEMP_TAG:      return (tag_shanghai_user_process(tag));//2?¨°a return 0;?¨¹?¡À?¨®?a??¨¤2¡ê?
+        case TEMP_TAG:      return (tag_shanghai_user_process(tag));
         case USER_TAG:      return (tag_shanghai_user_process(tag));
-        case MANAGENT_TAG:  return (tag_shanghai_user_process(tag));//2?¨°a return 0;?¨¹?¡À?¨®?a??¨¤2¡ê?
+        case MANAGENT_TAG:  return (tag_shanghai_user_process(tag));
 
-        default:            printf("tag->tagPower ERR\r\n");return TAG_NO_SUPPORT;
+        default:           return TAG_NO_SUPPORT;
     }
 }
 

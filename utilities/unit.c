@@ -41,20 +41,9 @@ uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)
     }
 
 }
-double mypow( double x, int n )
-{
-	double sum;
 
-    if(n==0)
-    	return 1;
-	else if(n == 1)
-		sum = x;
-	else 
-		sum = mypow(x, n-1)*x;
-	return sum;
-}
 //0XAB-->"AB" 长度会扩大一倍！注意：0没有结束符
-void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len)
+void memcpy_up(unsigned char* strings,unsigned char* bytes,unsigned char len)
 {
     unsigned char const StrRefer[]="0123456789abcdef";//"0123456789ABCDEF";
     #define GET_MSB_STR(x) (StrRefer[((x>>4)&0x0f)])
@@ -66,15 +55,7 @@ void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len
     }
 
 }
-uint32_t Beint(uint8_t *arry,uint8_t Len)
-{
-	uint32_t rst=0;					
-	uint8_t i=0;
-	while(Len)
-		rst += (arry[--Len])*(mypow(10,i++));
 
-    return rst;
-}
 
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen)  
 {  
@@ -110,20 +91,6 @@ uint8_t mycrc8(uint8_t *ps1,uint8_t uLen)
   printf("mycrc8=%02X\r\n",i_crc);
   return i_crc;
 }
-
-
-uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len)
-{
-  uint8_t i;
- // printf("A::");
- // for(i=0;i<len;i++) printf("%02X ",A[i]);  printf("\n");
- // printf("B::");
-//  for(i=0;i<len;i++) printf("%02X ",B[i]);  printf("\n");
-  for(i=0;i<len;i++)
-    if(A[i]!=B[i]) return 0;
-  return 1;
-}
-
 
 unsigned char aiot_strcmp( unsigned char *pst , unsigned char *str , unsigned char len)
 {
@@ -234,6 +201,49 @@ void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsig
     }
 }
 
+
+
+uint8_t  hex_to_char(uint8_t ucData)
+{
+    if(ucData < 10){
+        return ucData+'0';
+    }
+    else{
+        return ucData-10+'A';
+    }
+}
+
+
+
+unsigned char str_to_int(unsigned char dData)
+{      
+        unsigned char rst=0;
+	if((dData >= '0')&& (dData <= '9'))
+          rst = dData-'0';
+	else if((dData >= 'A')&&(dData <= 'F'))
+          rst =  dData+10-'A';
+	else if((dData >= 'a')&&(dData <= 'f'))
+          rst =  dData+10-'a';
+        else rst = 0;//不是ASCII的char
+        
+        return rst;
+}
+
+/*"1234"---->0X12 0X34  参数3一般是strlen*/
+int memcpy_down( unsigned char *respone, char *data , int length)
+{
+
+    if(length%2 != 0)    return -1;
+
+    for( int i = 0 ; i < length/2 ;i++)
+    {
+        *respone++ = (((str_to_int(data[i*2])<<4)&0xf0)|(str_to_int(data[i*2+1])&0x0f)); 
+    }
+
+    return 0;
+    
+}
+
 uint64_t atol64( char *str)
 {
     uint64_t t[16]={0}; 
@@ -242,7 +252,7 @@ uint64_t atol64( char *str)
     
     while( *str != '\0')
     {
-        t[cnt++] = str_to_hex(*str);
+        t[cnt++] = str_to_int(*str);
         str++;
         if( cnt > 16)
         {
@@ -260,58 +270,6 @@ uint64_t atol64( char *str)
     return temp;
     
 }
-
-uint8_t  hex_to_char(uint8_t ucData)
-{
-    if(ucData < 10){
-        return ucData+'0';
-    }
-    else{
-        return ucData-10+'A';
-    }
-}
-
-unsigned char str_to_hex(unsigned char data)
-{
-    if(data <= '9')
-    {
-        return data-'0';
-    }
-    else if((data >= 'A')&&(data <= 'F'))
-    {
-        return data+10-'A';
-    }
-    else
-    {
-        return data+10-'a';
-    }
-}
-
-
-unsigned char str_to_int(unsigned char dData)
-{
-    if(dData <= '9')
-          return dData-'0';
-    else if((dData >= 'A')&&(dData <= 'F'))
-          return dData+10-'A';
-        else
-          return dData+10-'a';
-}
-
-int string_to_hex( char *data , int length , char *respone)
-{
-
-    if(length%2 != 0)    return -1;
-
-    for( int i = 0 ; i < length/2 ;i++)
-    {
-        *respone++ = (((str_to_int(data[i*2])<<4)&0xf0)|(str_to_int(data[i*2+1])&0x0f)); 
-    }
-
-    return 0;
-    
-}
-
 
 void sys_delay(uint32_t ms)
 {
@@ -353,48 +311,6 @@ void soft_system_resert( const char *funs )
     log(WARN,"System has been resert form %s\n" , funs);
     NVIC_SystemReset();
 }
-
-
-
-//完成'4'-->4  ‘A’-->10
-unsigned char G_strTobyte(unsigned char dData)
-{
-        unsigned char rst=0;
-	if((dData >= '0')&& (dData <= '9'))
-          rst = dData-'0';
-	else if((dData >= 'A')&&(dData <= 'F'))
-          rst =  dData+10-'A';
-	else if((dData >= 'a')&&(dData <= 'f'))
-          rst =  dData+10-'a';
-        else rst = 0;//不是ASCII的char
-        
-        return rst;
-}
- 
-//??"10"--->0x10  "1234"--->0X12,0X34 
-//len?????strlen(strings)
-//????len???
-//G_strsTobytes(CQType.locatcode,   &pRtData[12],22);
-char G_strsTobytes(void* Strings,void* Bytes,char len)
-{
-	unsigned char* strings=(unsigned char *)Strings;
-	unsigned char* bytes  =(unsigned char *)Bytes;
-	unsigned char i = 0,j=0,lowbits=0,highbits=0;
-	if(len%2)return 0;//????
-	for (i = 0; i < len; i+=2)
-	{           
-		highbits = G_strTobyte(strings[i]  );
-		lowbits  = G_strTobyte(strings[i+1]);
-		bytes[j++] =( highbits << 4)|lowbits;//j???i???
-	}
-	return j;
-}
-
-void IP4ARRToStr(unsigned char *arr, char *str)
-{ 
-    sprintf(str,"%d.%d.%d.%d",arr[0],arr[1],arr[2],arr[3]);
-}
-
 
 
 

@@ -159,9 +159,11 @@ void show_OTA(void);
 
 typedef struct
 {
-    uint8_t ip[50];
+    uint8_t ip[20];
     uint16_t port;
 }serverAddrType;
+
+void ShowIp(serverAddrType *p);
 
 typedef struct
 {

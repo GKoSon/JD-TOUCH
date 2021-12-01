@@ -171,10 +171,9 @@ static char *cj_create_uploadDeviceVer(void)
 {
     cJSON *root = NULL;
     char *outStr;
-    char versionData[5];//---------------------²»ÄÜÊÇ4
+    char versionData[6]={0};
     uint32_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
-    memset(versionData , 0x00 , sizeof(versionData));
-    sprintf(versionData ,"v%03d" , swVer);
+    StringVer(versionData,swVer);
     
     root =  cJSON_CreateObject();
     
@@ -188,10 +187,9 @@ static char *cj_create_uploadDeviceInfo(void)
     cJSON *root = NULL;
     char *outStr;
     uint8_t deviceLockMode = config.read(CFG_SYS_LOCK_MODE , NULL);
-    char versionData[4];
+    char versionData[6]={0};
     uint32_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
-    memset(versionData , 0x00 , sizeof(versionData));
-    sprintf(versionData ,"v%03d" , swVer);
+    StringVer(versionData,swVer);
     
     root =  cJSON_CreateObject();
     cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
@@ -550,10 +548,8 @@ char downProgramURL(char *pJson)
       char *p = NULL;
       char url[100]={0};
       cJSON * pSub  = NULL;
-      char i;
       uint8_t Md5[16]={0};
-      cJSON * pRoot = cJSON_Parse(pJson); MUST_TRUE(pRoot);
-      
+      cJSON * pRoot = cJSON_Parse(pJson); MUST_TRUE(pRoot);   
       cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID"); MUST_TRUE(pSubONE);
 
       memset(taskID,0,33);
@@ -579,32 +575,19 @@ char downProgramURL(char *pJson)
  
 
       serverAddrType ip_port;
-      if(p = strstr ((const char*)url,"//"))
+      p = strstr ((const char*)url,"//");
       p+=2;
-
-      for( i=0;i<strlen(p);i++)
-      {
-        if(p[i]==':')
-         {
-           p[i]='\0';
-             break;
-         }
-      }
-      memcpy(ip_port.ip,p,strlen(p));
-
-      p[i]=':';
+      sscanf((const char*)p,"%[^:]", ip_port.ip);
       p = strstr ((const char*)p,":");
-      ++p;
-      ip_port.port = atoi(p);
-
+      p+=1;
+      ip_port.port=atoi(p);
+      
+      ShowIp(&ip_port);
       config.write(CFG_OTA_ADDR ,&ip_port,0);
-
-
 
 
       p = strstr ((const char*)p,"/");
       config.write(CFG_OTA_URL ,p,0);
-
 
 
       pSub = cJSON_GetObjectItem(pSubALL, "md5Str");
@@ -615,11 +598,9 @@ char downProgramURL(char *pJson)
       }
 
 
-
       printf("¡¾%s¡¿",pSub->valuestring);
 
-
-      G_strsTobytes(pSub->valuestring,Md5,32);
+      memcpy_down(Md5,pSub->valuestring,32);
       otaCfg.crc32=CRC16_CCITT(Md5,16);      
             
 
@@ -768,29 +749,25 @@ static char downGupcode(char *pJson)
 {    
     SHOWME
     uint8_t dosave = 1;
-    if(NULL == pJson) return 1;
 
+    cJSON * pRoot = cJSON_Parse(pJson);MUST_TRUE(pRoot)
 
-    cJSON * pRoot = cJSON_Parse(pJson);
-    if(NULL == pRoot) { cJSON_Delete(pRoot);  SHOWME  return 2;  }
+    cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID");MUST_TRUE(pSubONE)
 
-
-    cJSON * pSubONE = cJSON_GetObjectItem(pRoot, "taskID");
-    if(NULL == pSubONE) { cJSON_Delete(pRoot); return 3; }
     memset(taskID,0,33);
     sprintf(taskID,"%.32s",pSubONE->valuestring);
 
 
-    cJSON * pSub = cJSON_GetObjectItem(pRoot, "data");
-    if(NULL == pSub)  {  cJSON_Delete(pRoot);  SHOWME return 2; }
+    cJSON * pSub = cJSON_GetObjectItem(pRoot, "data");MUST_TRUE(pSub)
 
-    cJSON * pmd5str = cJSON_GetObjectItem(pSub, "md5str");
-    if(NULL == pmd5str) {  cJSON_Delete(pRoot); SHOWME return 2; }
+
+    cJSON * pmd5str = cJSON_GetObjectItem(pSub, "md5str");MUST_TRUE(pmd5str)
+
     uint16_t md5 = CRC16_CCITT((uint8_t *)pmd5str->valuestring,32);
     printf("[MQTT-TSL]pmd5str = %s [%d][%d]\n",pmd5str->valuestring,md5,SHType.gup.md5);
     
-    cJSON * gup_arry = cJSON_GetObjectItem(pSub, "groupList");
-    if(NULL == gup_arry) {  cJSON_Delete(pRoot); SHOWME return 2; }
+    cJSON * gup_arry = cJSON_GetObjectItem(pSub, "groupList");MUST_TRUE(gup_arry)
+
     char  array_size   = cJSON_GetArraySize ( gup_arry );
     printf("[MQTT-TSL]array_size = [%d]\n",array_size);
     
@@ -814,7 +791,7 @@ static char downGupcode(char *pJson)
           pSub = cJSON_GetArrayItem(gup_arry, iCnt);
           if(NULL == pSub ){ continue ; }
           char * ivalue = pSub->valuestring ;
-          G_strsTobytes(ivalue,SHType.gup.code[iCnt],22);
+          memcpy_down(SHType.gup.code[iCnt],ivalue,22);
           printf("[MQTT-TSL]groupList[%d] : %s\r\n",iCnt,ivalue);
       }
       config.write(CFG_SYS_SHANGHAI ,&SHType, TRUE);

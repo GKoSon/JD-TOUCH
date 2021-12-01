@@ -3,6 +3,7 @@
 *.crf
 *.d
 *.axf
+*.pbi
 *.htm
 *.xcl
 *.lnp

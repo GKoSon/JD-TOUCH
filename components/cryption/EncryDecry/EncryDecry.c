@@ -229,11 +229,23 @@ void Decryption16_32(unsigned char* SourceData,unsigned char* key,unsigned char*
     for(i=0;i<8;i++)PurposeData[j*8+i]=ucMw[j][i];
   }
 }
-//解密
-void Decryptionr(unsigned char* SourceData,unsigned char *key,unsigned char* PurposeData)
+#include "unit.h"
+
+void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* PurposeData)
 {
-  int i,j;//,iBlock1;
-  unsigned char uckey64[8][8],ucMw[8][8];;
+  int i,j;
+  unsigned char key[8]={0},tem[16]={0},tem2[16]={0};
+  unsigned char uckey64[8][8],ucMw[8][8];
+  /*维持原UID*/
+  //for(i=0;i<8;i++) key[i]=Key[i];
+  /*翻转*/
+  for(i=0;i<8;i++) key[i]=Key[7-i];
+  /*翻转*/
+  //memcpy_up(tem,Key,8);
+  //for(i=0;i<16;i++) tem2[i]=tem[15-i];
+  //printf("Decryptionr key[%.16s]\r\n",tem2);
+  //memcpy_down(key,tem2,16);
+  log_arry(DEBUG,"[CARD]key,UID" , key , 8);
   for(i=0;i<8;i++)
   {
      uckey64[0][i]=*(key+i);

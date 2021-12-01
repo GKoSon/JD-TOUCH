@@ -440,7 +440,7 @@ void socket_close( void )
         }
         else
         {
-            log(INFO,"SOCKET已经关闭，不用重复关闭\n");
+            //log(INFO,"SOCKET已经关闭，不用重复关闭\n");
         }
         
         //xSemaphoreGive( xSocketSemaphore );

@@ -313,7 +313,7 @@ config.write(CFG_OTA_URL ,p,0);
 
 
 uint8_t Md5[16]={0};
-G_strsTobytes(valuestring,Md5,32);
+memcpy_down(Md5,valuestring,32);
 otaCfg.crc32=CRC16_CCITT(Md5,16);      
       
 
@@ -335,6 +335,7 @@ otaCfg.ver=InterVer(ver);
   printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");
 }
 /* main_task function */
+
 void main_task(void const * argument)
 {
       EventBits_t uxBits;
@@ -358,7 +359,7 @@ void main_task(void const * argument)
       create_mqtt_task();
       
       printf("<<<<<<<<<--------开机成功-------->>>>>>>>>>>\r\n");
-  
+
     for(;;)
     { 
         uxBits = xEventGroupWaitBits(xWatchdogEventGroup,TASK_ALL_BIT, pdTRUE,pdTRUE,2500);

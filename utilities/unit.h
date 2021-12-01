@@ -153,13 +153,9 @@ void read_task_stack( char const *name , xTaskHandle taskHandle);
 
 void sys_delay(uint32_t ms);
 
-int string_to_hex( char *data , int length , char *respone);
 
 unsigned char str_to_int(unsigned char dData);
 
-unsigned char str_to_hex(unsigned char data);
-
-uint8_t  hex_to_char(uint8_t ucData);
 
 uint64_t atol64( char *str);
 
@@ -172,9 +168,8 @@ unsigned char aiot_strcmp( unsigned char *pst , unsigned char *str , unsigned ch
 void soft_system_resert( const char *funs );
 
 #define GMIN(a,b)  ((a)<(b))?(a):(b) 
-char G_strsTobytes(void* Strings,void* Bytes,char len);
 
-uint8_t is_arr_same(uint8_t* A,uint8_t* B,uint8_t len);
+int memcpy_down( unsigned char *respone, char *data , int length);
 
 #define SHOWME       log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
 #define NEVERSHOW    log(ERR,"\r\n【%d】----*********-----*********-----*********------【%s】\r\n",__LINE__,__func__);
@@ -183,16 +178,12 @@ uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
 #define GGMIN(A,B) (A)>(B)?B:A
 
 
-void IP4ARRToStr(unsigned char *arr, char *str);
-
-void G_1byteTo2str(unsigned char* strings,unsigned char* bytes,unsigned char len);
-
+void memcpy_up(unsigned char* strings,unsigned char* bytes,unsigned char len);
 
 uint8_t mycrc8(uint8_t *ps1,uint8_t uLen);
+
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen) ;
 
-uint32_t Beint(uint8_t *arry,uint8_t Len);
-char G_strsTobytes(void* Strings,void* Bytes,char len);
 
 uint8_t bcd_to_bin(uint8_t bcd);
 #define GMAX_LEN_TOPIC        55/* 文本最长33 + 点码是22 那就是55 */

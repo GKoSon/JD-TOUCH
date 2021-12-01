@@ -68,9 +68,6 @@ void sys_cfg_clear( void )
     }
         
      chip_flash_release_lock();
-
-
-
 }
 
 
@@ -220,7 +217,6 @@ void sys_info_read_device_module( void )
 void sysCfg_set_ble_default( void )
 {
 
-    
     memset(cfg.ble.ble_mac , 0xFE , BLE_MAC_LENGTH);
 
     cfg.ble.ble_version = 0;
@@ -332,6 +328,12 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
       SHOWME  SHOWME  SHOWME
 }
 
+void ShowIp(serverAddrType *p)
+{
+  printf("*********************ip  %s*******************\r\n",p->ip);
+  printf("*********************port%d*******************\r\n",p->port);
+}
+
 void show_OTA(void)
 {
     log(INFO,"\n********************* ******show_OTA******  ********************* \n");
@@ -377,9 +379,6 @@ void sysCfg_print( void )
       log(INFO,"********************* 2021 Copyright ********************* \n");
       log(DEBUG,"系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
       log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));
-
-
-
       
       log(ERR,"设备模式 =[%d][安装位置 0:门口机单元门禁 ,1:楼栋门禁 ,2: 围墙机小区门禁]\n" ,cfg.parm.lock_mode);
       log(DEBUG,"软件版本: [%d]\n" , cfg.parm.soft_version);
@@ -698,7 +697,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             static uint8_t proj_pwd[7];
             memset(proj_pwd , 0     ,     7);
-            G_1byteTo2str(proj_pwd,cfg.pair_pwd,3);
+            memcpy_up(proj_pwd,cfg.pair_pwd,3);
             *parma = proj_pwd;
         }break;
              
@@ -772,16 +771,15 @@ void sysCfg_init( void )
     {
       log_err("\n************新设备****在此设置缺损值******\n");
 memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void **)&SHType );已经变成全F
-
+#if 1
 static char * deviceCode   =   "110101001001003102001";//21长!!!!!
 memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
-//G_strsTobytes(deviceCode,SHType.deviceCode,22);
-
-
 static char * groupcode    =   "3101040110130060000001";//默认通行组  
-G_strsTobytes(groupcode,SHType.gup.code[0],22);
+memcpy_down(SHType.gup.code[0],groupcode,22);
 SHType.gup.cnt=1;
+#else
 
+#endif
     }
     else
     {

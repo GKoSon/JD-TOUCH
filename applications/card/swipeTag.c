@@ -287,15 +287,6 @@ uint8_t checkuiderr(shanghaicardtype *p,tagBufferType *tag )
     return 0;        
 }
 
-uint8_t checkzeroerr(shanghaicardtype *p)
-{
-    uint8_t *data = (uint8_t *)p;
-    for(char i=0;i<98;i++)
-        if(data[i]!=0)
-            return 0;
-    return 1;
-}
-
 uint8_t checkclasserr(shanghaicardtype *p)
 {
 
@@ -304,8 +295,19 @@ uint8_t checkclasserr(shanghaicardtype *p)
     else
         return 1;
 }
+uint8_t A[98]={
+0x92,0x33,0x84,0xE0,0x5E,0xBB,0x2E,0xC8,0xCD,0xC9,
+0xA1,0x71,0x97,0x04,0x21,0xF5,0x10,0x28,0x97,0xB3,
+0x6E,0xE9,0xE9,0x6D,0x89,0x7F,0x53,0xC6,0x6A,0x21,
+0x38,0x68,0x94,0xEA,0xD4,0x62,0x99,0x3B,0x17,0x97,
+0x98,0xF3,0xE3,0x73,0xB2,0x2A,0x92,0x5C,0x5A,0x6B,
+0xB1,0x83,0x60,0xCC,0xB2,0xE7,0xCF,0x5E,0xD1,0x74,
+0xB6,0xCE,0xD2,0x63,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x97};
 
-
+uint8_t B[8]={0x57,0x74,0x8A,0xA8,0x06,0x23,0x02,0xE0};
 uint8_t tag_read_15693_data( tagBufferType *tag ) 
 {
     uint8_t tag_buffer[98];//16*6+2=98 ALL DATA
@@ -315,6 +317,8 @@ uint8_t tag_read_15693_data( tagBufferType *tag )
     if( tagComp->iso15693_read_data(0 , 98 ,tag_buffer) == FALSE)
     {   
 
+//memcpy(tag_buffer,A,98);
+//memcpy(tag->UID,B,8);
       log_arry(DEBUG,"tag_buffer" ,tag_buffer , 98 );
 
       Decryptionr(tag_buffer,tag->UID,tag->buffer);
@@ -326,29 +330,23 @@ uint8_t tag_read_15693_data( tagBufferType *tag )
       p = (shanghaicardtype *)tag->buffer;
 
       SHANGHAISHOW(p);        
-
+   
 
       if(checkclasserr(p))
       {
-        log(ERR,"[CARD]CLASS\n");
+        log(ERR,"[CARD]CLASS RETURN\n");
         return TAG_NULL;
       }
 
-      if( checkzeroerr(p))
-      {
-        log(ERR,"[CARD]ZERO\n");
-        return TAG_NULL;
-      } 
-
       if(checkuiderr(p,tag))
       {
-        log(ERR,"[CARD]UID\n");
+        log(ERR,"[CARD]UID RETURN\n");
         return TAG_NULL;
       }
 
       if(checkcrcerr(p))
       {
-        log(ERR,"[CARD]CRC\n");
+        log(ERR,"[CARD]CRC RETURN\n");
         return TAG_CRC_ERR;
       }    
 
@@ -393,12 +391,6 @@ uint8_t tag_read_fk_card( tagBufferType *tag )
         log(ERR,"[CARD]CLASS\n");
         return TAG_NULL;
       }
-
-      if( checkzeroerr(p))
-      {
-        log(ERR,"[CARD]ZERO\n");
-        return TAG_NULL;
-      } 
 
       if(checkuiderr(p,tag))
       {

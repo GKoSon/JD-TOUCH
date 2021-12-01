@@ -1,0 +1,101 @@
+void downuploadDeviceInfoRequest(char *p)
+{
+    cj_uploadDeviceInfoRequest item;
+    memset(&item,0,sizeof(cj_uploadDeviceInfoRequest));
+    cj_parse_uploadDeviceInfoRequest(p,&item);
+    upuploadDeviceInfo();
+
+}
+
+
+
+
+
+typedef struct _cj_uploadDeviceInfoRequest
+{
+    char deviceNo[12] ;
+    int  apkVersion;
+    char bluetoothMac[12] ;
+    char ipAddress[16];
+} cj_uploadDeviceInfoRequest;
+
+void showuploadDeviceInfoRequest(cj_uploadDeviceInfoRequest *p)
+{
+    printf("p->deviceNo     %s\r\n",p->deviceNo);
+    printf("p->apkVersion   %d\r\n",p->apkVersion);
+    printf("p->bluetoothMac %s\r\n",p->bluetoothMac);
+    printf("p->ipAddress    %s\r\n",p->ipAddress);
+}
+
+int cj_parse_uploadDeviceInfoRequest(const char * pJson,cj_uploadDeviceInfoRequest *item)
+{
+
+    char cnt=0;
+
+    if(NULL == pJson) return 1;
+
+    cJSON * pRoot = cJSON_Parse(pJson);
+    if(NULL == pRoot) 
+    {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) 
+        {
+          log(ERR,"Error before: %s\n", error_ptr);
+        }
+        cJSON_Delete(pRoot);
+
+        return 2;
+    }
+
+
+    cJSON * pSub = cJSON_GetObjectItem(pRoot, "deviceNo");
+    if(NULL != pSub)
+    {
+      cnt++;
+      memcpy(item->deviceNo,pSub->valuestring,strlen(pSub->valuestring));
+    }
+
+
+
+    pSub = cJSON_GetObjectItem(pRoot, "apkVersion");
+    if(NULL != pSub)
+    {
+      cnt++;    
+      item->apkVersion = pSub->valueint;
+    }
+
+
+    pSub = cJSON_GetObjectItem(pRoot, "bluetoothMac");
+    if(NULL != pSub)
+    {
+      cnt++;    
+      memcpy(item->bluetoothMac,pSub->valuestring,strlen(pSub->valuestring));
+    }
+
+    pSub = cJSON_GetObjectItem(pRoot, "ipAddress");
+    if(NULL != pSub)
+    {
+      cnt++;    
+      memcpy(item->ipAddress,pSub->valuestring,strlen(pSub->valuestring));
+    }        
+
+    cJSON_Delete(pRoot);
+
+    showuploadDeviceInfoRequest(item);
+
+    if(cnt==4)
+    return 0;
+    else
+    return 3;
+}
+
+
+
+
+
+
+
+
+
+
+

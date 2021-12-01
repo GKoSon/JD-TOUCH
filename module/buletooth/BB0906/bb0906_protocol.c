@@ -177,7 +177,7 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
               
               for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
               {
-                      if(is_arr_same(BleModuleAppData.Msg.hdr.FormAddr,pag[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
+                      if(aiot_strcmp(BleModuleAppData.Msg.hdr.FormAddr,pag[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
                       {
                         
                         if(pag[i].hdr.WriteType!=0XFF)

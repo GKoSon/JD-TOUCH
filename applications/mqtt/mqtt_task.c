@@ -33,13 +33,13 @@ extern void startota(void);
 
 char suball(void)
 {
-char rc = 0;
-rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-rc = mqtt_subscribe(&client, ( uint8_t *)topicPath3 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-rc = mqtt_subscribe(&client, ( uint8_t *)topicPath4 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-return 0;
+    char rc = 0;
+    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath3 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath4 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+    return 0;
 }
 
 void pack_connect_message(MQTTPacket_connectData *con)
@@ -78,7 +78,7 @@ void mqtt_login_info( MQTTPacket_connectData *con )
     pack_connect_message(con);
 }
 
-
+extern char *getdeviceCode();
 extern void upuploadDevicever(void) ;
 extern void upuploadDeviceInfo(void) ;
 extern void upfilterRequest(void)  ;
@@ -109,7 +109,7 @@ static void mqtt_task( void const *pvParameters)
 
         switch(mqttRunType)
         {
-        case GMQTT_INIT:
+        case GMQTT_INIT:                 
                   mqtt_disconnect(&client);
                   mqtt_network_close();
                   mqttRunType = GMQTT_CONNECT_TCP;
@@ -121,6 +121,14 @@ static void mqtt_task( void const *pvParameters)
         //          cj_create_uploadAccessLog_pwd (20190722,1,0,2);
 
                   */
+          
+                  if(0==strlen(getdeviceCode()))
+                  {
+                    log(WARN , "[MQTT-STA]…–Œ¥∑÷≈‰…Ë±∏±‡¬Î »•ÀØæı\n");
+                    mqttRunType = GMQTT_INIT;
+                    break;
+                  }
+
                   timer.stop(mqttKEEPAliveBLUE);                    
                   serverAddrType *addr;         
                   config.read(CFG_NET_ADDR , (void **)&addr);

@@ -12,6 +12,7 @@ void swipe_task( void const *pvPar )
     configASSERT( ( ( unsigned long ) pvPar ) == 0 );
     uint8_t result = TAG_NONE , rt = TAG_LIST_NULL;
     tagBufferType tag;
+    DEecryptionr_test();
     while(1)
     {
           result = read_tag(&tag);

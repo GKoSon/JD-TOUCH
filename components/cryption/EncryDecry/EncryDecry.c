@@ -101,7 +101,7 @@ void desData(unsigned char desMode,unsigned char* inData, unsigned char* outData
  
     int i;
     int j=0;
-    if(desMode==0)//jiami
+    if(desMode==0)/*加密*/
     {
         for(i=0;i<8;i++)
         {
@@ -111,7 +111,7 @@ void desData(unsigned char desMode,unsigned char* inData, unsigned char* outData
         for(j=0;j<8;j++)
             outData[j]=inData[j];
     }
-    else if(desMode==1)//jiemi
+    else if(desMode==1)/*解密*/
     {
         for(i=7;i>=0;i--)
             for(j=0;j<8;j++)
@@ -143,19 +143,19 @@ void makeKey(unsigned char* inKey,unsigned char outKey[][8])
 void initPermutation(unsigned char* inData)
 {
 
-    unsigned char newData[8]={0,0,0,0,0,0,0,0};
-    int i;
-    for(i=0;i<64;i++)
-    {
-        if((inData[BitIP[i]>>3]&(1<<(7-(BitIP[i]&7))))!=0)
-            newData[i>>3]=newData[i>>3]|(1<<(7-(i&7)));
-    }
-    for(i=0;i<8;i++)
-    {
-        inData[i]=newData[i];
-    }
+	unsigned char newData[8]={0,0,0,0,0,0,0,0};
+	int i;
+	for(i=0;i<64;i++)
+	{
+		if((inData[BitIP[i]>>3]&(1<<(7-(BitIP[i]&7))))!=0)
+			newData[i>>3]=newData[i>>3]|(1<<(7-(i&7)));
+	}
+	for(i=0;i<8;i++)
+	{
+		inData[i]=newData[i];
+	}
 
-    
+	
 }
 
 void conversePermutation(unsigned char* inData)
@@ -172,63 +172,10 @@ void conversePermutation(unsigned char* inData)
         inData[i]=newData[i];
     }
 }
-unsigned char intToStr(unsigned char dData)
-{
-    if(dData < 10)
-    {
-        return dData+'0';
-    }
-    else
-    {
-        return dData-10+'A';
-    }
-}
-unsigned char strToInt(unsigned char dData)
-{
-    if(dData <= '9')
-          return dData-'0';
-    else if((dData >= 'A')&&(dData <= 'F'))
-          return dData+10-'A';
-        else
-          return dData+10-'a';
-}
-//加密 32
-void Encryption16_32(unsigned char* SourceData,unsigned char* key,unsigned char* PurposeData,unsigned char uType)
-{
-  int i,j;
-  unsigned char uCnt,ucMw[4][8];
-  if(uType==3)uCnt=3;
-  else if(uType==4)uCnt=4;
-  else uCnt=2;
-  for(j=0;j<uCnt;j++)
-  {
-    for(i=0;i<8;i++)ucMw[j][i]=SourceData[j*8+i];
-  }
-  for(j=0;j<uCnt;j++)EncryStr(ucMw[j],key,ucMw[j]);
-  for(j=0;j<uCnt;j++)
-  {
-    for(i=0;i<8;i++)PurposeData[j*8+i]=ucMw[j][i];
-  }
-}
 
-//解密 32
-void Decryption16_32(unsigned char* SourceData,unsigned char* key,unsigned char* PurposeData,unsigned char uType)
-{
-  int i,j;
-  unsigned char uCnt,ucMw[4][8];
-  if(uType==3)uCnt=3;
-  else if(uType==4)uCnt=4;
-  else uCnt=2;
-  for(j=0;j<uCnt;j++)
-  {
-    for(i=0;i<8;i++)ucMw[j][i]=SourceData[j*8+i];
-  }
-  for(j=0;j<uCnt;j++)DecryStr(ucMw[j],key,ucMw[j]);
-  for(j=0;j<uCnt;j++)
-  {
-    for(i=0;i<8;i++)PurposeData[j*8+i]=ucMw[j][i];
-  }
-}
+
+
+
 #include "unit.h"
 
 void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* PurposeData)
@@ -237,9 +184,9 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
   unsigned char key[8]={0},tem[16]={0},tem2[16]={0};
   unsigned char uckey64[8][8],ucMw[8][8];
   /*维持原UID*/
-  for(i=0;i<8;i++) key[i]=Key[i];
+  //for(i=0;i<8;i++) key[i]=Key[i];
   /*翻转*/
-  //for(i=0;i<8;i++) key[i]=Key[7-i];
+  for(i=0;i<8;i++) key[i]=Key[7-i];
   /*翻转*/
   //memcpy_up(tem,Key,8);
   //for(i=0;i<16;i++) tem2[i]=tem[15-i];
@@ -311,4 +258,120 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
   {
     for(i=0;i<8;i++)PurposeData[j*8+i]=ucMw[j][i];
   }
+}
+
+
+void Eecryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* PurposeData)
+{
+  int i,j;
+  unsigned char key[8]={0},tem[16]={0},tem2[16]={0};
+  unsigned char uckey64[8][8],ucMw[8][8];
+
+  for(i=0;i<8;i++) key[i]=Key[7-i];
+
+  log_arry(DEBUG,"[CARD]key,UID" , key , 8);
+  for(i=0;i<8;i++)
+  {
+     uckey64[0][i]=*(key+i);
+  }
+  for(i=0;i<8;i++)
+  {
+     uckey64[1][i]=*(key+7-i);
+  }
+  for(i=0;i<7;i++)
+  {
+     uckey64[2][i]=*(key+i+1);
+  }
+     uckey64[2][7]=*(key+0);
+  for(i=0;i<6;i++)
+  {
+     uckey64[3][i]=*(key+i+2);
+  }
+
+  for(i=0;i<2;i++)
+  {
+     uckey64[3][6+i]=*(key+i);
+  }
+  for(i=0;i<5;i++)
+  {
+     uckey64[4][i]=*(key+i+3);
+  }
+  for(i=0;i<3;i++)
+  {
+     uckey64[4][5+i]=*(key+i);
+  }
+  for(i=0;i<4;i++)
+  {
+     uckey64[5][i]=*(key+i+4);
+  }
+  for(i=0;i<4;i++)
+  {
+     uckey64[5][4+i]=*(key+i);
+  }
+  for(i=0;i<3;i++)
+  {
+     uckey64[6][i]=*(key+i+5);
+  }
+  for(i=0;i<5;i++)
+  {
+     uckey64[6][3+i]=*(key+i);
+  }
+  for(i=0;i<2;i++)
+  {
+     uckey64[7][i]=*(key+i+6);
+  }
+  for(i=0;i<6;i++)
+  {
+     uckey64[7][2+i]=*(key+i);
+  }
+  
+  for(j=0;j<8;j++)
+  {
+    for(i=0;i<8;i++)ucMw[j][i]=SourceData[j*8+i];
+  }
+  
+  for(j=0;j<8;j++)EncryStr(ucMw[j],uckey64[j],ucMw[j]);
+  for(j=0;j<8;j++)
+  {
+    for(i=0;i<8;i++)PurposeData[j*8+i]=ucMw[j][i];
+  }
+}
+
+
+
+void DEecryptionr_test(void)
+{
+/*一组数据*/
+uint8_t A1[98]={
+0x92,0x33,0x84,0xE0,0x5E,0xBB,0x2E,0xC8,0xCD,0xC9,
+0xA1,0x71,0x97,0x04,0x21,0xF5,0x10,0x28,0x97,0xB3,
+0x6E,0xE9,0xE9,0x6D,0x89,0x7F,0x53,0xC6,0x6A,0x21,
+0x38,0x68,0x94,0xEA,0xD4,0x62,0x99,0x3B,0x17,0x97,
+0x98,0xF3,0xE3,0x73,0xB2,0x2A,0x92,0x5C,0x5A,0x6B,
+0xB1,0x83,0x60,0xCC,0xB2,0xE7,0xCF,0x5E,0xD1,0x74,
+0xB6,0xCE,0xD2,0x63,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x97};
+
+uint8_t A2[8]={0x57,0x74,0x8A,0xA8,0x06,0x23,0x02,0xE0};
+
+log_arry(DEBUG,"A卡密文" ,A1 , 98 );
+log_arry(DEBUG,"A2" ,A2 , 8 );
+
+Decryptionr(A1,A2,A1);
+
+log_arry(DEBUG,"AB卡公共明文" ,A1 , 98 );
+
+
+uint8_t B2[8]={0xF1,0xD4,0x71,0x37,0x04,0x23,0x02,0xE0};
+log_arry(DEBUG,"B2" ,B2 , 8 );
+Eecryptionr(A1,B2,A1);
+
+log_arry(DEBUG,"B卡密文" ,A1 , 98 );
+
+Decryptionr(A1,B2,A1);
+
+log_arry(DEBUG,"AB卡公共明文" ,A1 , 98 );
+
 }

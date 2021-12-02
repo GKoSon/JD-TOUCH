@@ -181,7 +181,15 @@ void BleReceiveUsartByteHandle( uint8_t ucData)
         };   
         case DATA_TRANS:
         {   
-              
+//test
+
+if(BleModuleAppData.Msg.Data[0]==0x11)
+{
+    wrirenfc=1;NEVERSHOW
+} else if(BleModuleAppData.Msg.Data[0]==0x22)
+{
+    wrirenfc=0;NEVERSHOW
+}
 
 all_printf(&BleModuleAppData,sizeof(BleModuleAppData));
 
@@ -190,7 +198,7 @@ all_printf(&BleModuleAppData,sizeof(BleModuleAppData));
                       memcpy( &ble_app[0].hdr  ,&BleModuleAppData.Msg.hdr  ,sizeof(AppDataHeardType));
                       memcpy( &ble_app[0] ,&BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);
                       ble_app[0].alllen = 0xFF;
-        release_sig();      
+//        release_sig();      
               
           memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));
                     

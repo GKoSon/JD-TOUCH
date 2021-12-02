@@ -6,7 +6,7 @@
 
 uint32_t    sysDebugFlag = 0xFF;
 
-
+char wrirenfc =0;
 /*时间*/
 /*控制*/
 /*黑白名单*/
@@ -155,15 +155,6 @@ void log_arry(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigne
 {
     if(LOG_BIT_ON(sysDebugFlag,level))
     {
-        if(level == ERR)
-        printf("\033[0;31m");
-        else if(level == WARN)
-        printf("\033[0;32m");
-        else if(level == INFO)
-        printf("\033[0;33m");
-        else if(level == DEBUG)
-        printf("\033[0;37m");
-        printf("[#]");
         printf("%s :  [" , pst);
         for(unsigned int i = 0 ; i < leng ; i++)
         {
@@ -178,15 +169,6 @@ void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsig
 {
     if(LOG_BIT_ON(sysDebugFlag,level))
     {
-        if(level == ERR)
-        printf("\033[0;31m");
-        else if(level == WARN)
-        printf("\033[0;32m");
-        else if(level == INFO)
-        printf("\033[0;33m");
-        else if(level == DEBUG)
-        printf("\033[0;37m");
-        printf("[#]");
         printf("%s :  [" , pst);
         for(unsigned int i = 0 ; i < leng ; i++)
         {

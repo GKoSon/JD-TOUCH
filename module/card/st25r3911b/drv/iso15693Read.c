@@ -15,6 +15,27 @@
 
 iso15693ProximityCard_t iso15693Cards;
 
+uint8_t st25WriteISO15693Data(uint8_t* data,uint8_t Length)
+{
+    ReturnCode err = ERR_NONE;
+    uint8_t writeBuffer[100]={0} ,  Flag = 0;
+ 
+    
+    memset(writeBuffer , 0xFF , 100);
+    memcpy(writeBuffer , data , Length);//Length 控制在100以内 我写100是4的整数倍而已
+    iso15693PiccMemoryBlock_t memBlock;
+    
+    for(char i=0;i<25;i++)
+    {
+      memcpy(memBlock.data,&writeBuffer[4*i],4);
+      memBlock.blocknr=i;
+      memBlock.actualSize = 4;
+      iso15693WriteSingleBlock(&iso15693Cards,Flag,&memBlock);
+    }
+    log(INFO,"memBlock.errorCode = %d  \n" , memBlock.errorCode);
+
+    return err;
+}
 
 uint8_t st25ReadISO15693Data( uint8_t Address , uint8_t Length ,uint8_t *Respone)
 {
@@ -27,8 +48,8 @@ uint8_t st25ReadISO15693Data( uint8_t Address , uint8_t Length ,uint8_t *Respone
     err = iso15693ReadMultipleBlocks(&iso15693Cards,0, 32, &resFlags,readBuffer, 128, &readLen  );
     if (ERR_NONE == err)
     {
-        log(INFO,"Read leng = %d\n" , readLen);//127
-        log_arry(DEBUG,"Read Data:" , readBuffer , readLen);
+        //log(INFO,"Read leng = %d\n" , readLen);//127
+        //log_arry(DEBUG,"Read Data:" , readBuffer , readLen);
         if(readLen >= Length )
         {
             memcpy( Respone , readBuffer , Length);

@@ -47,6 +47,8 @@ __packed  typedef struct _AppDataHeard
     uint8_t FormAddr[6];
     uint16_t Handle;
     uint8_t  WriteType;
+/*这个变量 没有意义 它是模组给的 6个地址表示那个手机APP 2个是连接句柄 
+而这个没有意义 可以自己拿去使用！它模组给一个char进来 我不处理只是往后移动 case WRITE_TYPE_POS:*/
 }AppDataHeardType;
 
 __packed  typedef struct  _BleModuleAppMsgType

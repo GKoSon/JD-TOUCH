@@ -54,9 +54,9 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
  
 
  
-  此时可以OK
+此时可以OK
   
-  如下
+如下
 [0;39m[0;37m[#][0%][17-11-24 07:24:09][CARD]tag->UID :  [F1 D4 71 37 04 23 02 E0 ]--真实卡
 
 [0;39m[0;37m[#][0%][17-11-24 07:24:09]tag_buffer :  [92 33 84 E0 5E BB 2E C8 CD C9 A1 71 97 04 21 F5 10 28 97 B3 6E E9 E9 6D 89 7F 53 C6 6A 21 38 68 94 EA D4 62 99 3B 17 97 98 F3 E3 73 B2 2A 92 5C 5A 6B B1 83 60 CC B2 E7 CF 5E D1 74 B6 CE D2 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
@@ -64,6 +64,8 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
 [0;39m[0;37m[#][0%][17-11-24 07:24:09][CARD]key,UID :  [E0 02 23 06 A8 8A 74 57 ]--假的我的B翻转的
 
 [0;39m[0;37m[#][0%][17-11-24 07:24:09]tag->buffer :  [01 02 51 57 88 48 37 13 25 19 83 08 12 73 10 27 31 01 04 00 40 05 00 10 00 00 01 99 12 31 DA 02 31 01 04 00 40 05 00 10 00 00 02 99 12 31 DB 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
+
+
 
 
 继续测试
@@ -80,3 +82,106 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
 
 结论：微信给的三组数据可以自圆其说 但是真实给的卡不行 解密出来不对
 质疑1--卡没有发好 2--卡写的块儿不对
+
+
+
+准备自己写一个加密解密的对称函数https://blog.csdn.net/weixin_42381351/article/details/83420660?ops_request_misc=&request_id=&biz_id=102&utm_term=%E5%AF%86%20gkoson&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-83420660.pc_search_mgc_flag&spm=1018.2226.3001.4187
+
+
+
+void DEecryptionr_test(void)
+{
+/*一组数据*/
+uint8_t A1[98]={
+0x92,0x33,0x84,0xE0,0x5E,0xBB,0x2E,0xC8,0xCD,0xC9,
+0xA1,0x71,0x97,0x04,0x21,0xF5,0x10,0x28,0x97,0xB3,
+0x6E,0xE9,0xE9,0x6D,0x89,0x7F,0x53,0xC6,0x6A,0x21,
+0x38,0x68,0x94,0xEA,0xD4,0x62,0x99,0x3B,0x17,0x97,
+0x98,0xF3,0xE3,0x73,0xB2,0x2A,0x92,0x5C,0x5A,0x6B,
+0xB1,0x83,0x60,0xCC,0xB2,0xE7,0xCF,0x5E,0xD1,0x74,
+0xB6,0xCE,0xD2,0x63,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x97};
+
+uint8_t A2[8]={0x57,0x74,0x8A,0xA8,0x06,0x23,0x02,0xE0};
+
+log_arry(DEBUG,"A卡密文" ,A1 , 98 );
+log_arry(DEBUG,"A2" ,A2 , 8 );
+
+Decryptionr(A1,A2,A1);
+
+log_arry(DEBUG,"AB卡公共明文" ,A1 , 98 );
+
+
+uint8_t B2[8]={0xF1,0xD4,0x71,0x37,0x04,0x23,0x02,0xE0};
+log_arry(DEBUG,"B2" ,B2 , 8 );
+Eecryptionr(A1,B2,A1);
+
+log_arry(DEBUG,"B卡密文" ,A1 , 98 );
+
+Decryptionr(A1,B2,A1);
+
+log_arry(DEBUG,"AB卡公共明文" ,A1 , 98 );
+
+}
+测试是可以的
+A卡密文 :  [92 33 84 E0 5E BB 2E C8 CD C9 A1 71 97 [0;39m04 21 F5 10 28 97 B3 6E E9 E9 6D 89 7F 53 C6 6A 21 38 68 94 EA D4 62 99 3B 17 97 98 F3 E3 73 B2 2A 92 5C 5A 6B B1 83 60 CC B2 E7 CF 5E D1 74 B6 CE D2 63 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
+
+[0;39mA2 :  [57 74 8A A8 06 23 02 E0 ]
+
+[0;39m[CARD]key,UID :  [E0 02 23 06 A8 8A 74 57 ]
+
+[0;39mAB卡公共明文 :  [01 02 51 57 88 48 37 13 25 19 83 08 12 73 10 27 31 01 04 00 40 05 00 10 00 00 01 99 12 31 DA 02 31 01 04 00 40 05 00 10 00 00 02 99 12 31 DB 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
+
+[0;39mB2 :  [F1 D4 71 37 04 23 02 E0 ]
+
+[0;39m[CARD]key,UID :  [E0 02 23 04 37 71 D4 F1 ]
+
+[0;39mB卡密文 :  [DC 26 E0 BC 19 1B BE 7A FD 8F 50 88 C5 B8 F0 48 04 1F D3 3A 89 E3 81 3C 74 AD BC 76 94 5F C8 AE 4C F6 7D 21 39 3E 5D D4 80 CE AB E9 FB 4C 52 5F BC C1 9D 04 29 F8 87 12 D0 B7 1C 7B A3 2E 3C 1C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
+
+[0;39m[CARD]key,UID :  [E0 02 23 04 37 71 D4 F1 ]
+
+[0;39mAB卡公共明文 :  [01 02 51 57 88 48 37 13 25 19 83 08 12 73 10 27 31 01 04 00 40 05 00 10 00 00 01 99 12 31 DA 02 31 01 04 00 40 05 00 10 00 00 02 99 12 31 DB 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 40 97 ]
+
+
+
+可能是卡片给我给错了
+我做一个制卡器吧
+1---手机APP发蓝牙0X11就设置为写卡模式 发0x22就回到正常读卡模式
+2----在写卡模式 你刷卡 我不会走卡片解析的逻辑
+而是把你的卡读出来 解密变成明文 把明文保存起来
+
+3-----完成公共明文的 读写 比较简单 
+extern uint8_t card_info_read(uint8_t *data);
+extern void card_info_write(uint8_t *data);
+
+extern uint8_t st25WriteISO15693Data(uint8_t* data,uint8_t Length );
+4---怎么完成写卡？st25WriteISO15693Data
+
+使用谷歌才可以  谷歌 iso15693WriteSingleBlock
+https://community.st.com/s/question/0D53W00000KnzvsSAB/is-there-any-source-code-available-for-st25r3916disco-desktop-app-either-one-or-at-least-a-protocol-document-for-the-usb-protocol-therein
+参考一下 有一个接口
+我的测试代码
+uint8_t st25WriteISO15693Data(uint8_t* data,uint8_t Length)
+{
+    ReturnCode err = ERR_NONE;
+    uint8_t writeBuffer[100]={1,2,3,4} ,  Flag = 0;
+
+    iso15693PiccMemoryBlock_t memBlock;
+    memcpy(memBlock.data,writeBuffer,4);//----赋值 写啥到卡里面
+    memBlock.blocknr=0;//--卡的那个块儿 每块4个HEX 从0号开始标记的 我这里就是写的最开始的4个HEX
+    memBlock.actualSize = 4;//实际长度
+    err = iso15693WriteSingleBlock(&iso15693Cards,Flag,&memBlock);        log(INFO,"memBlock.actualSize = %d  %d\n" , memBlock.actualSize,err);//127
+
+    return err;
+}
+
+调用它 最后读卡器看到最开始4个 就是1234了 
+理解:iso15693WriteSingleBlock 这个函数第三个参数是关键 它其实不是OUT 是需要自己赋值的 三元组 是ST的集合参数输入的结构体
+
+
+
+全局说明：
+程序跑起来---蓝牙设置flag=1---去刷A卡---去刷B卡
+此时设备恢复正常了 而且B卡=A卡

@@ -21,7 +21,7 @@ typedef enum
 
 typedef struct _AppHandleArry
 {
-    uint16_t Rxid;
+    uint8_t cmd;
     uint8_t (*EventHandlerFn)( BleProtData *pag);
 }AppHandleArryType;
 

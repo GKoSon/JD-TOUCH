@@ -1,0 +1,77 @@
+问题1
+BleModuleAppDateType     BleModuleAppData;
+
+这个是模组自带的 比如你发1给蓝牙了 这个蓝牙发给单片机的不是1而是一个如下的结构
+__packed  typedef struct _AppDataHeard
+{
+    uint8_t FormAddr[6];
+    uint16_t Handle;
+    uint8_t  WriteType;
+}AppDataHeardType;
+
+typedef struct  _BleModuleAppMsgType
+{
+    AppDataHeardType hdr;
+    uint8_t  Data[40];
+    uint16_t DatLength;
+}BleModuleAppMsgType;
+
+
+typedef struct  _BleModuleAppData
+{
+    uint16_t                Command;
+    uint8_t                 Response;
+    uint16_t                Length;
+    BleModuleAppMsgType     Msg;
+    uint8_t                 BytePos;
+}BleModuleAppDateType;
+
+
+比如发“123456”
+模组发给mcu是 i-t-a-z-Command-Response-Length-此时进到数据壳子 FormAddr-Handle-开始根据Length接受数据
+
+nordic app 发送第一额UUID “123456”
+4D-00-01-0F-00-68-97-BF-7E-8F-1D-F1-2A-00-31-32-33-34-35-36-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-06-00-0F-[0;37m[#][0%][17-11-24 08:37:19]GSM模块关机成功
+
+分析
+Command 4D-00-
+Response 01-
+Length 0F-00- 【表示后面的全长 我自己的6+其他的6+2+1】
+
+FormAddr 68-97-BF-7E-8F-1D-
+Handle F1-2A-
+WriteType 00-
+Data 31-32-33-34-35-36-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-06-00-0F-[0;37m[#][0%][17-11-24 08:37:19]GSM模块关机成功
+
+发送0X11
+4D-00-
+01-
+0A-00-[10 也就是9+1]
+5A-21-89-04-64-AB-
+F1-2A-
+00-
+
+11
+
+
+真实测试:
+4D-00-
+01-
+1D-00-[29 也就是9+20]
+
+58-F0-ED-8B-2F-63-
+F1-2A-
+00-
+
+02-02-00-10-08-C0-C4-07-10-01
+18-C0-C4-07-20-BD-C4-F8-A0-D7
+
+说明就一包过来20个！！
+
+那么我去回答一下
+
+门禁计划
+三个建议
+1---OTA 已经做了ZIP
+2---放弃蓝牙 直接下载配置文件 用JS
+3---制卡器 做上面的草稿

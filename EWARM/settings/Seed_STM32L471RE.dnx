@@ -129,7 +129,7 @@
         <Bp1>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.130.13" 0 0 1 "" 0 "" 0</Bp1>
         <Bp2>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.130.13" 0 0 1 "" 0 "" 0</Bp2>
         <Bp3>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\buletooth\before\btTask.c}.42.17" 0 0 1 "" 0 "" 0</Bp3>
-        <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\module\buletooth\BB0906\bb0906_protocol.c}.185.1" 0 0 1 "" 0 "" 0</Bp4>
+        <Bp4>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\module\buletooth\BB0906\bb0906_protocol.c}.193.1" 0 0 1 "" 0 "" 0</Bp4>
         <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.717.11" 0 0 1 "" 0 "" 0</Bp5>
         <Bp6>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.482.9" 0 0 1 "" 0 "" 0</Bp6>
         <Bp7>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Src\freertos.c}.343.7" 0 0 1 "" 0 "" 0</Bp7>

@@ -17,13 +17,13 @@
 //extern _SHType SHType;
 
 
-uint8_t FTSLBLEDeviceInfoRequest            (BleProtData *pag);
-
-
+uint8_t down_device_match  (BleProtData *pag);
+uint8_t down_device_Info  (BleProtData *pag);
+uint8_t down_device_open  (BleProtData *pag);
 AppHandleArryType gAppTaskArry[]={
-{0x0100 , FTSLBLEDeviceInfoRequest  },
-
-
+{2 , down_device_match },
+{3 , down_device_Info },
+{4 , down_device_open },
 };
 
 #define BLE_DEBUG_LOG(type, message)                                           \
@@ -35,18 +35,23 @@ do                                                                            \
 while (0)
 #define BLE_DEBUG                                                     1
 
+uint8_t down_device_match (BleProtData *pag)
+{SHOWME
+ 
+    return APP_OK;
 
+}
 
 void show_BleProtData(BleProtData *p)
 {
   
   BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
-  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:ID---0X%02X----\r\n",p->id.data));
-  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:CMD---0X%02X----\r\n",p->cmd));
-  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:SEQ---0X%02X----\r\n",p->num.data));
-  BLE_DEBUG_LOG(BLE_DEBUG, (" ---HEAD:LEN---0X%02X----\r\n",p->len));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:ID  0X%02X\r\n",p->id.data));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:CMD 0X%02X\r\n",p->cmd));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:SEQ 0X%02X\r\n",p->num.data));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:LEN 0X%02X\r\n",p->len));
 
-  log_arry(DEBUG,"---DATA---" ,p->body ,p->len);
+  log_arry(DEBUG,"---BODY" ,p->body ,p->len);
   //printf("---------0X%02X----\r\n",p->alllen);
 }
 
@@ -81,7 +86,7 @@ message DeviceOpenRequest {
    string phoneNo=5;  	//ÊÖ»úºÅ
 }
 */
-uint8_t Down_DeviceOpenRequest (BleProtData *pag)
+uint8_t down_device_open (BleProtData *pag)
 {SHOWME
   uint8_t   phoneNo[20]={0};
   pb_istream_t requestStream ;// pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
@@ -141,7 +146,7 @@ message DeviceSetDeviceNameRequest {
 }
 
 */
-uint8_t Down_DeviceSetDeviceNameRequest (BleProtData *pag)
+uint8_t down_device_Info (BleProtData *pag)
 {SHOWME
 uint8_t   name[20]={0};
 uint8_t   code[20]={0};
@@ -225,15 +230,15 @@ uint8_t BleDataHandleDetails(BleProtData *pag)
     show_BleProtData(pag);
     for(idx = 0; idx < sizeof (gAppTaskArry) / sizeof (gAppTaskArry[0]); idx++)
     {
-        if( pag->cmd == gAppTaskArry[idx].Rxid)
+        if( pag->cmd == gAppTaskArry[idx].cmd)
         {
-            log(INFO,"Bt receive command TYPE = 0X%04X\r\n" ,  gAppTaskArry[idx].Rxid);
-           // return (gAppTaskArry[idx].EventHandlerFn(pag,gAppTaskArry[idx].Txid));               
+            log(INFO,"Bt receive command . cmd = 0X%02X\r\n" ,pag->cmd );
+            //return (gAppTaskArry[idx].EventHandlerFn(pag));               
         }
     }
     
-    UP_Return_Comm(pag,0,1);
-    log(DEBUG,"This command TYP has no register. cmd = %x.\r\n" ,pag->cmd );
+    //UP_Return_Comm(pag,0,1);
+    log(DEBUG,"This command TYP has no register. cmd = 0X%02X\r\n" ,pag->cmd );
     return APP_ERR;
 }
 
@@ -299,12 +304,7 @@ void BleDataHandle(BleProtData *sorpag)
    // return 1;
 //}
 
-uint8_t FTSLBLEDeviceInfoRequest (BleProtData *pag)
-{SHOWME
 
-
-}
- 
 void ip_port_handle(uint8_t *  sor)
 {
   char *p=0;

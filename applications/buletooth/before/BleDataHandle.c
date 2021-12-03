@@ -12,17 +12,13 @@
 #include "cmd_pb.h"
 #include "BleProtocol.pb.h"
 
-
-
-//extern _SHType SHType;
-
-uint8_t down_device_match  (BleProtData *pag);
+uint8_t down_device_A9  (BleProtData *pag);
 uint8_t down_device_info  (BleProtData *pag);
 uint8_t down_device_open  (BleProtData *pag);
 AppHandleArryType gAppTaskArry[]={
-{2 , down_device_match },
 {3 , down_device_open  },
 {4 , down_device_info  },
+{5 , down_device_A9 },
 };
 
 
@@ -36,7 +32,7 @@ while (0)
 #define BLE_DEBUG                                                     1
 
 
-
+void ip_port_handle(uint8_t *  sor);
 
 
 static void show_BleProtData(BleProtData *p)
@@ -69,7 +65,7 @@ static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len, BlePr
   pag->bodylen = len;
   size = pag->len +4;
   memcpy(pag->body,msg,len );
-  show_BleProtData(pag);
+  //show_BleProtData(pag);
   return size;
 }
 
@@ -109,8 +105,9 @@ int up_return_comm( BleProtData *pag, uint8_t status)
 }
 
 
-uint8_t down_device_match (BleProtData *pag)
+uint8_t down_device_A9 (BleProtData *pag)
 {SHOWME
+  up_return_comm(pag,0);
    return APP_OK;
 }
 
@@ -164,24 +161,42 @@ uint8_t down_device_open (BleProtData *pag)
     return APP_OK;
   }
   
-
   return APP_ERR;
 }
 
+/*
+message DeviceSetDeviceNameRequest {
+        string name = 1;	//设备名称
+	string code = 2;	//设备编码
+	int32 pairPWD = 3;	//配对密码
+	int32 openPWD = 4;	//开门密码
+	int32 openDelay = 5;	// 开门延迟
+	int32 alarmDelay = 6;	// 开门报警延迟
+	int32 installPurpose = 7;	//安装用途 0:单元机  1：围墙机 2：多围墙 
+	string  mqttServer = 8; //设置mqtt server ip:port信息
+	string  ntpServer = 9;//设置ntp server ip:port信息
+	int32   isdhcp = 10;   //0:手动、1:自动
+	string  ip = 11; 	  //设备ip
+	string  gateway = 12;  //网关
+	string  mask = 13; 	  //子网掩码
+	string  dns = 14; 	  //dns
+	string  groupId = 15;  //默认通行组
+}
 
+*/
 uint8_t down_device_info (BleProtData *pag)
-{SHOWME
-uint8_t   name[20]={0};
-uint8_t   code[20]={0};
-uint8_t   mqttServer[20]={0};
+{
+uint8_t   name[5]={0};
+uint8_t   code[22]={0};
+uint8_t   mqttServer[30]={0};
 uint8_t   ntpServer[20]={0};
 uint8_t   ip[20]={0};
 uint8_t   gateway[20]={0};
 uint8_t   mask[20]={0};
 uint8_t   dns[20]={0};
-uint8_t   groupId[20]={0};
-  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
-  DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
+
+pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
+DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
   
   
 pb_decode_bytes(&A.name , name);
@@ -192,10 +207,10 @@ pb_decode_bytes(&A.ip , ip);
 pb_decode_bytes(&A.gateway , gateway);
 pb_decode_bytes(&A.mask , mask);
 pb_decode_bytes(&A.dns , dns);
-pb_decode_bytes(&A.groupId , groupId);
 
   if(pb_decode(&requestStream, DeviceSetDeviceNameRequest_fields, &A) == TRUE )		
-  {			
+  {	
+BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
@@ -210,11 +225,39 @@ BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
 BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】groupId        =%s\n",groupId));
-  }
-   return APP_ERR;
-}
 
+
+
+config.write(CFG_SYS_DEVICE_NAME ,name,0);//前4个hex替换
+config.write(CFG_MQTT_DC ,code,1);//21个char
+
+char DeafultPwd[BLE_PASSWORD_LENGTH*2] ={0};
+
+
+sprintf(DeafultPwd,"%d",A.pairPWD);
+memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
+config.write(CFG_PAIR_PWD ,DeafultPwd ,0);
+log_arry(DEBUG,"配对密码 "  ,DeafultPwd,BLE_PASSWORD_LENGTH);
+
+
+sprintf(DeafultPwd,"%d",A.openPWD);
+memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
+config.write(CFG_USER_PWD ,DeafultPwd ,0);
+log_arry(DEBUG,"开门密码 "  ,DeafultPwd,BLE_PASSWORD_LENGTH);
+
+
+config.write(CFG_SYS_OPEN_TIME ,&A.openDelay,0);
+config.write(CFG_SYS_ALARM_TIME ,&A.alarmDelay,0);
+config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,0);
+
+ip_port_handle(mqttServer);
+
+    up_return_comm(pag,0);
+    return APP_OK;
+  }
+  
+  return APP_ERR;
+}
 
 
 uint8_t BleDataHandleDetails(BleProtData *pag)
@@ -234,14 +277,9 @@ uint8_t BleDataHandleDetails(BleProtData *pag)
     return APP_ERR;
 }
 
-void BleDataHandle(BleProtData *sorpag)
+void BleDataHandle(BleProtData *pag)
 {
-    BleProtData   pag;
-
-    memset(&pag , 0x00 ,   sizeof(BleProtData));
-    memcpy(&pag , sorpag , sizeof(BleProtData));      
-
-    if( BleDataHandleDetails(&pag) != APP_OK)
+    if( BleDataHandleDetails(pag) != APP_OK)
     {      
         beep.write(BEEP_ALARM);   
         return ;
@@ -251,69 +289,28 @@ void BleDataHandle(BleProtData *sorpag)
 }
 
 
-
-
-
-//2é?ˉ??á?
-//int BLEWIZ_return_info( ProtData_T *pag,uint16_t idtype )
-//{
-    //uint8_t pbBuf[256] , msg[256] , size = 0;
-
-    //_DeviceInfo *devinfo;
-    //TslBLEProto_TSLBLEDeviceInfoResponse    result = TslBLEProto_TSLBLEDeviceInfoResponse_init_zero; 
-    //pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 256);  
-
-   // result.security = config.read(BLE_PAIR_PWD ,NULL);
-    
-   // config.read(BLE_DEV_INFO , (void **)&devinfo );
-   // result.dev_type = devinfo->dev_type;
-    //show_DeviceInfo(devinfo);
-    //BytesType B1,B2,B3,B4,B5,B6,B7;    
-    //pb_add_bytes(&B1 , devinfo->sn , strlen((char *)devinfo->sn));   
-    //pb_add_bytes(&B2 , manufacturers , strlen((char *)manufacturers)); 
-    //pb_add_bytes(&B3 , devinfo->dev_name , strlen((char *)devinfo->dev_name));    
-    //pb_add_bytes(&B4 , devinfo->software_version , strlen((char *)devinfo->software_version));    
-    //pb_add_bytes(&B5 , devinfo->hardware_version , strlen((char *)devinfo->hardware_version)); 
-    //pb_add_bytes(&B6 , SHType.codedev       ,11);    
-    //pb_add_bytes(&B7 , SHType.codelocation  ,11); 
-    
-    //pb_encode_bytes(&result.sn ,                &B1);
-    //pb_encode_bytes(&result.manufacturers ,     &B2);   
-    //pb_encode_bytes(&result.dev_name ,          &B3);
-    //pb_encode_bytes(&result.software_version ,  &B4);
-    //pb_encode_bytes(&result.hardware_version ,  &B5);
-    //pb_encode_bytes(&result.device_code ,       &B6);
-    //pb_encode_bytes(&result.location_code ,     &B7);
-
-    //if( pb_encode_respone(&RequestStream , TslBLEProto_TSLBLEDeviceInfoResponse_fields , &result) == TRUE)
-    //{
-        //printf("RequestStream.bytes_written=0X%02X && idtype=%04x\r\n",RequestStream.bytes_written,idtype);
-        //size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written ,idtype,pag);
-        //log_arry(DEBUG,"MSG "  ,msg ,size);
-       // btModule.send(pag ,msg,size);
-   // }
-
-   // return 1;
-//}
-
-
+/*  tcp://139.9.66.72:18 */
 void ip_port_handle(uint8_t *  sor)
 {
   char *p=0;
   serverAddrType ip_port;
-//tcp://192.168.66.34:3001
+
+  //printf("input[%s]\r\n",sor); 
   if(p = strstr ((const char*)sor,"//"))
     p+=2;
   else
     p = (char *)sor;
-  //GIPStringtoarry((uint8_t *)p,ip_port.ip);
 
+  
+  sscanf((const char*)p,"%[^:]", ip_port.ip);
+  
   p = strstr ((const char*)p,":");
   ++p;
   ip_port.port = atoi(p);
 
-  //show_serverAddr(&ip_port);
-  //config.write(CFG_NET_ADDR ,&ip_port,1);
+  
+  ShowIp(&ip_port);
+  config.write(CFG_NET_ADDR ,&ip_port,0);
 
 }
          

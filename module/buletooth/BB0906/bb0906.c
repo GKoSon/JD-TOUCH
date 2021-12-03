@@ -56,7 +56,7 @@ void ble_recvive_timer( void )
 {
     if( bleTimerStart )
     {
-        if(bleTimerCnt++ > 8)
+        if(bleTimerCnt++ > 10)
         {
             memset(ble_app , 0x00 , sizeof(BleProtData)*BLE_CONNECT_MAX_NUM);
             memset(&bleModuleReceiveCmd , 0x00 , sizeof(bleModuleReceiveCmdType));

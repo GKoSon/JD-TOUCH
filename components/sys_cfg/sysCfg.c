@@ -364,8 +364,8 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
 
 void ShowIp(serverAddrType *p)
 {
-  printf("*********************ip  %s*******************\r\n",p->ip);
-  printf("*********************port%d*******************\r\n",p->port);
+  printf("\r\n********************* ip   %s *******************\r\n",p->ip);
+  printf("********************* port %d *******************\r\n",p->port);
 }
 
 void show_OTA(void)
@@ -425,6 +425,8 @@ void sysCfg_print( void )
       log(DEBUG,"设备蓝牙名称 = %s \n" ,cfg.parm.deviceName);
       log(DEBUG,"蓝牙模块版本号 [%d] \n" , cfg.ble.ble_version );
       log_arry(DEBUG,"蓝牙模块的MAC地址 "  ,cfg.ble.ble_mac ,BLE_MAC_LENGTH);
+      
+      log_arry(DEBUG,"配对密码 "  ,cfg.pair_pwd,BLE_PASSWORD_LENGTH);
       log(DEBUG,"设备网络类型 = [%d] [1:GPRS,2:WFI,4ETH]\n" ,cfg.parm.support_net_types);
 
       log(DEBUG,"MQTT业务服务器IP地址: %s:%d\n" , cfg.server.net.ip ,    cfg.server.net.port);
@@ -432,7 +434,7 @@ void sysCfg_print( void )
       log(DEBUG,"mqtt client    = %s\n" ,    cfg.mqtt.mqttClientId);
       log(DEBUG,"mqtt user name = %s\n" ,    cfg.mqtt.mqttUserName);
       log(DEBUG,"mqtt user pwd  = %s\n" ,    cfg.mqtt.mqttUserPwd);
-     log(ERR,"设备是否拉过黑白名单 = [%d]\n",cfg.parm.filterSynced);
+      log(ERR,"设备是否拉过黑白名单 = [%d]\n",cfg.parm.filterSynced);
      
       permi.show();//展示一下黑白名单
  permi_list_init();
@@ -448,7 +450,18 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
     switch(mode)
     {
       
-         case MQTT_FILTER_SYNCED:
+         case CFG_SYS_DEVICE_NAME:
+        {
+            //uint8_t  deviceName[DEVICE_NAME_LENG];
+            memcpy(cfg.parm.deviceName,parma,4);/*仅仅修改前面4个*/  
+        }break;
+        
+         case CFG_MQTT_DC:
+        {      
+            memcpy(SHType.deviceCode,parma,21);
+        }break;
+                    
+        case MQTT_FILTER_SYNCED:
         {
             cfg.parm.filterSynced = *(uint8_t *)(parma);
         }break;
@@ -613,7 +626,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
            *parma = cfg.user_pwd;
             data = BLE_PASSWORD_LENGTH;
         }break;
-
+        
         case CFG_BLE_MAC:
         {
             *parma = cfg.ble.ble_mac;
@@ -726,15 +739,7 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {      
             *parma = SHType.deviceCode;
         }break;
-        
-        case CFG_PRO_PWD:
-        {
-            static uint8_t proj_pwd[7];
-            memset(proj_pwd , 0     ,     7);
-            memcpy_up(proj_pwd,cfg.pair_pwd,3);
-            *parma = proj_pwd;
-        }break;
-             
+                    
         case CFG_SET_RESTORE_FLAG:
         {
             data = cfg.sysRestoreFlag;
@@ -808,7 +813,7 @@ memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void 
 #if 1
 static char * deviceCode   =   "110101001001003102001";//21长!!!!!
 memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
-static char * groupcode    =   "3101040110130060000001";//默认通行组  
+static char * groupcode    =   "3101040110130060000001";//默认通行组  22
 memcpy_down(SHType.gup.code[0],groupcode,22);
 SHType.gup.cnt=1;
 #else

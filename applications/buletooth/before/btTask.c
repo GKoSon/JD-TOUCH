@@ -27,7 +27,7 @@ void bt_check_work( void )
 void ble_data_process( void const *pvParameters)
 {
     configASSERT( ( ( unsigned long ) pvParameters ) == 0 );
-      
+    
     btModule.init();
     
     bt_check_work();
@@ -40,10 +40,10 @@ void ble_data_process( void const *pvParameters)
             for(uint8_t i = 0 ; i < BLE_CONNECT_MAX_NUM ; i++)
             {
                 if(ble_app[i].hdr.WriteType == 0xFF)
-                {  
-                    BleDataHandle(&ble_app[i]);
-                    memset(&ble_app[i] , 0x00 , sizeof(BleProtData));
-                    task_keep_alive(TASK_BT_BIT); 
+                { 
+                  BleDataHandle(&ble_app[i]);
+                  memset(&ble_app[i] , 0x00 , sizeof(BleProtData)); 
+                  task_keep_alive(TASK_BT_BIT); 
                 }
             }
         }

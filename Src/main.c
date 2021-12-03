@@ -129,6 +129,26 @@ void test_crc8(void)
   printf("AAACRC^BBBCRC=%d\r\n",AAACRC^BBBCRC);
 }
 
+
+void test_my(void)
+{
+char A[6]={"123456"};
+memcpy_down(A,A,strlen(A));
+log_arry(DEBUG,"A" ,A , 6);
+
+char B[3]={0xAB,0XCD,0XEF};
+memcpy_up(A,B,3);
+printf("[%s]\r\n",A);
+
+
+int C=654321;//-->0X65 0X43 0X21
+sprintf(A,"%d",C);
+printf("[%.6s]\r\n",A);
+memcpy_down(A,A,strlen(A));
+log_arry(DEBUG,"A" ,A , 6);
+}
+
+
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -177,6 +197,7 @@ void test_crc8(void)
     serial_console_init();
     ExchangeBytes();
     test_crc8();
+    test_my();
     /* USER CODE END 2 */
 #if TESTOTA
 while(1)

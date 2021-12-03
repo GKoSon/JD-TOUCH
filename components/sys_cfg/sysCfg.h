@@ -106,7 +106,6 @@ typedef enum
     CFG_MQTT_USERPWD,
     CFG_MQTT_MAC,
     CFG_MQTT_DC,
-    CFG_PRO_PWD,
 
     CFG_SET_RESTORE,
     CFG_SYS_UPDATA_TIME,
@@ -132,9 +131,7 @@ typedef struct
       uint8_t support_ble_types;//蓝牙 0--BM77 1--0906
       uint8_t lock_mode;//0 1 2 三种 标识安装在哪儿 涉及开门权限
 
-
-      
-      uint8_t  alarm_time; //开门
+      uint8_t  alarm_time; 
       uint16_t delay_time;//开门
       uint8_t  magnet_status;
       uint8_t  filterSynced; /*1--是有拉过名单*/

@@ -163,16 +163,18 @@ void ble_receive_data_process( uint8_t ucData)
         case DATA_TRANS:
         {   
 //test
-
+#if 0
 if(BleModuleAppData.Msg.Data[0]==0x11){
 wrirenfc=1;NEVERSHOW
 } else if(BleModuleAppData.Msg.Data[0]==0x22)
 {wrirenfc=0;NEVERSHOW}
+#endif
 
-
-
-              all_printf(&BleModuleAppData,sizeof(BleModuleAppData)-23);
-
+#if 0
+all_printf(&BleModuleAppData.Msg,sizeof(BleModuleAppData)-23);
+printf("\r\n");
+#endif
+#if 1
               for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
               {
                       if(aiot_strcmp(BleModuleAppData.Msg.hdr.FormAddr,ble_app[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
@@ -188,26 +190,26 @@ wrirenfc=1;NEVERSHOW
                             uint8_t  body[16];
                           }hb;
                           
-                          memset( &hb       ,  0                         ,sizeof(hb));;
+
                           memcpy( &hb       , &BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);/*DatLength 是29-9 就是20*/
 
-                          uint16_t bodylen =  ble_app[i].bodylen;
-                          memcpy( ble_app[i].body+bodylen        ,hb.body,    hb.len);
+  
+                          memcpy( ble_app[i].body+ble_app[i].bodylen        ,hb.body,    hb.len);
 
                           //log(INFO,"之前bodylen=%d 现在增加%d " ,bodylen,hb.len);
-                          bodylen += hb.len;
-                          ble_app[i].bodylen = bodylen;
-                          log(INFO,"第N次 展示序列号 （%d:%d)\n" ,hb.num.byte.seqall,hb.num.byte.seqid);
+
+                          ble_app[i].bodylen += hb.len;
+                          //log(INFO,"第N次 展示序列号 （%d:%d)\n" ,hb.num.byte.seqall,hb.num.byte.seqid);
 
 
                           if(hb.num.byte.seqall==hb.num.byte.seqid)
                           {
-                              NEVERSHOW
+                              //NEVERSHOW
                               ble_app[i].hdr.WriteType = 0xFF;
+                              ble_app[i].num=hb.num;
                               release_sig();    
-                              i = 100;/*结束流程 防止进入到下面if( i == BLEMODE_PHONE_MAX)*/
                           } 
-                      
+                      i = 100;/*结束流程 防止进入到下面if( i == BLEMODE_PHONE_MAX)*/
                       }
               } /*第一次过来这个for进去马上出来  因为if进不去的 此时ble_app全是0* 所以第一次就是进下面的*/
 
@@ -220,16 +222,17 @@ wrirenfc=1;NEVERSHOW
                       memcpy( &ble_app[ch].hdr     ,&BleModuleAppData.Msg.hdr   ,sizeof(AppDataHeardType));
                       memcpy( &ble_app[ch]         ,&BleModuleAppData.Msg.Data  ,BleModuleAppData.Msg.DatLength);
                       /*正好一包就搞定*/
-                      log(INFO,"第一次 展示序列号 （%d:%d)\n" ,ble_app[ch].num.byte.seqall,ble_app[ch].num.byte.seqid);
+                      //log(INFO,"第1次 展示序列号 （%d:%d)（chg=%d）\n" ,ble_app[ch].num.byte.seqall,ble_app[ch].num.byte.seqid,ch);
                       if(ble_app[ch].num.byte.seqall==ble_app[ch].num.byte.seqid)
                       {
                           log(INFO,"第一次 只是收到一包数据 就可以打完收工啦\n");
                           ble_app[ch].hdr.WriteType = 0xFF;
                           release_sig();    
+                          NEVERSHOW
                       } else {
-                           log(INFO,"第一次 展示body长度 %d/%d\n" , BleModuleAppData.Msg.DatLength  - 4,ble_app[ch].len);            
-                           ble_app[0].bodylen = BleModuleAppData.Msg.DatLength - 4; /*29-9  上面的1D就是29 而DatLength已经提前-9了 BLE_DATA_HEARD_LENG   */
-                           ble_app[0].bodylen = ble_app[ch].len;
+                           //log(INFO,"第一次 展示body长度 %d/%d\n" , BleModuleAppData.Msg.DatLength  - 4,ble_app[ch].len);            
+                           ble_app[ch].bodylen = BleModuleAppData.Msg.DatLength - 4; /*29-9  上面的1D就是29 而DatLength已经提前-9了 BLE_DATA_HEARD_LENG   */
+                           ble_app[ch].bodylen = ble_app[ch].len;
                       }
                       
                       
@@ -237,7 +240,7 @@ wrirenfc=1;NEVERSHOW
               ch = (ch + 1)% BLEMODE_PHONE_MAX ;
               }
               
-              
+#endif            
         memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));            
         }break; 
      

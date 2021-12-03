@@ -66,7 +66,6 @@ buletoothDriveType btModule =
   .read_version = bt_drive_read_version,
   .set_default = bt_drive_set_default,
   .resert = bt_drive_resert,
-
 };
 
 void bluetooth_drv_init( void )
@@ -75,12 +74,6 @@ void bluetooth_drv_init( void )
   btDrv = &BB0906Drv;
   bb0906_init();
 }
-void Clear_ProtBuf(void)
-{
-
-}
-
-
 
 
 void release_sig(void)

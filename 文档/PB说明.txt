@@ -7,7 +7,7 @@ start ../../generator-bin/protoc --nanopb_out=. BleProtocol.proto
 
 
 
-计划只是给BleDataHandle使用
+只是给BleDataHandle.c.h使用
 完成第一个
 
 步骤1---
@@ -73,6 +73,22 @@ uint8_t Down_DeviceOpenRequest (ProtData_T *pag,uint16_t id)
     Show_DeviceOpenRequest(&A);
     log_arry(ERR,"phoneNo" ,tem ,12);
     printf("phoneNo %s" ,tem);
+    
+    
+ OK
+uint8_t down_device_open (BleProtData *pag)
+{SHOWME
+  uint8_t   phoneNo[20]={0};
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
+  DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
+  pb_decode_bytes(&A.phoneNo ,phoneNo);
+  if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
+  {			
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pwd      =%d\n",A.pwd));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】type     =%d\n",A.type));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】uid      =%lld\n",A.uid));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】timeStamp=%lld\n",A.timeStamp));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】phoneNo  =%s\n",phoneNo)); 
 +++++
 完成一个回答
 

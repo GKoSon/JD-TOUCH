@@ -16,15 +16,15 @@
 
 //extern _SHType SHType;
 
-
 uint8_t down_device_match  (BleProtData *pag);
-uint8_t down_device_Info  (BleProtData *pag);
+uint8_t down_device_info  (BleProtData *pag);
 uint8_t down_device_open  (BleProtData *pag);
 AppHandleArryType gAppTaskArry[]={
 {2 , down_device_match },
-{3 , down_device_Info },
-{4 , down_device_open },
+{3 , down_device_open  },
+{4 , down_device_info  },
 };
+
 
 #define BLE_DEBUG_LOG(type, message)                                           \
 do                                                                            \
@@ -35,45 +35,86 @@ do                                                                            \
 while (0)
 #define BLE_DEBUG                                                     1
 
-uint8_t down_device_match (BleProtData *pag)
-{SHOWME
- 
-    return APP_OK;
 
-}
 
-void show_BleProtData(BleProtData *p)
+
+
+static void show_BleProtData(BleProtData *p)
 {
-  
   BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
   BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:ID  0X%02X\r\n",p->id.data));
   BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:CMD 0X%02X\r\n",p->cmd));
   BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:SEQ 0X%02X\r\n",p->num.data));
   BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:LEN 0X%02X\r\n",p->len));
-
-  log_arry(DEBUG,"---BODY" ,p->body ,p->len);
-  //printf("---------0X%02X----\r\n",p->alllen);
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---HEAD:LEN 0X%02X\r\n",p->len));
+  BLE_DEBUG_LOG(BLE_DEBUG, ("---BODY:LEN 0X%02X\r\n",p->bodylen));
+  log_arry(DEBUG,"---BODY" ,p->body ,p->bodylen);
 }
 
+/********************************上行1****************************/
 /*
 组包  完成HEAD-BODY结构发出去
 */
 
 static uint16_t  ble_mode_packet(uint8_t *out ,uint8_t *msg ,uint16_t len, BleProtData *in)
 {
-uint16_t size=0;
+  uint16_t size=0;
 
-BleProtData *pag=(BleProtData *)out;
+  BleProtData *pag=(BleProtData *)out;
 
-pag->id.data = in->id.data;
-pag->cmd = 0x01;
-pag->num.data = 0x10;
-pag->len = len;
-size = pag->len +4;
-memcpy(pag->body,msg,len );
-show_BleProtData(pag);
-return size;
+  pag->id.data = in->id.data;
+  pag->cmd = 0x01;
+  pag->num.data = 0x11;/*控制在1包回答完毕*/
+  pag->len = len;
+  pag->bodylen = len;
+  size = pag->len +4;
+  memcpy(pag->body,msg,len );
+  show_BleProtData(pag);
+  return size;
 }
+
+/*
+message DeviceCommonResponse {
+        int32   status = 1;           
+	string  reserved = 2; 
+}
+*/
+int up_return_comm( BleProtData *pag, uint8_t status)
+{
+    uint8_t pbBuf[100] , msg[256] , size = 0;
+    BytesType B1; 
+    uint8_t back[2][4]={"YES","ERR"};
+    uint8_t *p;
+    DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
+    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100);  
+
+    B.status = status;
+    
+    if(status==0)           p = back[0];    
+    else if(status==1)     p = back[1];
+      
+    pb_add_bytes(&B1 , p , strlen((char *)p)); 
+    pb_encode_bytes(&B.reserved , &B1); 
+    
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】up_return_comm=%s\n",p));
+    
+    if( pb_encode_respone(&RequestStream , DeviceCommonResponse_fields , &B) == TRUE)
+    {
+        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, pag);
+
+        btModule.send(pag->hdr.FormAddr ,pag->hdr.Handle, msg,size);
+    }
+
+    return 1;
+}
+
+
+uint8_t down_device_match (BleProtData *pag)
+{SHOWME
+   return APP_OK;
+}
+
+
 
 /********************************下行1****************************/
 
@@ -89,64 +130,46 @@ message DeviceOpenRequest {
 uint8_t down_device_open (BleProtData *pag)
 {SHOWME
   uint8_t   phoneNo[20]={0};
-  pb_istream_t requestStream ;// pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
   DeviceOpenRequest A = DeviceOpenRequest_init_zero; 
   pb_decode_bytes(&A.phoneNo ,phoneNo);
   if(pb_decode(&requestStream, DeviceOpenRequest_fields, &A) == TRUE )		
   {			
-  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pwd      =%d\n",A.pwd));
-  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】type     =%d\n",A.type));
-  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】uid      =%d\n",A.uid));
-  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】timeStamp=%lld\n",A.timeStamp));
-  BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】phoneNo  =%s\n",phoneNo));
-    log_arry(ERR,"phoneNo" ,phoneNo ,12);
-    printf("phoneNo %s" ,phoneNo);
-    if(A.type==1)
-    {
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pwd      =%d\n",A.pwd));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】type     =%d\n",A.type));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】uid      =%lld\n",A.uid));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】timeStamp=%lld\n",A.timeStamp));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】phoneNo  =%s\n",phoneNo));
 
-    } else if(A.type==2)
-    {
-        uint32_t stamp = 0;
-        stamp = rtc.read_stamp();
-        BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】A.timeStamp =%lld rtc.read_stamp()=%lld\n",A.timeStamp,stamp));
-        if( abs(stamp-A.timeStamp) < 5)
-        {
+           
+      if(A.type==0)
+      {
+          open_door();
+      } else if(A.type)
+      {
+          uint32_t stamp = 0;
+          stamp = rtc.read_stamp();
+          BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】A.timeStamp =%lld rtc.read_stamp()=%u\n",A.timeStamp,stamp));
+          if( abs(stamp-A.timeStamp) < 5)
+          {
          
-        }
-        else
-        {
+          }
+          else
+          {
         
-        }
+          }
      }
+         
+    up_return_comm(pag,0);
     return APP_OK;
   }
   
 
   return APP_ERR;
 }
-/*
 
 
-message DeviceSetDeviceNameRequest {
-        string name = 1;	//设备名称
-	string code = 2;	//设备编码
-	int32 pairPWD = 3;	//配对密码
-	int32 openPWD = 4;	//开门密码
-	int32 openDelay = 5;	// 开门延迟
-	int32 alarmDelay = 6;	// 开门报警延迟
-	int32 installPurpose = 7;	//安装用途 0:单元机  1：围墙机 2：多围墙 
-	string  mqttServer = 8; //设置mqtt server ip:port信息
-	string  ntpServer = 9;//设置ntp server ip:port信息
-	int32   isdhcp = 10;   //0:手动、1:自动
-	string  ip = 11; 	  //设备ip
-	string  gateway = 12;  //网关
-	string  mask = 13; 	  //子网掩码
-	string  dns = 14; 	  //dns
-	string  groupId = 15;  //默认通行组
-}
-
-*/
-uint8_t down_device_Info (BleProtData *pag)
+uint8_t down_device_info (BleProtData *pag)
 {SHOWME
 uint8_t   name[20]={0};
 uint8_t   code[20]={0};
@@ -157,7 +180,7 @@ uint8_t   gateway[20]={0};
 uint8_t   mask[20]={0};
 uint8_t   dns[20]={0};
 uint8_t   groupId[20]={0};
-  pb_istream_t requestStream ;//pb_istream_from_buffer((const uint8_t*)pag->POS25V,pag->POS2324L); 
+  pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
   DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
   
   
@@ -192,37 +215,7 @@ BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】groupId        =%s\n",groupId));
    return APP_ERR;
 }
 
-/********************************上行1****************************/
-int UP_Return_Comm( BleProtData *pag, uint8_t status ,uint16_t type )
-{
-    uint8_t pbBuf[100] , msg[256] , size = 0;
-    BytesType B1; 
-    uint8_t back[2][4]={"YES","ERR"};
-    uint8_t *p;
-    DeviceCommonResponse B = DeviceCommonResponse_init_zero; 
-    pb_ostream_t RequestStream = pb_ostream_from_buffer(pbBuf, 100);  
 
-    B.status = status;
-    
-
-    if(status==0)           p = back[0];    
-    else if(status==1)     p = back[1];
-   
-    
-    pb_add_bytes(&B1 , p , strlen((char *)p)); 
-    pb_encode_bytes(&B.reserved , &B1); 
-    
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】UP_Return_Comm=%s\n",p));
-    
-    if( pb_encode_respone(&RequestStream , DeviceCommonResponse_fields , &B) == TRUE)
-    {
-        size = ble_mode_packet(msg ,pbBuf , RequestStream.bytes_written, pag);
-
-        btModule.send(pag->hdr.FormAddr ,pag->hdr.Handle, msg,size);
-    }
-
-    return 1;
-}
 
 uint8_t BleDataHandleDetails(BleProtData *pag)
 { 
@@ -233,11 +226,10 @@ uint8_t BleDataHandleDetails(BleProtData *pag)
         if( pag->cmd == gAppTaskArry[idx].cmd)
         {
             log(INFO,"Bt receive command . cmd = 0X%02X\r\n" ,pag->cmd );
-            //return (gAppTaskArry[idx].EventHandlerFn(pag));               
+            return (gAppTaskArry[idx].EventHandlerFn(pag));               
         }
     }
-    
-    //UP_Return_Comm(pag,0,1);
+
     log(DEBUG,"This command TYP has no register. cmd = 0X%02X\r\n" ,pag->cmd );
     return APP_ERR;
 }

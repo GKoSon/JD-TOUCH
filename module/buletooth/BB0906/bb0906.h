@@ -154,18 +154,6 @@ typedef enum
 }BleRunModeEnum;
 
 
-typedef struct  _bleModuleReceiveData
-{
-    uint8_t     class[4];
-    uint16_t    command;
-    uint8_t     response;
-    uint16_t    length;
-    uint8_t     formAddr[6];
-    uint8_t     crc;
-    uint8_t     cnt;
-    uint8_t     pos;
-}bleModuleReceiveDataType;
-
 typedef struct  _bleModuleReceiveCmd
 {
     uint8_t     class[4];
@@ -187,7 +175,6 @@ typedef struct _bleCmdHandleArry
 }bleCmdHandleArryType;
 
 
-extern QueueHandle_t                xBtOperationQueue;
 
 extern bleReceiveModeEnum           ble_receive_mode;
 extern bleModuleReceiveCmdType      bleModuleReceiveCmd;

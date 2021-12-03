@@ -15,8 +15,6 @@
 #define BLE_CONNECT_MAX_NUM             (2)  
 
 
-
-void Clear_ProtBuf(void);
 void release_sig(void);
 
 
@@ -113,7 +111,7 @@ __packed  typedef struct _BleProtData
       uint8_t  body[BLEMODE_FARM_MAX];
       
       /*前面是协议的头+body 后面是我追加的 主要是方便memcpy( &ble_app[0] ,&BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength); 这里直接把模组的数据 是head+body*/
-      uint16_t alllen;  
+      uint16_t bodylen;  
       AppDataHeardType hdr;//ble_mode_packet 大可不必！！！  9
 }BleProtData;
 

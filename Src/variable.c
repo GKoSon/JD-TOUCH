@@ -18,6 +18,5 @@ uint8_t                                fb[4096]@(0x10001000);
 usartReceiveDataType                receiveData@(0x10002000);//ÐÞ¸ÄRECEIVE_MAX 2048¼õÐ¡
 SystemConfigType                            cfg@(0x10002800);
 char 			        rxOtaData[4096]@(0x10003000);
-
 char	                 mqttSocketBuffer[2048]@(0x10004000);
-BleProtData                              ble_app[2]@(0x10004800);
+BleProtData                          ble_app[2]@(0x10004800);

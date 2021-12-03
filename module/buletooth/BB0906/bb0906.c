@@ -5,23 +5,21 @@
 #include "beep.h"
 
 static uint8_t prefix[] ={0x4C ,0X00,0X02,0X15};
+
 static uint8_t UUID[] = {0x00 ,0x00,0x18,0xF0,0x00,0x00,0x10,0x00,0x80,0x00,0x00,0x80,0x5F,0x9B,0x34,0xFB};
 
 static void *bb0906_port = NULL;
-
 
 static uint8_t  responeTypeMsg[BLE_MODULE_CALSEE_LENG]="itaz";
 
 static bleReceiveModeEnum ble_receive_mode = BLE_DATA_MODE;
 
 static bleModuleReceiveCmdType     bleModuleReceiveCmd;
-static bleModuleReceiveDataType    bleModuleReceiveData;
 
+static uint8_t bleTimerCnt = 0;
 
-static uint32_t bleTimerCnt = 0;
-static uint8_t bleTimerStart = 0;
+static uint8_t  bleTimerStart = 0;
 
-static __IO uint8_t BleConnectCnt = 0;
 
 /*****************************************************************************
 ** 
@@ -33,7 +31,6 @@ static uint8_t ble_get_mac( void *pucdata ,void *pucParma);
 static uint8_t ble_get_version( void *pucdata ,void *pucParma);
 static uint8_t ble_get_work_data( void *pucdata ,void *pucParma);
 static uint8_t ble_get_raw_data( void *pucdata ,void *pucParma);
-static void pb_clear_protocol( void );
 void bb0906_resert( void );
 
 
@@ -59,17 +56,15 @@ void ble_recvive_timer( void )
 {
     if( bleTimerStart )
     {
-        if(bleTimerCnt++ > 10)
+        if(bleTimerCnt++ > 8)
         {
-            pb_clear_protocol();
-            ble_clear_buffer();
+            memset(ble_app , 0x00 , sizeof(BleProtData)*BLE_CONNECT_MAX_NUM);
             memset(&bleModuleReceiveCmd , 0x00 , sizeof(bleModuleReceiveCmdType));
             log(WARN,"[BLE]ble_recvive_timer out clear all\n");
+            ble_clear_timerflag();
         }
     }
 }
-
-
 
 void ble_receive_cmd_process( uint8_t usart_data)
 {
@@ -163,30 +158,17 @@ void ble_receive_cmd_process( uint8_t usart_data)
     }
 }
 
-
-
-static void pb_clear_protocol( void )
-{
-    memset(&bleModuleReceiveData , 0x00 , sizeof(bleModuleReceiveDataType));
-    bleModuleReceiveData.pos =BLE_MODULE_HEARD1_POS;
-    ble_clear_timerflag();
-}
-
-
-
-
 void bleDrv_receive_usart_byte( uint8_t usartData)
 {
 
     bleTimerCnt = 0;
     bleTimerStart = 1;
     if( ble_receive_mode == BLE_DATA_MODE)
-        BleReceiveUsartByteHandle(usartData);
+        ble_receive_data_process(usartData);
     else
         ble_receive_cmd_process(usartData);
 
 }
-
 
 static bleCmdHandleArryType bleCmdTaskArry[]=
 {

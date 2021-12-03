@@ -32,7 +32,7 @@ uint8_t st25WriteISO15693Data(uint8_t* data,uint8_t Length)
       memBlock.actualSize = 4;
       iso15693WriteSingleBlock(&iso15693Cards,Flag,&memBlock);
     }
-    log(INFO,"memBlock.errorCode = %d  \n" , memBlock.errorCode);
+    //log(INFO,"memBlock.errorCode = %d  \n" , memBlock.errorCode);
 
     return err;
 }

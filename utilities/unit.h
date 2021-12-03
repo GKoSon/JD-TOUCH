@@ -172,7 +172,7 @@ void soft_system_resert( const char *funs );
 int memcpy_down( unsigned char *respone, char *data , int length);
 
 #define SHOWME       log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
-#define NEVERSHOW    log(ERR,"\r\n【%d】----*********-----*********-----*********------【%s】\r\n",__LINE__,__func__);
+#define NEVERSHOW    log(ERR,"\r\n----*********-----*********-----*********------*********------【%d】【%s】\r\n",__LINE__,__func__);
 
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
 #define GGMIN(A,B) (A)>(B)?B:A

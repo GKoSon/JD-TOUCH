@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "bb0906_protocol.h"
-#include "EncryDecry.h"
+
 #include "sysCfg.h"
-#include "twinkle.h"
+
 
 
 typedef enum
@@ -22,7 +22,7 @@ typedef enum
 typedef struct _AppHandleArry
 {
     uint8_t cmd;
-    uint8_t (*EventHandlerFn)( BleProtData *pag);
+    uint8_t (*EventHandlerFn)(BleProtData *pag);
 }AppHandleArryType;
 
 

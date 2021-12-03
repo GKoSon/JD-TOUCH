@@ -61,7 +61,7 @@ typedef enum
 
 
 
-extern void BleReceiveUsartByteHandle( uint8_t ucData);
-extern void ble_clear_buffer( void );
-extern void ble_easyclear_buffer( char i );
+extern void ble_receive_data_process( uint8_t ucData);
+
+
 #endif

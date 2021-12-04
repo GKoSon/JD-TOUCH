@@ -570,7 +570,7 @@ taskDISABLE_INTERRUPTS();
                 otaCfg.crc32 = ota.crc32;
                 otaCfg.fileSize = ota.fileSize;
                 otaCfg.otaUpgMark = UPG_MARK;
-                config.write(CFG_SYS_SW_VERSION ,&ota.ver , 0);
+                //config.write(CFG_SYS_SW_VERSION ,&ota.ver , 0);
                 config.write(CFG_OTA_CONFIG     ,&otaCfg , TRUE);
                 return OTA_OK;
             }

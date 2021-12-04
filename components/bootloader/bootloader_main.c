@@ -1019,6 +1019,7 @@ uint8_t bootloader_iap( void )
         log(INFO,"文件校验成功，开始擦写覆盖用户程序\n");
         if( bootload_download_to_flash() == TRUE)
         {
+            cfg.parm.soft_version=cfg.otaVar.ver;
             clear_ota_mark();
             log(INFO,"更新成功\n");
             return TRUE;

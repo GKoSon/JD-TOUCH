@@ -10,3 +10,7 @@
 *.lnp
 *.__i
 *.map
+*.browse
+*.linf
+*.pbw
+*.dep

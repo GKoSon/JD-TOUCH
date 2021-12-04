@@ -474,10 +474,11 @@ char memcpydown(void* Bytes,void* Strings,char len)
 
 //#define INPUT_HEX_NAME "1.hex"
 //#define OUTPUT_BIN_NAME "1.bin"
-const char * INPUT_HEX_NAME = "1.hex";
-const char * OUTPUT_BIN_NAME ="1.bin";
+//const char * INPUT_HEX_NAME = "1.hex";
+const char * INPUT_HEX_NAME = "application.hex";
+const char * OUTPUT_BIN_NAME ="application.bin";
 const char * OUTPUT_ZIP_NAME ="zip.bin";
-const char * OUTPUT_HEADZIP_NAME ="headzip.bin";
+const char * OUTPUT_HEADZIP_NAME ="application.zip";
 void hex2bin(void)
 {
 	FILE *fp1,*fp2; 
@@ -668,14 +669,14 @@ CRC16_CCITT_ONE((uint8_t*)&buffer,lastlen);
     DEBUG_LOG(INFO_DEBUG, ("******1.bin->N.bin*******\r\n"));
 	for( i=0;i<cnt;i++)
 	{	
-        memset(name,0,sizeof(name));
-		sprintf(name,"NO-%02d.bin",i);
-    	lSize = get_filelen(name);
-        DEBUG_LOG(LOG_DEBUG, ("file %s len =%d ",name,lSize));
-        every_bin_len[i]=lSize;//////// 全局
-		memcpy (every_bin_name[i],name,strlen(name));//////// 全局
-		sprintf(every_zip_name[i],"%s%s",name,".zip");
-		DEBUG_LOG(LOG_DEBUG, ("[BINfile %s ZIPfile =%s]\n",every_bin_name[i],every_zip_name[i]));
+    memset(name,0,sizeof(name));
+    sprintf(name,"NO-%02d.bin",i);
+    lSize = get_filelen(name);
+    DEBUG_LOG(LOG_DEBUG, ("file %s len =%d ",name,lSize));
+    every_bin_len[i]=lSize;//////// 全局
+    memcpy (every_bin_name[i],name,strlen(name));//////// 全局
+    sprintf(every_zip_name[i],"%s%s",name,".zip");
+    DEBUG_LOG(LOG_DEBUG, ("[BINfile %s ZIPfile =%s]\n",every_bin_name[i],every_zip_name[i]));
 
 	}
 	all_bin_num=cnt;//////// 全局
@@ -702,7 +703,7 @@ int bin2zip(char *binname,int inlen,char *zipname)
 
     fclose(fpZIP);
 	fclose(fpBIN);
-    DEBUG_LOG(INFO_DEBUG, ("******bin2zip*******\r\n"));
+    DEBUG_LOG(LOG_DEBUG, ("******bin2zip*******\r\n"));
 	return outlen;
 }
 
@@ -747,7 +748,7 @@ void Zip_Head_Handle(void)
 	int	allziplen=0;
     for(i=0; i<all_bin_num; i++) allziplen+=every_zip_len[i];
   
-  DEBUG_LOG(INFO_DEBUG, ("allziplen=%d allbinlen=%d [%d]\r\n",allziplen,allbinlen,(allziplen*100)/allbinlen));
+  DEBUG_LOG(INFO_DEBUG, ("allziplen=%d allbinlen=%d (payoff %d)\r\n",allziplen,allbinlen,(allziplen*100)/allbinlen));
 	fread (data2buf, sizeof(char), allziplen, fpolddel);
 	fwrite(data2buf, sizeof(char), allziplen, fpnewout);	
 	fclose(fpolddel);
@@ -757,18 +758,17 @@ void Zip_Head_Handle(void)
 void Show_Head(void)
 {
     uint8_t	i;
-    printf("Show_Head\r\n");
     DEBUG_LOG(INFO_DEBUG, ("******Show_Head*******\r\n"));
     FILE *fpnewout  =  fopen(OUTPUT_HEADZIP_NAME,    "rb");
-	uint16_t	buf[50];
-	fread (buf, sizeof(uint16_t), 50, fpnewout);
+    uint16_t	buf[50];
+    fread (buf, sizeof(uint16_t), 50, fpnewout);
 
     DEBUG_LOG(INFO_DEBUG, ("1--CRC16    =0X%04X\r\n",buf[0]));
     DEBUG_LOG(INFO_DEBUG, ("2--numofzips=%d\r\n",buf[1]));
     for(i=0;i<buf[1];i++)
-      DEBUG_LOG(INFO_DEBUG, ("【%d】lenofzip=0X%04X \r\n",i,buf[i]));
+    DEBUG_LOG(LOG_DEBUG, ("(%d)lenofzip=0X%04X \r\n",i,buf[i]));
 
-	fclose(fpnewout);
+    fclose(fpnewout);
 }
 /*验证全局CRC16 和分布CRC16 是否相等 JAMES*/
 void Test_crc16(void)
@@ -810,5 +810,7 @@ int main(int argc,char **argv)
 		remove(every_zip_name[i]);
 		remove(every_bin_name[i]);
 	}
+  remove(OUTPUT_ZIP_NAME);
+  
 	return 1;
 }

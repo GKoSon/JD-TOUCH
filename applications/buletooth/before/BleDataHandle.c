@@ -12,13 +12,13 @@
 #include "cmd_pb.h"
 #include "BleProtocol.pb.h"
 
-uint8_t down_device_A9  (BleProtData *pag);
+uint8_t down_device_A9    (BleProtData *pag);
 uint8_t down_device_info  (BleProtData *pag);
 uint8_t down_device_open  (BleProtData *pag);
 AppHandleArryType gAppTaskArry[]={
 {3 , down_device_open  },
 {4 , down_device_info  },
-{5 , down_device_A9 },
+{5 , down_device_A9    },
 };
 
 
@@ -108,6 +108,9 @@ int up_return_comm( BleProtData *pag, uint8_t status)
 uint8_t down_device_A9 (BleProtData *pag)
 {SHOWME
   up_return_comm(pag,0);
+ 
+sys_delay(1000);
+ soft_system_resert(__FUNCTION__);
    return APP_OK;
 }
 
@@ -188,7 +191,7 @@ uint8_t down_device_info (BleProtData *pag)
 {
 uint8_t   name[5]={0};
 uint8_t   code[22]={0};
-uint8_t   mqttServer[30]={0};
+uint8_t   mqttServer[35]={0};
 uint8_t   ntpServer[20]={0};
 uint8_t   ip[20]={0};
 uint8_t   gateway[20]={0};
@@ -229,26 +232,40 @@ BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
 
 
 config.write(CFG_SYS_DEVICE_NAME ,name,0);//前4个hex替换
-config.write(CFG_MQTT_DC ,code,1);//21个char
 
+
+uint8_t *dc;
+config.read(CFG_MQTT_DC , (void **)&dc);
+log(DEBUG,"新下发设备编码 = %s  原始设备编码 = %s\n" , (char*)code,(char*)dc);
+if(aiot_strcmp(dc,code,21))
+{
+  log(DEBUG,"编码一致 啥也不做 \n");;
+} else{
+log(DEBUG,"编码有变 清空本地黑白名单 \n");
+set_clear_flash(FLASH_PERMI_LIST_BIT);
+config.write(CFG_MQTT_DC ,code,1);//21个char
+}
+
+
+/*如果再次安装，devicecode和上次不一样，要把黑白名单和通行组都删掉，如果devicecode一样，就不需要删了*/
 char DeafultPwd[BLE_PASSWORD_LENGTH*2] ={0};
 
 
 sprintf(DeafultPwd,"%d",A.pairPWD);
 memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
 config.write(CFG_PAIR_PWD ,DeafultPwd ,0);
-log_arry(DEBUG,"配对密码 "  ,DeafultPwd,BLE_PASSWORD_LENGTH);
+log_arry(DEBUG,"配对密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
 
 
 sprintf(DeafultPwd,"%d",A.openPWD);
 memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
 config.write(CFG_USER_PWD ,DeafultPwd ,0);
-log_arry(DEBUG,"开门密码 "  ,DeafultPwd,BLE_PASSWORD_LENGTH);
+log_arry(DEBUG,"开门密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
 
 
 config.write(CFG_SYS_OPEN_TIME ,&A.openDelay,0);
 config.write(CFG_SYS_ALARM_TIME ,&A.alarmDelay,0);
-config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,0);
+config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,1);
 
 ip_port_handle(mqttServer);
 
@@ -295,7 +312,7 @@ void ip_port_handle(uint8_t *  sor)
   char *p=0;
   serverAddrType ip_port;
 
-  //printf("input[%s]\r\n",sor); 
+  printf("input[%s]\r\n",sor); 
   if(p = strstr ((const char*)sor,"//"))
     p+=2;
   else

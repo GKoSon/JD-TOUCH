@@ -30,10 +30,19 @@ mqttClientType             client;
 Network                    network;
 uint8_t                    mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
 extern void startota(void);
+extern char *getdeviceCode();
+extern void upuploadDevicever(void) ;
+extern void upuploadDeviceInfo(void) ;
+extern void upfilterRequest(void)  ;
+extern void upkeepAlive(char isr) ;
 
 char suball(void)
 {
     char rc = 0;
+strncat(topicPath1,getdeviceCode(),21);
+strncat(topicPath2,getdeviceCode(),21);
+strncat(topicPath3,getdeviceCode(),21);
+strncat(topicPath4,getdeviceCode(),21);
     rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
     rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
     rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
@@ -78,11 +87,7 @@ void mqtt_login_info( MQTTPacket_connectData *con )
     pack_connect_message(con);
 }
 
-extern char *getdeviceCode();
-extern void upuploadDevicever(void) ;
-extern void upuploadDeviceInfo(void) ;
-extern void upfilterRequest(void)  ;
-extern void upkeepAlive(char isr) ;
+
 
 void BLUE_keep_alive(void)
 {
@@ -115,16 +120,9 @@ static void mqtt_task( void const *pvParameters)
                   mqttRunType = GMQTT_CONNECT_TCP;
                 break;
         case GMQTT_CONNECT_TCP:
-                  /*
-                  //GmakeJson();
-        //          cj_create_uploadAccessLog_card(20190722,1,0,"HELLO",1,2);
-        //          cj_create_uploadAccessLog_pwd (20190722,1,0,2);
-
-                  */
-          
                   if(0==strlen(getdeviceCode()))
                   {
-                    log(WARN , "[MQTT-STA]…–Œ¥∑÷≈‰…Ë±∏±‡¬Î »•ÀØæı\n");
+                    //log(WARN , "[MQTT-STA]…–Œ¥∑÷≈‰…Ë±∏±‡¬Î »•ÀØæı\n");
                     mqttRunType = GMQTT_INIT;
                     break;
                   }

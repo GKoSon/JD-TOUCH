@@ -228,7 +228,7 @@ int FreeRTOS_write(Network* n, unsigned char* buffer, int len, int timeout_ms)
 
     if( sentLen < 0)
     {
-        log(WARN,"Send error =%d\n" , sentLen);
+        //log(WARN,"Send error =%d\n" , sentLen);
     }
 
     return sentLen;

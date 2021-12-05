@@ -51,13 +51,9 @@ int tsl_mqtt_recv_data_handle(mqttClientType* c, uint16_t cmd);
 
 void creat_tsl_mqtt_task( mqttClientType* c);
 
-char * GmakeJson(void);
-
 int GparseJson(const char * pJson);
 
 char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
-char *cj_create_uploadAccessLog_pwd( long openTime,  int passwordType) ;
-
 
 
 extern uint16_t HTTP_packREG(char *out);

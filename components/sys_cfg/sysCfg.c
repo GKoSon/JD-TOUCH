@@ -397,7 +397,7 @@ void show_SH(_SHType *p)
     printf("*********************gup.md5:%d\n",p->gup.md5);
     printf("*********************gup.cnt:%d\n",p->gup.cnt);
     printf("*********************gup.code\n");
-    num = GGMIN(GUPMAX,p->gup.cnt);
+    num = GMIN(GUPMAX,p->gup.cnt);
     for(char i=0;i<num;i++)
     for(char j=0;j<11;j++)
     {
@@ -458,7 +458,13 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         
          case CFG_MQTT_DC:
         {      
-            memcpy(SHType.deviceCode,parma,21);
+           //log(DEBUG,"设置设备编码 = %s  原始设备编码 = %s\n" , (char*)parma,SHType.deviceCode);
+           //if(aiot_strcmp(SHType.deviceCode,parma,21))
+           //{
+           //    log(DEBUG,"编码一致 啥也不做 \n");break;
+           //}
+           memcpy(SHType.deviceCode,parma,21);
+           //log(DEBUG,"编码有变 清空本地黑白名单 \n");
         }break;
                     
         case MQTT_FILTER_SYNCED:
@@ -810,10 +816,10 @@ void sysCfg_init( void )
     {
       log_err("\n************新设备****在此设置缺损值******\n");
 memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void **)&SHType );已经变成全F
-#if 1
-static char * deviceCode   =   "110101001001003102001";//21长!!!!!
+#if 0
+static char * deviceCode   =   "310104004005001101003";//21长!!!!!
 memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
-static char * groupcode    =   "3101040110130060000001";//默认通行组  22
+static char * groupcode    =   "223101040040050010000009";//默认通行组  
 memcpy_down(SHType.gup.code[0],groupcode,22);
 SHType.gup.cnt=1;
 #else
@@ -834,23 +840,23 @@ SHType.gup.cnt=1;
     
     
 /*主题*/  
-    
+#if 0
 log(INFO,"topicPath0 %s\r\n",topicPath0);
 log(INFO,"topicPath1 %s\r\n",topicPath1);
 log(INFO,"topicPath2 %s\r\n",topicPath2);
 log(INFO,"topicPath3 %s\r\n",topicPath3);
 log(INFO,"topicPath4 %s\r\n",topicPath4);
-strncat(topicPath1,"110101001001003102001",21);
-strncat(topicPath2,"110101001001003102001",21);
-strncat(topicPath3,"110101001001003102001",21);
-strncat(topicPath4,"110101001001003102001",21);
+strncat(topicPath1,"310104004005001101003",21);
+strncat(topicPath2,"310104004005001101003",21);
+strncat(topicPath3,"310104004005001101003",21);
+strncat(topicPath4,"310104004005001101003",21);
 log(INFO,"topicPath0 %s\r\n",topicPath0);
 log(INFO,"topicPath1 %s\r\n",topicPath1);
 log(INFO,"topicPath2 %s\r\n",topicPath2);
 log(INFO,"topicPath3 %s\r\n",topicPath3);
 log(INFO,"topicPath4 %s\r\n",topicPath4);
     
-    
+#endif    
     
     sysCfg_print();
 

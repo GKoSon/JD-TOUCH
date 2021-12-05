@@ -19,7 +19,7 @@
 
 xTaskHandle tslMqttTask;
 uint8_t  sendGetTimeTimerHandle = 0xFF;
-#define CLIENT_TOPIC_LEN          70
+#define CLIENT_TOPIC_LEN          80
 int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p) ;
 static char taskID[33]={0};
 enum
@@ -48,25 +48,19 @@ enum
                   cJSON_Delete(pRoot);\
                   return 1;\
               }\
-        }while(0);
-                
+        }while(0); 
+        
         
         
 char *getBleMac() {
-  
     uint8_t *mac;
-
-    config.read(CFG_MQTT_MAC , (void **)&mac);
-        
+    config.read(CFG_MQTT_MAC , (void **)&mac);       
     return (char *)mac;
 }
 
 char *getdeviceCode() {
-  
     uint8_t *dc;
-
-    config.read(CFG_MQTT_DC , (void **)&dc);
-        
+    config.read(CFG_MQTT_DC , (void **)&dc);     
     return (char *)dc;
 }
 
@@ -119,6 +113,8 @@ openType ¿ªÃÅ·½Ê½£º0-Ë¢¿¨£¬1-À¶ÑÀ¿ªÃÅ£¬2-ÈËÁ³¿ªÃÅ£¬3-ÃÜÔ¿¿ªÃÅ£¬4-ºô½Ð¿ªÃÅ£¬5-ÃÅÄ
 openTime ¿ªÃÅÊ±¼ä
 lockStatus ËøµÄ×´Ì¬£º0-¿ª£¬1-¹Ø±Õ
 openResult 0-³É¹¦£¬1-ÎÞÐ§¶þÎ¬Âë , 2-ÎÞÐ§ÓÃ»§
+
+Ôö¼ÓDC ±àÂë
 */
 
 static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) 
@@ -129,6 +125,7 @@ static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char o
 
     root =  cJSON_CreateObject();
 
+    cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
     cJSON_AddNumberToObject(root,"openType", 0);
     cJSON_AddNumberToObject(root,"openTime",(double) openTime*1000);
     cJSON_AddNumberToObject(root,"lockStatus", lockStatus);
@@ -143,9 +140,6 @@ static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char o
     COMMON_END_CODE
 }
 
-
-static char *cj_create_uploadAccessLog_pwd(long openTime,   int passwordType) 
-{return NULL;}
 
 
 static char *cj_create_uploadAccessLog(long openTime,int openType,int Result) 
@@ -306,8 +300,8 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
         
      char *send = cj_create_uploadAccessLog_card(openTime,lockStatus, openResult,cardNo, cardType,cardIssueType);
 
-    //sprintf(topicPath,"%s%s","/client/uploadAccessLog/",getBleMac());
-    memcpy(clientTopic,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
+    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());
+    //memcpy(clientTopic,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
     //strcat(topicPath,getBleMac());
    
     log(DEBUG,"topicPath¡¾%s¡¿[%s]\n",clientTopic,send);
@@ -318,18 +312,6 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
     log(DEBUG,"clientTopic ¡¾%s¡¿[%s]\n",clientTopic,send);
 }
 
-
-
-void upuploadAccessLog_pwd(long openTime,  int passwordType) 
-{       
-    SHOWME
-    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN); 
-    char *send = cj_create_uploadAccessLog_pwd( openTime,   passwordType) ;
-    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());
-    printf("clientTopic:%s\r\n",clientTopic);
-    mqtt_send_publish(&client, (uint8_t *)clientTopic, (uint8_t *)send, strlen(send), QOS1, 0);
-    journal.send_queue(LOG_DEL , 0);
-}
 
 void upuploadAccessLog_indoor(long openTime) 
 {       
@@ -376,6 +358,7 @@ void upfilterRequest(void)
     
     log(INFO,"topicPath¡¾%s¡¿[%s]\n",topicPath,send);
 }
+
 
 void upkeepAlive(char isr) 
 {
@@ -482,26 +465,26 @@ void downdispatchFilterItem(char *p)
         
         if(cj_parse_dispatchFilterItem(p,&item)) return;
 
-        log(DEBUG,"½Óµ½ºÚ°×Ãûµ¥ÃüÁî[cnt=%d],item.cardNo=%s , item.authEndTime=%ld , item.filterType=%d(0:Ôö¼ÓºÚÃûµ¥£¬2£ºÔö¼Ó°×Ãûµ¥£¬1&3:É¾³ýÃûµ¥)\n" ,++cnt,item.cardNo , item.authEndTime ,item.filterType  );
+        log(DEBUG,"½Óµ½ºÚ°×Ãûµ¥ÃüÁî[cnt=%d],item.cardNo=%s , item.authEndTime=%ld , item.filterType=%d(1: ÐÂÔöºÚÃûµ¥£¬2: É¾³ýºÚÃûµ¥ 3: ÐÂÔö°×Ãûµ¥£¬4: È¡Ïû°×Ãûµ¥)\n" ,++cnt,item.cardNo , item.authEndTime ,item.filterType  );
         list.ID = atol64((char*)item.cardNo);
         list.time = item.authEndTime;
 
                 
         switch( item.filterType )
         {
-            case 0:
+            case 1:
             {
                 list.status = LIST_BLACK;
                 userListResault = permi.add(&list);
             }break;
-            case 2:
+            case 3:
             {
                 list.status = LIST_WRITE;
                 userListResault = permi.add(&list);
             }break;
 
-            case 1:
-            case 3:
+            case 2:
+            case 4:
             {
                 userListResault = permi.del(list.ID);
             }break;

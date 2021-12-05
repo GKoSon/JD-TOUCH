@@ -261,7 +261,7 @@ uint8_t gsm_module_init( void )
 
         case GSM_READ_SIM:
         {
-            log(DEBUG,"读取SIM卡\n");
+            log(DEBUG,"读取SIM卡[我的18818209416在这里失败 可能设置PIN 871314了]\n");
             //gsmRunStatus = ( gsm_send_command("AT+CPIN?\r\n" , strlen("AT+CPIN?\r\n") , 1000 , 30 , "\r\n+CPIN: READY\r\n") == FALSE)?GSM_POWER_OFF:GSM_READ_CSQ;
             gsm_assert(gsm_send_command("AT+CPIN?\r\n" , strlen("AT+CPIN?\r\n") , 1000 , 15 , "\r\n+CPIN: READY\r\n"),GSM_READ_CSQ);
         }break;
@@ -276,7 +276,7 @@ uint8_t gsm_module_init( void )
         }break;
         case GSM_READ_NET:
         {
-            log(DEBUG,"读取网络注册状态\n");
+            log(DEBUG,"读取网络注册状态[物联网卡在这里失败 可能没有激活]\n");
             //gsmRunStatus = ( gsm_send_command("AT+CREG?\r\n" , strlen("AT+CREG?\r\n") , 1000 , 30 , "\r\n+CREG: 0,1\r\n") == FALSE)?GSM_POWER_OFF:GSM_READ_GPRS;
             gsm_assert(gsm_send_command("AT+CREG?\r\n" , strlen("AT+CREG?\r\n") , 1000 , 30 , "\r\n+CREG: 0,1\r\n"),GSM_READ_GPRS);
         }break;

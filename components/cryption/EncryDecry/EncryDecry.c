@@ -186,12 +186,12 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
   /*维持原UID*/
   //for(i=0;i<8;i++) key[i]=Key[i];
   /*翻转*/
-  for(i=0;i<8;i++) key[i]=Key[7-i];
+  //for(i=0;i<8;i++) key[i]=Key[7-i];
   /*翻转*/
-  //memcpy_up(tem,Key,8);
-  //for(i=0;i<16;i++) tem2[i]=tem[15-i];
-  //printf("Decryptionr key[%.16s]\r\n",tem2);
-  //memcpy_down(key,tem2,16);
+  memcpy_up(tem,Key,8);
+  for(i=0;i<16;i++) tem2[i]=tem[15-i];
+  printf("Decryptionr key[%.16s]\r\n",tem2);
+  memcpy_down(key,tem2,16);
   log_arry(DEBUG,"[CARD]key,UID" , key , 8);
   for(i=0;i<8;i++)
   {

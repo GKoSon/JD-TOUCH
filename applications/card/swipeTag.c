@@ -206,7 +206,7 @@ void SHANGHAISHOW(shanghaicardtype *p)
 {
     char i,j;
     printf("p->head.class = %02X[00--A901 02--A902  03--rainbow]\r\n",p->head.class);
-    printf("p->head.type = %02X[00--TEMP_TAG 01--USER_TAG 03--MANAGENT_TAG]\r\n",p->head.type);
+    printf("p->head.type = %02X[临时-0x00 居民-0x02 管理员-0x03]\r\n",p->head.type);
     printf("p->uid:");
     for(i=0;i<4;i++) printf("%02X ",p->head.uid[i]);
     printf("\r\n");
@@ -239,7 +239,7 @@ uint8_t checkpowerinfo(shanghaicardtype *p)
     switch(p->head.type)
     {
         case 0X00:return TEMP_TAG;
-        case 0X01:return USER_TAG;
+        case 0X02:return USER_TAG;
         case 0X03:return MANAGENT_TAG;       
     }
     return INIT_TAG;

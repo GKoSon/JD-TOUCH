@@ -30,6 +30,8 @@ uint8_t tag_verify_group1(shanghaicardtype *p)
                                    return TAG_SUCESS;  
                                 }
 				log_err("【CARD】【card %d】【device %d】\r\n",i,j);
+                                
+                                log_arry(DEBUG,"设备同行组"  ,SHType.gup.code[j],11);
 			} 
 			
 		}
@@ -132,7 +134,7 @@ uint8_t tag_shanghai_user_process( tagBufferType *tag)
 
 uint8_t tag_shanghai_card_process( tagBufferType *tag)
 {
-    log_err("tag_shanghai_card_process, POWER = %d(2-USER_TAG 3-MANAGENT_TAG 4-TEMP_TAG 8-CONFIG_TAG)\r\n" , tag->tagPower);
+    log_err("tag_shanghai_card_process, POWER = %d(临时-0x00 居民-0x02 管理员-0x03)\r\n" , tag->tagPower);
     
     
     switch(tag->tagPower)

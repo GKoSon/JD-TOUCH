@@ -441,11 +441,10 @@ void journal_start_send_timer( void )
 
 
 extern void upuploadAccessLog_indoor(long openTime) ;
-extern void upuploadAccessLog_pwd (long openTime,    int passwordType) ;
 extern void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
 uint8_t journal_puck_string(openLogType *openlog , uint8_t *sendBuff)
 {
-        uint32_t openTime = openlog->hdr.openTime;
+    uint32_t openTime = openlog->hdr.openTime;
     switch(openlog->hdr.openType)
     {
  
@@ -479,26 +478,6 @@ uint8_t journal_puck_string(openLogType *openlog , uint8_t *sendBuff)
       case OPEN_FOR_PWD:
       case OPEN_FOR_ONCE_PWD:
     {
-
-          
-          int passwordType=0;
-          uint8_t *userPwd;
-          config.read(CFG_USER_PWD , (void **)&userPwd );
-          openLogUsePwdDataType pwdData;
-
-          memcpy(&pwdData , openlog->data , sizeof(openLogUsePwdDataType));
-
-
-          if( pwdData.pwdLength == 4)
-            passwordType = 0;
-          else if(aiot_strcmp(pwdData.password , userPwd , 3) == TRUE )
-            passwordType = 1;
-          else 
-            passwordType = 2;
-
-          //memcpy(&openTime,&openlog->data[6],4);
-          printf("==´ò°üOPEN_FOR_PWD==\r\n");
-          upuploadAccessLog_pwd(openTime,passwordType); 
 
     }break;
     case OPEN_FOR_APP_REMOTE:

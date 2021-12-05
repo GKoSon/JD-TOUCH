@@ -43,8 +43,10 @@ uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)
 }
 
 //0XAB-->"AB" 长度会扩大一倍！注意：0没有结束符
-void memcpy_up(unsigned char* strings,unsigned char* bytes,unsigned char len)
+void memcpy_up(void* Strings,void* Bytes,unsigned char len)
 {
+   unsigned char* strings = (unsigned char*)Strings;
+   unsigned char* bytes   = (unsigned char*)Bytes;
     unsigned char const StrRefer[]="0123456789abcdef";//"0123456789ABCDEF";
     #define GET_MSB_STR(x) (StrRefer[((x>>4)&0x0f)])
     #define GET_LSB_STR(x) (StrRefer[(x&0x0f)])
@@ -208,9 +210,10 @@ unsigned char str_to_int(unsigned char dData)
 }
 
 /*"1234"---->0X12 0X34  参数3一般是strlen*/
-int memcpy_down( unsigned char *respone, char *data , int length)
+int memcpy_down( void *Respone, void *Data , int length)
 {
-
+    unsigned char *respone=(unsigned char *)Respone;
+    char *data             =(char *)Data;
     if(length%2 != 0)    return -1;
 
     for( int i = 0 ; i < length/2 ;i++)

@@ -1,0 +1,32 @@
+整理一下系统存储的逻辑
+
+全局任务最后维护一个全局变量
+clearFlashFlag
+因为它是放在死循环里面的 可以ifelse一直执行的 不会丢失bit
+__IO uint32_t       clearFlashFlag = 0;
+
+    for(;;)
+    {
+ 
+        if( clearFlashFlag )
+        {
+            if( clearFlashFlag & FLASH_PERMI_LIST_BIT)
+            {
+                permi.clear();
+                clearFlashFlag &= ~FLASH_PERMI_LIST_BIT;
+            }
+            if( clearFlashFlag & FLASH_ALL_DATA)
+            {
+				device_set_default();
+                //clearFlashFlag &= ~FLASH_ALL_DATA;
+            }
+            
+        }
+        
+        
+        给出的接口是
+        
+            	log(INFO,"安装位置有变化，清楚黑白名单和一次性密码信息\n");
+    	set_clear_flash(FLASH_PERMI_LIST_BIT|FLASH_PWD_BIT);
+        
+        这样就是前后

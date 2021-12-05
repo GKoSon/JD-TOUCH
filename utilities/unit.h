@@ -153,10 +153,6 @@ void read_task_stack( char const *name , xTaskHandle taskHandle);
 
 void sys_delay(uint32_t ms);
 
-
-unsigned char str_to_int(unsigned char dData);
-
-
 uint64_t atol64( char *str);
 
 void log_arry(uint32_t level ,unsigned char *pst , unsigned char *arry , unsigned int leng);
@@ -169,23 +165,21 @@ void soft_system_resert( const char *funs );
 
 #define GMIN(a,b)  ((a)<(b))?(a):(b) 
 
-int memcpy_down( unsigned char *respone, char *data , int length);
-
 #define SHOWME       log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
 #define NEVERSHOW    log(ERR,"\r\n----*********-----*********-----*********------*********------【%d】【%s】\r\n",__LINE__,__func__);
 
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range);
-#define GGMIN(A,B) (A)>(B)?B:A
 
+int memcpy_down( void *respone, void *data , int length);
 
-void memcpy_up(unsigned char* strings,unsigned char* bytes,unsigned char len);
+void memcpy_up(void* strings, void* bytes,unsigned char len);
 
 uint8_t mycrc8(uint8_t *ps1,uint8_t uLen);
 
 unsigned short CRC16_CCITT(unsigned char *puchMsg, unsigned int usDataLen) ;
 
-
 uint8_t bcd_to_bin(uint8_t bcd);
+
 #define GMAX_LEN_TOPIC        55/* 文本最长33 + 点码是22 那就是55 */
 extern char topicPath0[];
 extern char topicPath1[GMAX_LEN_TOPIC];

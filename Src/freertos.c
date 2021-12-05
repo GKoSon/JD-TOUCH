@@ -246,21 +246,15 @@ void show_no_feed_task( uint32_t bits )
     printf("\r\n");
 }
 
-void device_set_default( char flag )
+void device_set_default( void )
 {
 
     err_log_format();
     permi.clear();
     journal.clear();
 
-    if(flag)
-      config.write(CFG_SET_RESTORE , NULL , FALSE);
-    else 
-    {
-      config.write(CFG_NOTHING , NULL , TRUE);
-      sys_delay(400);
-      soft_system_resert(__func__);
-    }
+    config.write(CFG_SET_RESTORE , NULL , FALSE);
+      //soft_system_resert(__func__);
 }
 
 
@@ -379,20 +373,15 @@ void main_task(void const * argument)
         }
         if( clearFlashFlag )
         {
-            if( clearFlashFlag == FLASH_ALL_DATA)
+            if( clearFlashFlag & FLASH_PERMI_LIST_BIT)
             {
-                device_set_default(1);
-            }
-            else if( clearFlashFlag == FLASH_ALL_BIT_BUT_CFG)
+                permi.clear();
+                clearFlashFlag &= ~FLASH_PERMI_LIST_BIT;
+            } else  if( clearFlashFlag == FLASH_ALL_DATA)
             {
-                device_set_default(0);
-            }
-            else if( clearFlashFlag == FLASH_PERMI_LIST_BIT)
-            {
-                permi.clear();     
-            }
-
-            clearFlashFlag = 0;
+                device_set_default();
+                clearFlashFlag = 0;
+            }  
 
         }
         //read_task_stack(__func__,mainHandle);

@@ -12,8 +12,8 @@
 
 #define FLASH_ALL_DATA          0X0001
 #define FLASH_PERMI_LIST_BIT    0x0002
-#define    FLASH_PWD_BIT            0x0004
-#define FLASH_ALL_BIT_BUT_CFG   0x0008 
+#define FLASH_PWD_BIT           0x0004
+
 
 
 #define TASK_CONSOLE_BIT        0x0001

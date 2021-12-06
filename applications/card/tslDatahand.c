@@ -7,8 +7,6 @@
 #include "unit.h"
 #include "beep.h"
 
-
-
 extern _SHType SHType; 
 
 uint8_t tag_verify_group1(shanghaicardtype *p)
@@ -19,8 +17,8 @@ uint8_t tag_verify_group1(shanghaicardtype *p)
 	{
 		if( p->body[i].crc)
 		{
-			level = p->body[i].power;
-			printf("level = p->p->body[%d].power=%d\r\n",i,level);		
+			//level = p->body[i].power;
+			//printf("level = p->p->body[%d].power=%d\r\n",i,level);		
 			
 			for(j=0;j<SHType.gup.cnt;j++)
 			{
@@ -29,16 +27,18 @@ uint8_t tag_verify_group1(shanghaicardtype *p)
                                    log_err("【CARD】YES!\r\n");
                                    return TAG_SUCESS;  
                                 }
-				log_err("【CARD】【card %d】【device %d】\r\n",i,j);
+				log_err("【CARD】(card %d vs device %d)",i,j);
                                 
                                 log_arry(DEBUG,"设备同行组"  ,SHType.gup.code[j],11);
 			} 
+                        printf("\r\n");
 			
 		}
 	}
   return  TAG_COMM_ERR;
 
 }
+
 uint8_t tag_verify_group2(shanghaicardtype *p)
 {
     uint8_t i,j,devicegupcode[22],cardgupcode[22];
@@ -57,9 +57,11 @@ uint8_t tag_verify_group2(shanghaicardtype *p)
                                    log_err("【CARD】YES!\r\n");
                                    return TAG_SUCESS;  
                                 }
-				log_err("【CARD】【card %d】【device %d】\r\n",i,j);
+				log_err("【CARD】(card %d vs device %d)",i,j);
+                                
+                                log_arry(DEBUG,"设备同行组"  ,SHType.gup.code[j],11);
 			} 
-			
+			printf("\r\n");
 		}
 	}
   return  TAG_COMM_ERR;
@@ -86,8 +88,8 @@ uint8_t tag_verify_time(shanghaicardtype *p)
           /*make a flag*/
 	  p->body[i].crc = (DateInCard >= DateInSys )?1:0;
 	  
-         printf("sys :%X--%X--%X  <-----pk----->  card:%X--%X--%X\n",time.year,time.mon,time.day,p->body[i].endtime[0],p->body[i].endtime[1],p->body[i].endtime[2]);
-         printf("DateInSys:%X  <-----pk-----> DateInCard:%X\n",DateInSys,DateInCard);
+         printf("sys :0X%X:%X:%X        card:0x%X:%X:%X\n",time.year,time.mon,time.day,p->body[i].endtime[0],p->body[i].endtime[1],p->body[i].endtime[2]);
+         printf("DateInSys:%X            DateInCard:%X\n",DateInSys,DateInCard);
       }
     }
     
@@ -101,7 +103,7 @@ uint8_t tag_verify_time(shanghaicardtype *p)
            printf("【CARD】All time FAILED\r\n");
 	   return 1;
     }
-    printf("【CARD】time ok ! gup have %d info\r\n", p->head.crc);
+    printf("【CARD】time ok ! card  have %d gup\r\n", p->head.crc);
     return 0;
 }
 
@@ -118,18 +120,18 @@ uint8_t tag_shanghai_user_process( tagBufferType *tag)
         return tag_verify_group2(p);
     }
     uint8_t deviceLockMode = config.read(CFG_SYS_LOCK_MODE , NULL);
-    if(deviceLockMode==1)
+    if(deviceLockMode==0)//0:单元机  1：围墙机 2：多围墙 
     {
         log_err("【CARD】This is menkouji [22same]!\r\n");
         return tag_verify_group1(p);
     } 
-    else //if(deviceLockMode==2)
+    else if(deviceLockMode==1)
     {
 
         log_err("【CARD】This is weiqiangji [15same]!\r\n");
         return tag_verify_group2(p);
     } 
-
+  return  TAG_COMM_ERR;
 }
 
 uint8_t tag_shanghai_card_process( tagBufferType *tag)

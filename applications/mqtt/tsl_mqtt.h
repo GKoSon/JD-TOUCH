@@ -36,7 +36,6 @@ typedef struct _mqttRecvMsgType
 } mqttRecvMsgType;
 
 
-
 typedef struct
 {
     uint8_t msgType;
@@ -51,15 +50,8 @@ int tsl_mqtt_recv_data_handle(mqttClientType* c, uint16_t cmd);
 
 void creat_tsl_mqtt_task( mqttClientType* c);
 
-int GparseJson(const char * pJson);
-
 char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
 
 
-extern uint16_t HTTP_packREG(char *out);
-extern uint16_t HTTP_packUP(char *out);
-extern uint16_t HTTP_packDEL(char *out);
-extern uint16_t HTTP_packCANREG(char *out);
-extern char    HTTP_checkack(char *in);
 #endif
 

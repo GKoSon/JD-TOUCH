@@ -166,6 +166,7 @@ static void mqtt_send_task( void const *pvParameters)
     client = (mqttClientType *)pvParameters;
 
     memset(&msg , 0x00 , sizeof(mqttSendMsgType));
+    
     while(1)
     {
         if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
@@ -181,7 +182,7 @@ static void mqtt_send_task( void const *pvParameters)
             }
             else
             {
-                log(INFO,"[mqtt_send_task]网络未连接\n");
+                log(INFO,"[mqtt_send_task]网络未连接 mqtt_network_normal\n",);
             }
             memset(&msg , 0x00 , sizeof(mqttSendMsgType));
         }
@@ -917,7 +918,7 @@ int mqtt_disconnect(mqttClientType* c)
     {
         if ((rc = mqtt_send_packet(c, buff , len)) != MQTT_SUCCESS) // send the publish packet
         {
-            log(WARN,"MQTT 发布发送数据失败,err = %d\n" , len);
+            //log(WARN,"MQTT 发布发送数据失败,err = %d\n" , len);
         }
     }
     
@@ -966,10 +967,10 @@ uint8_t GettopicNo(char *topicName)
   else if(aiot_strcmp(( unsigned char *)topicPath2,( unsigned char *)topicName,30)) return 2;
   else if(aiot_strcmp(( unsigned char *)topicPath3,( unsigned char *)topicName,30)) return 3;
   else if(aiot_strcmp(( unsigned char *)topicPath4,( unsigned char *)topicName,30)) return 4;
-  return 44;
+  return -1;
 }
 
-//extern uint8_t    COMMONSTATIC[1024];
+
 void mqtt_message_arrived(void *client , MessageData* data)
 {
     mqttRecvMsgType p;

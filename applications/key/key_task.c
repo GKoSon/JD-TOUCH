@@ -90,7 +90,7 @@ static void key_task( void const *pvParameters)
     while(1)
     { 
  
-        if(xQueueReceive( xKeyQueue, &key, 1000 ) == pdTRUE)
+        if(xQueueReceive( xKeyQueue, &key, 1000) == pdTRUE)
         {
             key_handle(&key);
             memset(&key,0x00,sizeof(keyTaskType));

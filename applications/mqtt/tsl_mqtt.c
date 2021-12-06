@@ -31,13 +31,12 @@ enum
   MQOTA,
 };
 
-
+  /*  printf("\r\n\r\n【%s】【%d】\r\n\r\n", outStr,strlen(outStr));\ */
 #define COMMON_END_CODE   \
     outStr = cJSON_Print(root);  \
     cJSON_Delete(root);\
     if(strlen(outStr) < 10)\
       soft_system_resert(__FUNCTION__);\
-    printf("\r\n\r\n【%s】【%d】\r\n\r\n", outStr,strlen(outStr));\
     return outStr;\
 
         
@@ -142,7 +141,7 @@ static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char o
 
 
 
-static char *cj_create_uploadAccessLog(long openTime,int openType,int Result) 
+static char *cj_create_uploadAccessLog_Indoor(long openTime,int openType,int Result) 
 {  return NULL;}
 
 
@@ -301,10 +300,7 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
      char *send = cj_create_uploadAccessLog_card(openTime,lockStatus, openResult,cardNo, cardType,cardIssueType);
 
     sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());
-    //memcpy(clientTopic,"/client/uploadAccessLog/",strlen("/client/uploadAccessLog/"));
-    //strcat(topicPath,getBleMac());
    
-    log(DEBUG,"topicPath【%s】[%s]\n",clientTopic,send);
     mqtt_send_publish(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
         
     journal.send_queue(LOG_DEL , 0);
@@ -317,9 +313,8 @@ void upuploadAccessLog_indoor(long openTime)
 {       
     SHOWME
     char clientTopic[50];    memset(clientTopic,0,50); 
-    char *send = cj_create_uploadAccessLog(openTime,5,0);
-    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());   
-    printf("clientTopic:%s\r\n",clientTopic);
+    char *send = cj_create_uploadAccessLog_Indoor(openTime,5,0);
+    sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());      
     mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);   
     journal.send_queue(LOG_DEL , 0);
 }
@@ -788,17 +783,10 @@ static char downGupcode(char *pJson)
 }
 
 
-
-
-
-
-
 int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p) 
 {
-    if(p->topicNo==44) { log(ERR,"[MQTT-TSL]该主题没有预定\n",); return MQTT_RECV_SUCCESS; }
 
-    printf("[MQTT-TSL]收到主题 ￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥%d(enum{MQTIME,MQCTL,MQBWLIST,MQGUP,MQOTA,})\r\n",p->topicNo);
-    
+    log(ERR,"[MQTT-TSL]收到主题 %d(enum{MQTIME,MQCTL,MQBWLIST,MQGUP,MQOTA,})\r\n",p->topicNo);
     switch(p->topicNo)
     {
        case MQTIME:

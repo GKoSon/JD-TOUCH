@@ -590,7 +590,7 @@ void log_task( void const *pvParameters )
 
     while(1)
     {
-        if(xQueueReceive( xLogQueue, &pst, 1000 ) == pdTRUE)
+        if(xQueueReceive( xLogQueue, &pst, 1000) == pdTRUE)
         {
             switch(pst.cmd)
             {
@@ -603,13 +603,12 @@ void log_task( void const *pvParameters )
                     journal_del(sendPos);
                     journal_send_queue(LOG_SEND,0);
                 }
-                        else
-                        {
-                          /*当初设计是 TX RX 序号一致 才执行del  现在我们只有TX 没有RX 也就无所谓了 一旦TX 就可DEL*/
-                          /*journalSn 没有意义*/
-                          // log(WARN,"sequenceId  和 return id错误 , sequenceId=%d ,get id=%d\n" , sequenceId , pst.sn);
-                          // sequenceId = 0;
-                        }
+                else {
+                  /*当初设计是 TX RX 序号一致 才执行del  现在我们只有TX 没有RX 也就无所谓了 一旦TX 就可DEL*/
+                  /*journalSn 没有意义*/
+                  // log(WARN,"sequenceId  和 return id错误 , sequenceId=%d ,get id=%d\n" , sequenceId , pst.sn);
+                  // sequenceId = 0;
+                }
                 break;
                 case LOG_SEND:
                         log(DEBUG,"接到发送LOG命令， get sn =%d ,device sn = %d\n" , pst.sn , journalSn);
@@ -625,7 +624,6 @@ void log_task( void const *pvParameters )
             memset(&pst , 0x00 , sizeof(journalTaskQueueType));
         }
         task_keep_alive(TASK_LOG_BIT);
-
     }
 }
 

@@ -134,7 +134,7 @@ void test_my(void)
 {
 char A[6]={"123456"};
 memcpy_down(A,A,strlen(A));
-log_arry(DEBUG,"A" ,A , 6);
+log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
 
 char B[3]={0xAB,0XCD,0XEF};
 memcpy_up(A,B,3);
@@ -145,7 +145,7 @@ int C=654321;//-->0X65 0X43 0X21
 sprintf(A,"%d",C);
 printf("[%.6s]\r\n",A);
 memcpy_down(A,A,strlen(A));
-log_arry(DEBUG,"A" ,A , 6);
+log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
 }
 
 

@@ -7,6 +7,7 @@
 uint32_t    sysDebugFlag = 0xFF;
 
 char wrirenfc =0;
+char diyota =0;
 /*时间*/
 /*控制*/
 /*黑白名单*/
@@ -254,20 +255,20 @@ uint64_t atol64( char *str)
 
 void sys_delay(uint32_t ms)
 {
-
-    if(ms < 500)
+#define STEP 200
+    if(ms < STEP)
     {
         osDelay(ms);
     }
     else
     {
-        for(uint16_t i = 0 ; i <  ms/500 ; i++)
+        for(uint16_t i = 0 ; i <  ms/STEP ; i++)
         {
-            osDelay(500);
+            osDelay(STEP);
             HAL_IWDG_Refresh(&hiwdg);
             task_keep_alive(TASK_ALL_BIT); 
         }
-        osDelay( ms%500);
+        osDelay( ms%STEP);
         HAL_IWDG_Refresh(&hiwdg);
         task_keep_alive(TASK_ALL_BIT); 
         

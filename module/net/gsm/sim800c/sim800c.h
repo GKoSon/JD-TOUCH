@@ -73,8 +73,8 @@ typedef enum
 
 extern devComType gsm;
 
-int8_t gsm_http_download_file ( uint8_t *fineName );
-void gsm_http_close( void );
+
+
 void gsm_close( void );
 
 #endif

@@ -107,11 +107,14 @@ int up_return_comm( BleProtData *pag, uint8_t status)
 
 uint8_t down_device_A9 (BleProtData *pag)
 {SHOWME
+  
   up_return_comm(pag,0);
- 
-sys_delay(1000);
- soft_system_resert(__FUNCTION__);
-   return APP_OK;
+
+  sys_delay(3000);
+  
+  soft_system_resert(__FUNCTION__);
+  
+  return APP_OK;
 }
 
 
@@ -189,88 +192,88 @@ message DeviceSetDeviceNameRequest {
 */
 uint8_t down_device_info (BleProtData *pag)
 {
-uint8_t   name[5]={0};
-uint8_t   code[22]={0};
-uint8_t   mqttServer[35]={0};
-uint8_t   ntpServer[20]={0};
-uint8_t   ip[20]={0};
-uint8_t   gateway[20]={0};
-uint8_t   mask[20]={0};
-uint8_t   dns[20]={0};
+    uint8_t   name[16]={0};
+    uint8_t   code[22]={0};
+    uint8_t   mqttServer[35]={0};
+    uint8_t   ntpServer[20]={0};
+    uint8_t   ip[20]={0};
+    uint8_t   gateway[20]={0};
+    uint8_t   mask[20]={0};
+    uint8_t   dns[20]={0};
 
-pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
-DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
-  
-  
-pb_decode_bytes(&A.name , name);
-pb_decode_bytes(&A.code , code);
-pb_decode_bytes(&A.mqttServer , mqttServer);
-pb_decode_bytes(&A.ntpServer , ntpServer);
-pb_decode_bytes(&A.ip , ip);
-pb_decode_bytes(&A.gateway , gateway);
-pb_decode_bytes(&A.mask , mask);
-pb_decode_bytes(&A.dns , dns);
+    pb_istream_t requestStream = pb_istream_from_buffer((const uint8_t*)pag->body,pag->bodylen); 
+    DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
+      
+      
+    pb_decode_bytes(&A.name , name);
+    pb_decode_bytes(&A.code , code);
+    pb_decode_bytes(&A.mqttServer , mqttServer);
+    pb_decode_bytes(&A.ntpServer , ntpServer);
+    pb_decode_bytes(&A.ip , ip);
+    pb_decode_bytes(&A.gateway , gateway);
+    pb_decode_bytes(&A.mask , mask);
+    pb_decode_bytes(&A.dns , dns);
 
   if(pb_decode(&requestStream, DeviceSetDeviceNameRequest_fields, &A) == TRUE )		
   {	
-BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openPWD        =%d\n",A.openPWD));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openDelay      =%d\n",A.openDelay));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】alarmDelay     =%d\n",A.alarmDelay));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】installPurpose =%d\n",A.installPurpose));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mqttServer     =%s\n",mqttServer));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ntpServer      =%s\n",ntpServer));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】isdhcp         =%d\n",A.isdhcp));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
-BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openPWD        =%d\n",A.openPWD));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openDelay      =%d\n",A.openDelay));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】alarmDelay     =%d\n",A.alarmDelay));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】installPurpose ----------------------------=%d\n",A.installPurpose));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mqttServer     =%s\n",mqttServer));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ntpServer      =%s\n",ntpServer));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】isdhcp         =%d\n",A.isdhcp));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
+    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
 
 
 
-config.write(CFG_SYS_DEVICE_NAME ,name,0);//前4个hex替换
+//config.write(CFG_SYS_DEVICE_NAME ,name,0);//前4个hex替换 暂时不处理 名字乱码
 
 
-uint8_t *dc;
-config.read(CFG_MQTT_DC , (void **)&dc);
-log(DEBUG,"新下发设备编码 = %s  原始设备编码 = %s\n" , (char*)code,(char*)dc);
-if(aiot_strcmp(dc,code,21))
-{
-  log(DEBUG,"编码一致 啥也不做 \n");;
-} else{
-log(DEBUG,"编码有变 清空本地黑白名单 \n");
-set_clear_flash(FLASH_PERMI_LIST_BIT);
-config.write(CFG_MQTT_DC ,code,1);//21个char
-}
+    uint8_t *dc;
+    config.read(CFG_MQTT_DC , (void **)&dc);
+    log(DEBUG,"新下发设备编码 = %s  原始设备编码 = %s\n" , (char*)code,(char*)dc);
+    if(aiot_strcmp(dc,code,21))
+    {
+      log(DEBUG,"编码一致 啥也不做 \n");;
+    } else{
+    log(DEBUG,"编码有变 清空本地黑白名单 \n");
+      set_clear_flash(FLASH_PERMI_LIST_BIT);
+      config.write(CFG_MQTT_DC ,code,1);//21个char
+    }
 
 
-/*如果再次安装，devicecode和上次不一样，要把黑白名单和通行组都删掉，如果devicecode一样，就不需要删了*/
-char DeafultPwd[BLE_PASSWORD_LENGTH*2] ={0};
+      /*如果再次安装，devicecode和上次不一样，要把黑白名单和通行组都删掉，如果devicecode一样，就不需要删了*/
+      char DeafultPwd[BLE_PASSWORD_LENGTH*2] ={0};
 
 
-sprintf(DeafultPwd,"%d",A.pairPWD);
-memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
-config.write(CFG_PAIR_PWD ,DeafultPwd ,0);
-log_arry(DEBUG,"配对密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
+      sprintf(DeafultPwd,"%d",A.pairPWD);
+      memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
+      config.write(CFG_PAIR_PWD ,DeafultPwd ,0);
+      log_arry(DEBUG,"配对密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
 
 
-sprintf(DeafultPwd,"%d",A.openPWD);
-memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
-config.write(CFG_USER_PWD ,DeafultPwd ,0);
-log_arry(DEBUG,"开门密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
+      sprintf(DeafultPwd,"%d",A.openPWD);
+      memcpy_down(DeafultPwd,DeafultPwd,strlen(DeafultPwd));
+      config.write(CFG_USER_PWD ,DeafultPwd ,0);
+      log_arry(DEBUG,"开门密码 "  ,(uint8_t *)DeafultPwd,BLE_PASSWORD_LENGTH);
 
 
-config.write(CFG_SYS_OPEN_TIME ,&A.openDelay,0);
-config.write(CFG_SYS_ALARM_TIME ,&A.alarmDelay,0);
-config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,1);
+      config.write(CFG_SYS_OPEN_TIME ,&A.openDelay,0);
+      config.write(CFG_SYS_ALARM_TIME ,&A.alarmDelay,0);
+      config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,1);
 
-ip_port_handle(mqttServer);
+      ip_port_handle(mqttServer);
 
-    up_return_comm(pag,0);
-    return APP_OK;
+      up_return_comm(pag,0);
+      return APP_OK;
   }
   
   return APP_ERR;

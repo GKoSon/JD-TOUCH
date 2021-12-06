@@ -192,4 +192,6 @@ void StringVer(char *s,uint32_t u) ;
 uint32_t InterVer(char *s);
 
 extern char wrirenfc;
+extern char diyota;
+
 #endif

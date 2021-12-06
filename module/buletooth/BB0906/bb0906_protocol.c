@@ -174,7 +174,7 @@ wrirenfc=1;NEVERSHOW
 all_printf(&BleModuleAppData.Msg,sizeof(BleModuleAppData)-23);
 printf("\r\n");
 #endif
-#if 1
+
               for( i = 0 ; i < BLEMODE_PHONE_MAX; i++ )
               {
                       if(aiot_strcmp(BleModuleAppData.Msg.hdr.FormAddr,ble_app[i].hdr.FormAddr , BLE_ADDR_SIZE) == TRUE)
@@ -193,7 +193,6 @@ printf("\r\n");
 
                           memcpy( &hb       , &BleModuleAppData.Msg.Data ,BleModuleAppData.Msg.DatLength);/*DatLength 是29-9 就是20*/
 
-  
                           memcpy( ble_app[i].body+ble_app[i].bodylen        ,hb.body,    hb.len);
 
                           //log(INFO,"之前bodylen=%d 现在增加%d " ,bodylen,hb.len);
@@ -240,7 +239,7 @@ printf("\r\n");
               ch = (ch + 1)% BLEMODE_PHONE_MAX ;
               }
               
-#endif            
+           
         memset(&BleModuleAppData ,0x00 , sizeof(BleModuleAppDateType));            
         }break; 
      

@@ -43,7 +43,6 @@ void ble_data_process( void const *pvParameters)
                 { 
                   BleDataHandle(&ble_app[i]);
                   memset(&ble_app[i] , 0x00 , sizeof(BleProtData)); 
-                  task_keep_alive(TASK_BT_BIT); 
                 }
             }
         }

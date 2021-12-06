@@ -33,11 +33,11 @@ void hal_read_chipId(unsigned char *p)
     }
 
 }
+
 uint8_t card_info_read(uint8_t *data)
 {
     return (chip_flash_read( TEST_CARD_ADDR , (uint8_t *)data , 128 ));
 }
-
 
 void card_info_write(uint8_t *data)
 {
@@ -68,12 +68,10 @@ void card_info_write(uint8_t *data)
     log(ERR,"[SYS]TEST_CARD_ADDR ERR\n"); 
 }
 
-
 uint8_t sys_cfg_read(SystemConfigType *data)
 {
     return (chip_flash_read( DSYS_CFG_ADDR , (uint8_t *)data , sizeof(SystemConfigType) ));
 }
-
 
 void sys_cfg_clear( void )
 {
@@ -132,9 +130,6 @@ void sys_cfg_write(SystemConfigType *cfg)
     else
     log(ERR,"[SYS]sys_cfg_write ERR\n"); 
 }
-
-
-
 
 void sysCfg_save( void )
 {
@@ -246,8 +241,6 @@ void sys_info_read_device_module( void )
       log(ERR,"[SYS]设备BLE模式=%d .(0--BM77  1--0906)\n" ,  cfg.parm.support_ble_types);     
 }
 
-
-      
 void sysCfg_set_ble_default( void )
 {
 
@@ -297,9 +290,7 @@ void sysCfg_set_default( void )
       cfg.parm.lock_mode = DEVICD_MODE;   
 
       cfg.parm.delay_time = OPEN_DELAY;
-
-      ///////////INFO
-      //密码                
+        
       config.write(CFG_USER_PWD ,DeafultPwd ,FALSE);
       config.write(CFG_PAIR_PWD ,DeafultPwd ,FALSE);
 
@@ -314,15 +305,13 @@ void sysCfg_set_default( void )
 
       sysCfg_set_ble_default();  //获得MAC
 
-      ///////////INFO
-
       cfg.parm.alarm_time = 3;/*默认3min门磁超时*/
 
       cfg.parm.magnet_status = DEFAULT_MAGNET_STATUS;//PIN_HIGH 开门时表现高
       cfg.parm.updataTime = FALSE;
       hal_read_chipId(cfg.parm.chipId);
 
-      //ESP32
+//ESP32
 memset(cfg.wifi.ssid , 0x00 , 50);
 memcpy(cfg.wifi.ssid , "mCube-Xsens-Employee" , strlen("mCube-Xsens-Employee"));
 
@@ -331,18 +320,15 @@ memcpy(cfg.wifi.pwd , "Kiss2017" , strlen("Kiss2017"));
 uint32_t restoreBit = SYS_NET_RESTORE_BIT;
 config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
 
-      //OTA    全0
+
       cfg.parm.soft_version = DEVICE_SW_VERSION;
 
-      //云端网诺  
+ 
       memset( &cfg.server , 0x00 , sizeof(netAttriType));
       memcpy(cfg.server.net.ip , NET_IP , strlen(NET_IP));
       cfg.server.net.port = MQTT_PORT;
 
 
-      
-
-      //基于MAC的标识
       sprintf((char *)cfg.parm.deviceName , "%.4s%02X%02X%02X%02X%02X%02X", DEVICE_NAME ,
       cfg.ble.ble_mac[0],cfg.ble.ble_mac[1],cfg.ble.ble_mac[2],
       cfg.ble.ble_mac[3],cfg.ble.ble_mac[4],cfg.ble.ble_mac[5]);
@@ -382,7 +368,7 @@ void show_OTA(void)
     
     printf("******************otanet:%d\n",cfg.server.otanet.port);
     printf("******************otanet:%s\n",cfg.server.otanet.ip);
-    //log_arry10(DEBUG,"otanet" ,cfg.server.otanet.ip , 4);//十进制打印 我们已经彻底放弃ip用4个int
+
     log(INFO,"\n********************* ******show_OTA******  ********************* \n");
 }
 
@@ -412,11 +398,9 @@ void sysCfg_print( void )
       log(DEBUG,"\n");
       log(INFO,"********************* 2021 Copyright ********************* \n");
       log(DEBUG,"系统编译时间: %s %s .\r\n" ,__DATE__,__TIME__);
-      log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));
-      
-      log(ERR,"设备模式 =[%d][安装位置 0:门口机单元门禁 ,1:楼栋门禁 ,2: 围墙机小区门禁]\n" ,cfg.parm.lock_mode);
+      log(DEBUG,"门禁配置文件CRC16 = %X SIZE=%d\n",cfg.crc16,sizeof(SystemConfigType));    
+      log(ERR,"设备模式 =[%d][0:单元机  1：围墙机 2：多围墙]\n" ,cfg.parm.lock_mode);
       log(DEBUG,"软件版本: [%d]\n" , cfg.parm.soft_version);
-
       log(DEBUG,"delay_time: [%d]\n" , cfg.parm.delay_time);
       log(DEBUG,"alarm_time: [%d]\n" , cfg.parm.alarm_time);
       log(ERR,"门磁正常电平: [%d]\n" , cfg.parm.magnet_status);
@@ -424,11 +408,9 @@ void sysCfg_print( void )
       log(DEBUG,"设备蓝牙类型 = [%d] [0:BM77 ,1:0906]\n" ,cfg.parm.support_ble_types);
       log(DEBUG,"设备蓝牙名称 = %s \n" ,cfg.parm.deviceName);
       log(DEBUG,"蓝牙模块版本号 [%d] \n" , cfg.ble.ble_version );
-      log_arry(DEBUG,"蓝牙模块的MAC地址 "  ,cfg.ble.ble_mac ,BLE_MAC_LENGTH);
-      
+      log_arry(DEBUG,"蓝牙模块的MAC地址 "  ,cfg.ble.ble_mac ,BLE_MAC_LENGTH);   
       log_arry(DEBUG,"配对密码 "  ,cfg.pair_pwd,BLE_PASSWORD_LENGTH);
       log(DEBUG,"设备网络类型 = [%d] [1:GPRS,2:WFI,4ETH]\n" ,cfg.parm.support_net_types);
-
       log(DEBUG,"MQTT业务服务器IP地址: %s:%d\n" , cfg.server.net.ip ,    cfg.server.net.port);
       log(DEBUG,"OTA 业务服务器IP地址: %s:%d\n" , cfg.server.otanet.ip,  cfg.server.otanet.port);
       log(DEBUG,"mqtt client    = %s\n" ,    cfg.mqtt.mqttClientId);
@@ -437,8 +419,8 @@ void sysCfg_print( void )
       log(ERR,"设备是否拉过黑白名单 = [%d]\n",cfg.parm.filterSynced);
      
       permi.show();//展示一下黑白名单
- permi_list_init();
-      permi.show();//展示一下黑白名单
+ //permi_list_init();
+//permi.show();//展示一下黑白名单
       log(INFO,"************************************ end  ************************************ \n");
       log(INFO,"************************************ end  ************************************ \n");
 }
@@ -452,19 +434,19 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
       
          case CFG_SYS_DEVICE_NAME:
         {
-            //uint8_t  deviceName[DEVICE_NAME_LENG];
             memcpy(cfg.parm.deviceName,parma,4);/*仅仅修改前面4个*/  
         }break;
         
          case CFG_MQTT_DC:
         {      
-           //log(DEBUG,"设置设备编码 = %s  原始设备编码 = %s\n" , (char*)parma,SHType.deviceCode);
-           //if(aiot_strcmp(SHType.deviceCode,parma,21))
-           //{
-           //    log(DEBUG,"编码一致 啥也不做 \n");break;
-           //}
-           memcpy(SHType.deviceCode,parma,21);
-           //log(DEBUG,"编码有变 清空本地黑白名单 \n");
+            memcpy(SHType.deviceCode,parma,21);
+
+            if(chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)&SHType, sizeof(_SHType)))
+            {
+              log(DEBUG,"\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
+              return true;
+            }log(DEBUG,"\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
+
         }break;
                     
         case MQTT_FILTER_SYNCED:
@@ -537,7 +519,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         {
              memset(&cfg.server.otaurl,0,64);
              memcpy(&cfg.server.otaurl , parma , GMIN(64,strlen((char*)parma)));
-             printf("CFG_OTA_URL[%s]\r\n",cfg.server.otaurl);
+             log(DEBUG,"CFG_OTA_URL[%s]\r\n",cfg.server.otaurl);
         }break;
         case CFG_OTA_CONFIG:
         {
@@ -571,28 +553,17 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
             uint32_t bit = *(uint32_t *)(parma);
             cfg.sysRestoreFlag |= bit;
         }break;  
+        
+        case CFG_SYS_SHANGHAI:
+        {
+          if(chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
+          {
+            log(DEBUG,"\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
+            return true;
+          }log(DEBUG,"\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
 
+        }break;  
         
-        
-case CFG_SYS_SHANGHAI:
-{
-  chip_flash_earse(DSYS_DIANMA_ADDR);
-  if(parma==NULL)
-  {
-  printf("clean\n\n");
-  return true;
-  }
-  if(true==chip_flash_write( DSYS_DIANMA_ADDR , (uint8_t *)parma, sizeof(_SHType)))
-  {
-    printf("\r\n*******CFG_SYS_SHANGHAI WRITE OK*********\r\n");
-  return true;
-  }
-  else
-  {
-  printf("\r\n*******CFG_SYS_SHANGHAI WRITE FAIL*********\r\n");
-  return false;
-}
-}break;  
         case CFG_NOTHING:
         default:
         {
@@ -708,7 +679,8 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
 
         case CFG_OTA_CONFIG:
         {
-                *parma = &cfg.otaVar;
+             
+          *parma = &cfg.otaVar;
         }break;
 
         case CFG_SYS_UPDATA_TIME:
@@ -756,19 +728,14 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         }break;
 
         
-case CFG_SYS_SHANGHAI:
-{
-  if(true==chip_flash_read( DSYS_DIANMA_ADDR ,(uint8_t *)&SHType ,sizeof(_SHType)))
-  {       
-  printf("\r\nCFG_SYS_SHANGHAI READ ok %dr\n",sizeof(_SHType));
-  return true;
-  }
-  else
-  {
-  printf("\r\nCFG_SYS_SHANGHAI READ failr\n");
-  return false;
-  }
-}break; 
+        case CFG_SYS_SHANGHAI:
+        {
+          if(chip_flash_read( DSYS_DIANMA_ADDR ,(uint8_t *)&SHType ,sizeof(_SHType)))
+          {       
+                printf("\r\nCFG_SYS_SHANGHAI READ OK size = %d\n",sizeof(_SHType));
+                return true;
+          } printf("\r\nCFG_SYS_SHANGHAI READ FAIL\n");
+        }break; 
         
         
         default:
@@ -812,19 +779,21 @@ void sysCfg_init( void )
     
     config.read(CFG_SYS_SHANGHAI , (void **)&SHType );
 
-    if(SHType.gup.cnt==0XFF || SHType.gup.cnt==0)
+    if(SHType.deviceCode[0]==0XFF)
     {
-      log_err("\n************新设备****在此设置缺损值******\n");
-memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void **)&SHType );已经变成全F
-#if 0
-static char * deviceCode   =   "310104004005001101003";//21长!!!!!
-memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
-static char * groupcode    =   "223101040040050010000009";//默认通行组  
-memcpy_down(SHType.gup.code[0],groupcode,22);
-SHType.gup.cnt=1;
-#else
 
-#endif
+      memset(&SHType,0x00,sizeof(_SHType));//因为config.read(CFG_SYS_SHANGHAI , (void **)&SHType );已经变成全F
+      #if 0
+      log_err("\n************新设备****在此设置缺损值******\n");
+      static char * deviceCode   =   "310104004005001101003";//21长!!!!!
+      memcpy(SHType.deviceCode,deviceCode,strlen(deviceCode));
+
+      //static char * groupcode    =   "223101040040050010000009";//默认通行组  
+      //memcpy_down(SHType.gup.code[0],groupcode,22);
+      //SHType.gup.cnt=1;
+      #else
+            log_err("\n************新设备****无操作******\n");
+      #endif
     }
     else
     {
@@ -834,29 +803,26 @@ SHType.gup.cnt=1;
     show_SH(&SHType);
 
     
-    
-    
-    
+
     
     
 /*主题*/  
-#if 0
+
 log(INFO,"topicPath0 %s\r\n",topicPath0);
 log(INFO,"topicPath1 %s\r\n",topicPath1);
 log(INFO,"topicPath2 %s\r\n",topicPath2);
 log(INFO,"topicPath3 %s\r\n",topicPath3);
 log(INFO,"topicPath4 %s\r\n",topicPath4);
-strncat(topicPath1,"310104004005001101003",21);
-strncat(topicPath2,"310104004005001101003",21);
-strncat(topicPath3,"310104004005001101003",21);
-strncat(topicPath4,"310104004005001101003",21);
+strncat(topicPath1,SHType.deviceCode,21);
+strncat(topicPath2,SHType.deviceCode,21);
+strncat(topicPath3,SHType.deviceCode,21);
+strncat(topicPath4,SHType.deviceCode,21);
 log(INFO,"topicPath0 %s\r\n",topicPath0);
 log(INFO,"topicPath1 %s\r\n",topicPath1);
 log(INFO,"topicPath2 %s\r\n",topicPath2);
 log(INFO,"topicPath3 %s\r\n",topicPath3);
 log(INFO,"topicPath4 %s\r\n",topicPath4);
-    
-#endif    
+  
     
     sysCfg_print();
 

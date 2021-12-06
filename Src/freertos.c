@@ -219,10 +219,6 @@ void MX_FREERTOS_Init(void)
 
 void show_no_feed_task( uint32_t bits )
 {
-    if( (bits & TASK_CONSOLE_BIT ) == 0 )
-    {
-        printf("串口控制台 、 ");
-    }
     
     if( (bits & TASK_BT_BIT ) == 0 )
     {
@@ -262,52 +258,22 @@ void device_set_default( void )
 void startota(void)
 {
   printf("<<<<<<<<<--------启动OTA成功-------->>>>>>>>>>>\r\n");
-#if 0
 
   serverAddrType ip_port;
   memcpy(ip_port.ip,"ibinhub.com",strlen("ibinhub.com"));
   ip_port.port = 80;
-  config.write(CFG_OTA_ADDR ,&ip_port,1);
-#endif
-char url[]={"http://139.9.66.72:17100/starline/headzip.bin"};
-char valuestring[32]={"2d5b4efd001049a67f7cd5e1e5da4c66"};
-char ver[]={"1.6.3"};
-serverAddrType ip_port;
-char *p = NULL;
-char i;
+  config.write(CFG_OTA_ADDR ,&ip_port,0); 
+
+
+
+char *path = "/upload/1487627177.bin";
+config.write(CFG_OTA_URL ,path,0);
+
+
+
 otaType otaCfg;
-
-if(p = strstr ((const char*)url,"//"))
-p+=2;
-
-for( i=0;i<strlen(p);i++)
-{
-  if(p[i]==':')
-   {
-     p[i]='\0';
-       break;
-   }
-}
-memcpy(ip_port.ip,p,strlen(p));
-
-
-p[i]=':';
-p = strstr ((const char*)p,":");
-++p;
-ip_port.port = atoi(p);
-
-
-config.write(CFG_OTA_ADDR ,&ip_port,0);
-
-p = strstr ((const char*)p,"/");
-//memcpy(otaurl,p,strlen(p))
-config.write(CFG_OTA_URL ,p,0);
-
-
-
-
 uint8_t Md5[16]={0};
-memcpy_down(Md5,valuestring,32);
+memcpy_down(Md5,"2d5b4efd001049a67f7cd5e1e5da4c66",32);
 otaCfg.crc32=CRC16_CCITT(Md5,16);      
       
 
@@ -315,7 +281,7 @@ otaCfg.crc32=CRC16_CCITT(Md5,16);
 otaCfg.fileSize=142430;
       
       
-otaCfg.ver=InterVer(ver);
+otaCfg.ver=InterVer("1.2.3");
           
       
 
@@ -364,8 +330,8 @@ void main_task(void const * argument)
         }
         else
         {
-            //log(INFO,"ubits = %x " , uxBits);
-            //show_no_feed_task(uxBits);
+            log(INFO,"ubits = 0X%04X 谁没有喂狗?" , uxBits);
+            show_no_feed_task(uxBits);
         }
         if( rtcTimerEnable)     //设备定时复位
         {

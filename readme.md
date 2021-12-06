@@ -1,4 +1,7 @@
-前身是仓库TOUCH-BLUE
+    源码起点是https://gitee.com/koson/TOUCH-BLUE 
+    但是当前编译不过于是回滚到下面的起点
+    $ git reset --hard 60bd818087284303c720cee706a4a4767fc8dd89
+    HEAD is now at 60bd818 释放V100给邵正飞-上海徐汇版本
 
 2021/11/19 本次简化代码 删除IIC键盘 删除BM77  // 删除临时密码部分
 
@@ -87,3 +90,21 @@
 2021/12/01替换蓝牙和APP测试 目前有问题/刷卡 真实卡 现在不能解出来 等待核对
 
 2021/12/02完成制卡器设计 参考文档里面卡的测试 AB卡复制
+
+2021/12/06 修改diyota=1可以测试自己的OTA可以ok 附上LOG 优化了2021/11/23的赋值方法 通过正常程序一样的读写
+
+打印开关
+
+#define RT_DEBUG_LOG(type, message)                                           \
+do                                                                            \
+{                                                                             \
+    if (type)                                                                 \
+        printf message;                                                   \
+}                                                                             \
+while (0)
+
+
+#define RT_DEBUG_IPC                                                      1
+
+
+ RT_DEBUG_LOG(RT_DEBUG_IPC, ("黑白名单permi操作成功\n"));

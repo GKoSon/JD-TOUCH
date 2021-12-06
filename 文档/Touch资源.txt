@@ -1,0 +1,36 @@
+Touch资源
+USART1---DEBUG
+USART3---BLE【PC4-->TX TO BLE】【PC5-->RX】【PB0-->RST】【PC2-->BM77的P20 我间接控制灯】
+PC8---BEEP
+PA12--RELAY
+PB11--LED【外接5V灯】PB10--LED RUN【底板的灯】
+PB1 外置狗 不是的 是NFC中断触发的脚 
+PB7--给以太网用的吧
+PC9---配置KEY
+
+
+
+USART2---GSM（PB2复位 3个脚即可）/WIFI （PB2复位也就是U2+PB2就好了）
+USART4---NC [相当于U4没有使用---PA0作为大唐移动复位（不是PWRKEY 不是TRIG 是RESET）]
+USART5---485
+USART6---NC
+IIC1---按键板
+SPI1---W24Q64--8M
+SPI2---NFC【注意不是MX默认的SPI2需要自己修改 CS-->B12 RST-->PC6 MOSI-->PB15 MISO-->PB14 SCK-->PB13】
+SPI3---W5500
+PC0----ADC确定蓝牙和ST读头组合
+PC1--电源电压输入检测
+ ADC1意义已经架空！！总是TRUE 它是外接电源电量检测的
+ ADC2判断模块组合BLE+NFC
+PC3---读0
+PC13--读1 两者定下00 01 10 联网方式
+
+内部FLASH保存FG--INFO
+外部保存--黑白明白 开门记录 一次性密码
+
+
+PA4--SPI1CS
+PB12--SPI2CS
+PC6--NXPRESET
+PB1--NXPIRQ
+

@@ -309,34 +309,29 @@ void ota_init_buffer( void )
     }
 /*挨个赋值*/    
 
+    
 /*1*/  
 char *fileKey;
 config.read(CFG_OTA_URL , (void **)&fileKey); 
 memcpy(ota.fileKey,fileKey ,strlen(fileKey)  );
-printf("ota.fileKey ---------%s------------\r\n",ota.fileKey);
-//memcpy(ota.fileKey,"/upload/1487627177.bin" ,strlen("/upload/1487627177.bin")  );
- 
+printf("ota.fileKey [%s]\r\n",ota.fileKey);
 
 
 /*2*/     
 ota.len=       0;
 
+
 /*3*/  
 ota.fileSize= otaCfg->fileSize;
-//ota.fileSize=  142430;
+
 
 /*4*/  
 ota.ver=otaCfg->ver;
 
-//ota.ver=444;
 
 /*5*/  
 ota.crc32=otaCfg->crc32;
-//char md5[33]={"2d5b4efd001049a67f7cd5e1e5da4c66"};
-//uint8_t Md5[16]={0};
-//G_strsTobytes(md5,Md5,32);
-//ota.crc32=CRC16_CCITT(Md5,16);
-//log_arry(DEBUG,"平台计算MD5是" ,Md5, 16);
+
 }
 
 
@@ -570,29 +565,15 @@ taskDISABLE_INTERRUPTS();
                 otaCfg.crc32 = ota.crc32;
                 otaCfg.fileSize = ota.fileSize;
                 otaCfg.otaUpgMark = UPG_MARK;
-                //config.write(CFG_SYS_SW_VERSION ,&ota.ver , 0);
+                //config.write(CFG_SYS_SW_VERSION ,&ota.ver , 0);放在BOOT
                 config.write(CFG_OTA_CONFIG     ,&otaCfg , TRUE);
                 return OTA_OK;
             }
             else if(ret == SOCKER_READ_ERR)
             {
-              OTA_DEBUG_LOG(1, ("【OTA】文件下载遇到SOCKER_READ_ERR说明模组意外关闭\n"));
+              OTA_DEBUG_LOG(1, ("【OTA】文件下载遇到SOCKER_READ_ERR说明模组意外关闭 重写下载\n"));
             
               ota_repert_connect();
-            }
-            else
-            {
-                if( ota.len > 8192)/*随便写的不要浪费了前面下载的*/
-                {
-                     ota.len =   (ota.len - ota.len%4096) - 4096;
-                }
-                else
-                {
-                    ota.len = 0;
-                }
-
-                OTA_DEBUG_LOG(OTA_DEBUG,("【OTA】网络下载错误 ，回退部分字节， 重新下载开始位置=%d\n" , ota.len));
-                ota_repert_connect();
             }
 taskENABLE_INTERRUPTS();            
         }break;

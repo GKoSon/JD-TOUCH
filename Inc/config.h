@@ -27,12 +27,10 @@
 #define TASK_MATE_BIT           0x0100
 
 
-#define TASK_ALL_BIT            (TASK_BT_BIT|TASK_KEY_BIT|TASK_LOG_BIT|TASK_SWIPE_BIT)  
+#define TASK_ALL_BIT            (TASK_BT_BIT|TASK_KEY_BIT|TASK_SWIPE_BIT)  //|TASK_LOG_BIT
 
    
 extern __IO uint8_t        rtcTimerEnable;
-
-extern uint8_t cy3116_verification( void );
 
 extern SemaphoreHandle_t    xBtSemaphore;
 extern SemaphoreHandle_t    xUsartNetSemaphore;

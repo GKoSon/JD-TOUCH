@@ -38,17 +38,14 @@ extern void upkeepAlive(char isr) ;
 
 char suball(void)
 {
-    char rc = 0;
-strncat(topicPath1,getdeviceCode(),21);
-strncat(topicPath2,getdeviceCode(),21);
-strncat(topicPath3,getdeviceCode(),21);
-strncat(topicPath4,getdeviceCode(),21);
-    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath3 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-    rc = mqtt_subscribe(&client, ( uint8_t *)topicPath4 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
-    return 0;
+  char rc = 0;
+
+  rc = mqtt_subscribe(&client, ( uint8_t *)topicPath0 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+  rc = mqtt_subscribe(&client, ( uint8_t *)topicPath1 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+  rc = mqtt_subscribe(&client, ( uint8_t *)topicPath2 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+  rc = mqtt_subscribe(&client, ( uint8_t *)topicPath3 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+  rc = mqtt_subscribe(&client, ( uint8_t *)topicPath4 , QOS2, mqtt_message_arrived);if(rc !=0)return 1;
+  return 0;
 }
 
 void pack_connect_message(MQTTPacket_connectData *con)
@@ -62,7 +59,6 @@ void pack_connect_message(MQTTPacket_connectData *con)
 
     if(mqttWillInfoFlag == FALSE)
     {
-
 
         config.read(CFG_MQTT_USERPWD, (void **)&pwd);
         config.read(CFG_MQTT_CLIENTID, (void **)&client);
@@ -183,7 +179,8 @@ static void mqtt_task( void const *pvParameters)
                     sys_delay(10);
                     timer.start(mqttKEEPAliveBLUE);
                     mqttRunType = GMQTT_FILTER;
-                    //startota();
+                    if(diyota)
+                    startota();
                 break;  
                 
        case GMQTT_FILTER:
@@ -194,7 +191,7 @@ static void mqtt_task( void const *pvParameters)
         case GMQTT_OK:
                   if( mqtt_run( &client ) < 0)
                   {
-                      SHOWME
+                      SHOWME SHOWME SHOWME SHOWME
                       mqtt_disconnect(&client);
                       mqttRunType = GMQTT_CONNECT_MQTT;
                   }       

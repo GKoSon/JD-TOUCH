@@ -25,12 +25,11 @@
 
 
 //0----门口机   1----围墙机
-//cfg.parm.lock_mode
-#define        UNIT_LOCK_MODE            0
-#define        BULID_LOCK_MODE           1
-#define        WEIQIANGJI                2        /*只需要VILLAGE判断*/
 
-#define        DEVICD_MODE               BULID_LOCK_MODE
+#define        MENKOUJI                  0
+#define        WEIQIANGJI                1        /*只需要VILLAGE判断*/
+
+#define        DEVICD_MODE               MENKOUJI
 
 
 

@@ -338,7 +338,7 @@ void Eecryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
 }
 
 
-
+#if 0
 void DEecryptionr_test(void)
 {
 /*一组数据*/
@@ -375,3 +375,4 @@ Decryptionr(A1,B2,A1);
 log_arry(DEBUG,"AB卡公共明文" ,A1 , 98 );
 
 }
+#endif

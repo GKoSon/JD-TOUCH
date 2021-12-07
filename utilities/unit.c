@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <string.h>
 
-uint32_t    sysDebugFlag = 0xFF;
+uint32_t    sysDebugFlag = 0xFE;
 
 char wrirenfc =0;
 char diyota =0;

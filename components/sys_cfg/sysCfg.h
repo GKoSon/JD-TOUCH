@@ -1,19 +1,12 @@
 #ifndef _SYS_CFG_H_
 #define _SYS_CFG_H_
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
 
 
-
-#define     DEVICE_SW_VERSION         999
-
-
-#define    DEVICE_TYPE                0x06
-
-
+#define     DEVICE_SW_VERSION         001
 
 /* 
  *  设备蓝牙名称，设备名称编码4个ASCII+设备MAC地址
@@ -27,16 +20,13 @@
 //0----门口机   1----围墙机
 
 #define        MENKOUJI                  0
-#define        WEIQIANGJI                1        /*只需要VILLAGE判断*/
+#define        WEIQIANGJI                1       
 
 #define        DEVICD_MODE               MENKOUJI
 
 
-
 #define       DSYS_CFG_ADDR         0x0807F800
 
-
-   
 //平台地址
 #define        NET_IP                  "139.9.66.72"
 #define        MQTT_PORT                1883
@@ -70,7 +60,6 @@
 typedef enum
 {
     MQTT_FILTER_SYNCED,
-
 
     CFG_PAIR_PWD,
     CFG_USER_PWD,

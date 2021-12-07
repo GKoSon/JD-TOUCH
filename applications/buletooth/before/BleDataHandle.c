@@ -3,22 +3,24 @@
 #include "buletooth.h"
 #include "beep.h"
 #include "open_door.h"
-#include "permi_list.h"
 #include "open_log.h"
-#include "magnet.h"
-#include "buletooth.h"
-#include "mqtt_task.h"
 #include "timer.h"
 #include "cmd_pb.h"
 #include "BleProtocol.pb.h"
 
+
+void ble_door_log(DeviceOpenRequest	*A);
+
 uint8_t down_device_A9    (BleProtData *pag);
 uint8_t down_device_info  (BleProtData *pag);
 uint8_t down_device_open  (BleProtData *pag);
+uint8_t down_device_card  (BleProtData *pag);
+
 AppHandleArryType gAppTaskArry[]={
 {3 , down_device_open  },
 {4 , down_device_info  },
 {5 , down_device_A9    },
+{0 , down_device_card  },
 };
 
 
@@ -29,7 +31,7 @@ do                                                                            \
         printf message;                                                   \
 }                                                                             \
 while (0)
-#define BLE_DEBUG                                                     1
+#define BLE_DEBUG                                                        1
 
 
 void ip_port_handle(uint8_t *  sor);
@@ -117,6 +119,17 @@ uint8_t down_device_A9 (BleProtData *pag)
   return APP_OK;
 }
 
+uint8_t down_device_card (BleProtData *pag)
+{
+  if(pag->id.data==0X11){
+    wrirenfc=1;SHOWME
+  }else{
+    wrirenfc=0;SHOWME
+  }
+  up_return_comm(pag,0);
+  return APP_OK;
+}
+
 
 
 /********************************下行1****************************/
@@ -145,20 +158,17 @@ uint8_t down_device_open (BleProtData *pag)
       BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】phoneNo  =%s\n",phoneNo));
 
            
-      if(A.type==0)
-      {
+      if(A.type==0)  {
           open_door();
-      } else if(A.type)
-      {
+      } else if(A.type)  {
           uint32_t stamp = 0;
           stamp = rtc.read_stamp();
           BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】A.timeStamp =%lld rtc.read_stamp()=%u\n",A.timeStamp,stamp));
-          if( abs(stamp-A.timeStamp) < 5)
-          {
-         
+          if( abs(stamp-A.timeStamp) < 5)   {
+             open_door();
+             ble_door_log(&A);
           }
-          else
-          {
+          else  {
         
           }
      }
@@ -214,40 +224,39 @@ uint8_t down_device_info (BleProtData *pag)
     pb_decode_bytes(&A.mask , mask);
     pb_decode_bytes(&A.dns , dns);
 
-  if(pb_decode(&requestStream, DeviceSetDeviceNameRequest_fields, &A) == TRUE )		
-  {	
-    BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openPWD        =%d\n",A.openPWD));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openDelay      =%d\n",A.openDelay));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】alarmDelay     =%d\n",A.alarmDelay));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】installPurpose ----------------------------=%d\n",A.installPurpose));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mqttServer     =%s\n",mqttServer));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ntpServer      =%s\n",ntpServer));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】isdhcp         =%d\n",A.isdhcp));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
-    BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
+    if(pb_decode(&requestStream, DeviceSetDeviceNameRequest_fields, &A) == TRUE ){	
+      BLE_DEBUG_LOG(BLE_DEBUG, ("\r\n"));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】name           =%s\n",name));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】code           =%s\n",code));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】pairPWD        =%d\n",A.pairPWD));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openPWD        =%d\n",A.openPWD));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】openDelay      =%d\n",A.openDelay));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】alarmDelay     =%d\n",A.alarmDelay));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】installPurpose =%d\n",A.installPurpose));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mqttServer     =%s\n",mqttServer));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ntpServer      =%s\n",ntpServer));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】isdhcp         =%d\n",A.isdhcp));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】ip             =%s\n",ip));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】gateway        =%s\n",gateway));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】mask           =%s\n",mask));
+      BLE_DEBUG_LOG(BLE_DEBUG, ("【BLE】dns            =%s\n",dns));
 
 
 
 //config.write(CFG_SYS_DEVICE_NAME ,name,0);//前4个hex替换 暂时不处理 名字乱码
 
 
-    uint8_t *dc;
-    config.read(CFG_MQTT_DC , (void **)&dc);
-    log(DEBUG,"新下发设备编码 = %s  原始设备编码 = %s\n" , (char*)code,(char*)dc);
-    if(aiot_strcmp(dc,code,21))
-    {
-      log(DEBUG,"编码一致 啥也不做 \n");;
-    } else{
-    log(DEBUG,"编码有变 清空本地黑白名单 \n");
-      set_clear_flash(FLASH_PERMI_LIST_BIT);
-      config.write(CFG_MQTT_DC ,code,1);//21个char
-    }
+      uint8_t *dc;
+      config.read(CFG_MQTT_DC , (void **)&dc);
+      log(DEBUG,"新下发设备编码 = %s  原始设备编码 = %s\n" , (char*)code,(char*)dc);
+      if(aiot_strcmp(dc,code,21))
+      {
+        log(DEBUG,"编码一致 啥也不做 \n");;
+      } else{
+      log(DEBUG,"编码有变 清空本地黑白名单 \n");
+        set_clear_flash(FLASH_PERMI_LIST_BIT);
+        config.write(CFG_MQTT_DC ,code,1);//21个char
+      }
 
 
       /*如果再次安装，devicecode和上次不一样，要把黑白名单和通行组都删掉，如果devicecode一样，就不需要删了*/
@@ -288,7 +297,7 @@ uint8_t BleDataHandleDetails(BleProtData *pag)
     {
         if( pag->cmd == gAppTaskArry[idx].cmd)
         {
-            log(INFO,"Bt receive command . cmd = 0X%02X\r\n" ,pag->cmd );
+            log(INFO,"Bt receive command cmd = 0X%02X\r\n" ,pag->cmd );
             return (gAppTaskArry[idx].EventHandlerFn(pag));               
         }
     }
@@ -312,26 +321,25 @@ void BleDataHandle(BleProtData *pag)
 /*  tcp://139.9.66.72:18 */
 void ip_port_handle(uint8_t *  sor)
 {
-  char *p=0;
-  serverAddrType ip_port;
+    char *p=0;
+    serverAddrType ip_port;
 
-  printf("input[%s]\r\n",sor); 
-  if(p = strstr ((const char*)sor,"//"))
-    p+=2;
-  else
-    p = (char *)sor;
+    printf("input[%s]\r\n",sor); 
+    if(p = strstr ((const char*)sor,"//"))
+      p+=2;
+    else
+      p = (char *)sor;
 
-  
-  sscanf((const char*)p,"%[^:]", ip_port.ip);
-  
-  p = strstr ((const char*)p,":");
-  ++p;
-  ip_port.port = atoi(p);
+    
+    sscanf((const char*)p,"%[^:]", ip_port.ip);
+    
+    p = strstr ((const char*)p,":");
+    ++p;
+    ip_port.port = atoi(p);
 
-  
-  ShowIp(&ip_port);
-  config.write(CFG_NET_ADDR ,&ip_port,0);
-
+    
+    ShowIp(&ip_port);
+    config.write(CFG_NET_ADDR ,&ip_port,0);
 }
          
 

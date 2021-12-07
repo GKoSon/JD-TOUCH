@@ -100,10 +100,10 @@ uint8_t tag_verify_time(shanghaicardtype *p)
     
     if(p->head.crc ==0)
     {
-           printf("¡¾CARD¡¿All time FAILED\r\n");
+           log_err("¡¾CARD¡¿All time FAILED\r\n");
 	   return 1;
     }
-    printf("¡¾CARD¡¿time ok ! card  have %d gup\r\n", p->head.crc);
+    log_err("¡¾CARD¡¿time ok ! card  have %d gup\r\n", p->head.crc);
     return 0;
 }
 

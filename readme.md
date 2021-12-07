@@ -106,5 +106,8 @@ while (0)
 
 #define RT_DEBUG_IPC                                                      1
 
-
  RT_DEBUG_LOG(RT_DEBUG_IPC, ("黑白名单permi操作成功\n"));
+
+
+
+2021/12/07释放程序 --修正MQTT上去前面的2个消息总是发送失败 是因为那个client状态机normal函数的判断

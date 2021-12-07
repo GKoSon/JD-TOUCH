@@ -323,11 +323,11 @@ return TAG_NULL;
 
       memcpy(tag->buffer , tag_buffer , 98);
       
-      log_arry(DEBUG,"tag->buffer" ,tag->buffer , 98 );
+      log_arry(0,"tag->buffer" ,tag->buffer , 98 );
 
       Decryptionr(tag->buffer,tag->UID,tag->buffer);
 
-      log_arry(DEBUG,"tag->buffer" ,tag->buffer , 98 ); 
+      log_arry(0,"tag->buffer" ,tag->buffer , 98 ); 
 
       p = (shanghaicardtype *)tag->buffer;
 

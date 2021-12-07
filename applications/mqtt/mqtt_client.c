@@ -30,7 +30,7 @@ int mqtt_send_publish(mqttClientType *c,
   //  printf("【topicName:%s】【sendBuf:%s】\r\n",topicName,sendBuf);
     if (!c->isconnected) /* don't send connect packet again if we are already connected */
     {
-        log(DEBUG,"[mqtt_send_publish] MQTT服务器未建立连接\n");
+        log(ERR,"[mqtt_send_publish] MQTT服务器未建立连接\n");
         return FAILURE;
     }
 
@@ -40,7 +40,7 @@ int mqtt_send_publish(mqttClientType *c,
     len = MQTTSerialize_publish(buff, sizeof(buff), 0, qos , retained , id, topic , sendBuf ,sendLen);
     if (len <= 0)
     {
-        log(WARN,"MQTT publish %d组包失败\n",__LINE__);
+        log(ERR,"MQTT publish %d组包失败\n",__LINE__);
         return FAILURE;
     }
 
@@ -72,7 +72,7 @@ int mqtt_send_publish_form_isr(mqttClientType *c,
 
     if (!c->isconnected) /* don't send connect packet again if we are already connected */
     {
-        log(DEBUG,"MQTT服务器未建立连接\n");
+        log(ERR,"MQTT服务器未建立连接\n");
         return FAILURE;
     }
 
@@ -82,7 +82,7 @@ int mqtt_send_publish_form_isr(mqttClientType *c,
     len = MQTTSerialize_publish(buff, sizeof(buff), 0, qos , retained , id, topic , sendBuf ,sendLen);
     if (len <= 0)
     {
-        log(WARN,"MQTT publish 组包失败\n");
+        log(ERR,"MQTT publish 组包失败\n");
         return FAILURE;
     }
     
@@ -109,13 +109,13 @@ int mqtt_send_mesg( mqttClientType *c  , uint8_t *data , uint16_t len ,uint8_t q
     
     if (!c->isconnected) /* don't send connect packet again if we are already connected */
     {
-        log(DEBUG,"MQTT服务器未建立连接\n");
+        log(ERR,"MQTT服务器未建立连接\n");
         goto exit;
     }
 
     if ((rc = mqtt_send_packet(c, data , len)) != MQTT_SUCCESS) // send the publish packet
     {
-        log(WARN,"MQTT 发布发送数据失败,err = %d\n" , len);
+        log(ERR,"MQTT 发布发送数据失败,err = %d\n" , len);
         goto exit;             // there was a problem
     }
 
@@ -171,7 +171,7 @@ static void mqtt_send_task( void const *pvParameters)
     {
         if(xQueueReceive( xMqttSendQueue, &msg, 1000 ) == pdTRUE)
         {
-            if( mqtt_network_normal() ==  TRUE )
+            if( mqtt_network_normal() )
             {
                 //log(DEBUG,"1   time=%d\n" , HAL_GetTick() - sysRunTimerCnt);
                 if( mqtt_send_mesg(client , msg.msg , msg.len , msg.qos) == MQTT_SUCCESS) 
@@ -182,7 +182,7 @@ static void mqtt_send_task( void const *pvParameters)
             }
             else
             {
-                log(INFO,"[mqtt_send_task]网络未连接 mqtt_network_normal\n",);
+                log(ERR,"[mqtt_send_task]网络未连接 mqtt_network_normal !!!\n",);
             }
             memset(&msg , 0x00 , sizeof(mqttSendMsgType));
         }

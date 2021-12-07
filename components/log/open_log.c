@@ -440,8 +440,8 @@ void journal_start_send_timer( void )
 }
 
 
-extern void upuploadAccessLog_indoor(long openTime) ;
-extern void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
+extern void uploadAccessLog_indoor(long openTime) ;
+extern void uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) ;
 uint8_t journal_puck_string(openLogType *openlog , uint8_t *sendBuff)
 {
     uint32_t openTime = openlog->hdr.openTime;
@@ -465,14 +465,14 @@ uint8_t journal_puck_string(openLogType *openlog , uint8_t *sendBuff)
               lockStatus = 1;
             }
 
-            printf("==打包OPEN_FOR_CARD==\r\n");
+            log_err("==打包OPEN_FOR_CARD==\r\n");
             
             if(cardData.cardNumberLength == 4)
               sprintf((char*)cardData.cardNumber,"%02X%02X%02X%02X",cardData.cardNumber[0],cardData.cardNumber[1],cardData.cardNumber[2],cardData.cardNumber[3]);  
             else   if(cardData.cardNumberLength == 8)         
               sprintf((char*)cardData.cardNumber,"%02X%02X%02X%02X%02X%02X%02X%02X",cardData.cardNumber[0],cardData.cardNumber[1],cardData.cardNumber[2],cardData.cardNumber[3],cardData.cardNumber[4],cardData.cardNumber[5],cardData.cardNumber[6],cardData.cardNumber[7]);
             
-            upuploadAccessLog_card(openTime,lockStatus,openResult,(char*)cardData.cardNumber,cardData.cardType,cardData.cardIssueType); 
+            uploadAccessLog_card(openTime,lockStatus,openResult,(char*)cardData.cardNumber,cardData.cardType,cardData.cardIssueType); 
             
          }break;
       case OPEN_FOR_PWD:
@@ -485,10 +485,9 @@ uint8_t journal_puck_string(openLogType *openlog , uint8_t *sendBuff)
         
     }break;
     case OPEN_FOR_IN_DOOR:
-    {
-        
-          printf("==打包OPEN_FOR_IN_DOOR==\r\n");
-          upuploadAccessLog_indoor(openTime); 
+    {     
+          log_err("==打包OPEN_FOR_IN_DOOR==\r\n");
+          uploadAccessLog_indoor(openTime); 
 
     }break;
     case OPEN_FOR_FACE:

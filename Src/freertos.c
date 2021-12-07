@@ -241,7 +241,7 @@ void show_no_feed_task( uint32_t bits )
     }
     printf("\r\n");
 }
-
+/*ª÷∏¥≥ˆ≥ß…Ë÷√*/
 void device_set_default( void )
 {
 
@@ -250,7 +250,7 @@ void device_set_default( void )
     journal.clear();
 
     config.write(CFG_SET_RESTORE , NULL , FALSE);
-      //soft_system_resert(__func__);
+
 }
 
 

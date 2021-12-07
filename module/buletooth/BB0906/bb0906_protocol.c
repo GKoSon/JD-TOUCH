@@ -224,14 +224,14 @@ printf("\r\n");
                       //log(INFO,"第1次 展示序列号 （%d:%d)（chg=%d）\n" ,ble_app[ch].num.byte.seqall,ble_app[ch].num.byte.seqid,ch);
                       if(ble_app[ch].num.byte.seqall==ble_app[ch].num.byte.seqid)
                       {
-                          log(INFO,"第一次 只是收到一包数据 就可以打完收工啦\n");
+                          log(INFO,"第一次 只是收到一包数据 就可以打完收工啦[%d]\n",ble_app[ch].num.data);
                           ble_app[ch].hdr.WriteType = 0xFF;
                           release_sig();    
                           NEVERSHOW
                       } else {
                            //log(INFO,"第一次 展示body长度 %d/%d\n" , BleModuleAppData.Msg.DatLength  - 4,ble_app[ch].len);            
                            ble_app[ch].bodylen = BleModuleAppData.Msg.DatLength - 4; /*29-9  上面的1D就是29 而DatLength已经提前-9了 BLE_DATA_HEARD_LENG   */
-                           ble_app[ch].bodylen = ble_app[ch].len;
+                           //ble_app[ch].bodylen = ble_app[ch].len; /*两种方法都可以 一个是模组计算 一个是我们自己HEAD-BODY约定*/
                       }
                       
                       
@@ -245,3 +245,10 @@ printf("\r\n");
      
     }
 }
+
+/*
+
+找一个条件进入到卡片复制模式 这里采用的是蓝牙发送0X11 就套用head-body的格式
+那就是我没有body  只有head的第一个HEX 它就是id 在任务里面CMD就是00 去找函数
+
+*/

@@ -51,7 +51,7 @@ enum
         
         
         
-char *getBleMac() {
+static char *getBleMac() {
     uint8_t *mac;
     config.read(CFG_MQTT_MAC , (void **)&mac);       
     return (char *)mac;
@@ -125,7 +125,7 @@ static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char o
     root =  cJSON_CreateObject();
 
     cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
-    cJSON_AddNumberToObject(root,"openType", 0);
+    cJSON_AddNumberToObject(root,"openType", 0);//0--表示开门方式是 刷卡
     cJSON_AddNumberToObject(root,"openTime",(double) openTime*1000);
     cJSON_AddNumberToObject(root,"lockStatus", lockStatus);
     cJSON_AddNumberToObject(root,"openResult", openResult);
@@ -141,8 +141,22 @@ static char *cj_create_uploadAccessLog_card(long openTime,char lockStatus,char o
 
 
 
-static char *cj_create_uploadAccessLog_Indoor(long openTime,int openType,int Result) 
-{  return NULL;}
+static char *cj_create_uploadAccessLog_Indoor(long openTime) 
+{ 
+    cJSON *root = NULL;//基础类型
+
+    char *outStr;
+
+    root =  cJSON_CreateObject();
+
+    cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
+    cJSON_AddNumberToObject(root,"openType", 5);//5--表示开门方式是门内开门
+    cJSON_AddNumberToObject(root,"openTime",(double) openTime*1000);
+    cJSON_AddNumberToObject(root,"openResult", 1);//1--表示开门成功 这是必须的
+
+
+    COMMON_END_CODE
+}
 
 
 
@@ -160,21 +174,6 @@ static char *cj_create_uploadAccessSensor(int sensorStatus)
     COMMON_END_CODE
 }
 
-static char *cj_create_uploadDeviceVer(void)
-{
-    cJSON *root = NULL;
-    char *outStr;
-    char versionData[6]={0};
-    uint32_t swVer = config.read(CFG_SYS_SW_VERSION , NULL); 
-    StringVer(versionData,swVer);
-    
-    root =  cJSON_CreateObject();
-    
-    cJSON_AddStringToObject(root,"version", versionData);
-
-    COMMON_END_CODE
-}
-
 static char *cj_create_uploadDeviceInfo(void) 
 {
     cJSON *root = NULL;
@@ -187,7 +186,7 @@ static char *cj_create_uploadDeviceInfo(void)
     root =  cJSON_CreateObject();
     cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
     cJSON_AddNumberToObject(root,"type", deviceLockMode);
-    cJSON_AddStringToObject(root,"apkVersion", versionData);
+    cJSON_AddStringToObject(root,"version", versionData);
     cJSON_AddStringToObject(root,"bluetoothMac", getBleMac());
 
     COMMON_END_CODE
@@ -229,14 +228,12 @@ static char *cj_create_keepAlive(int status)
 
     root =  cJSON_CreateObject();
 
-    if(NULL == cJSON_AddStringToObject(root,"deviceCode", getdeviceCode())) {SHOWME;return NULL;};
-    if(NULL == cJSON_AddNumberToObject(root,"status", status) ){SHOWME;return NULL;};
-    if(NULL == cJSON_AddNumberToObject(root,"timeStamp", (double)rtc.read_stamp()*1000)) {SHOWME;return NULL;};
+    cJSON_AddStringToObject(root,"deviceCode", getdeviceCode());
+    cJSON_AddNumberToObject(root,"status", status) ;
+    cJSON_AddNumberToObject(root,"timeStamp", (double)rtc.read_stamp()*1000);
     
-
     COMMON_END_CODE
 }
-
 
 
 void cj_response(char * taskID,int statusCode) //1--失败 0--成功
@@ -264,21 +261,7 @@ void cj_response(char * taskID,int statusCode) //1--失败 0--成功
     return ;
 }
              
-void upuploadDevicever(void) 
-{
-    SHOWME
-    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);   
-
-    char *send = cj_create_uploadDeviceVer();
-
-    sprintf(clientTopic,"%s%s","/client/uploadReaderProgramVersion/",getdeviceCode());
-    
-    mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
-    
-    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
-}
-
-void upuploadDeviceInfo(void) 
+void uploadDeviceInfo(void) 
 {
     SHOWME
     char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);   
@@ -292,7 +275,7 @@ void upuploadDeviceInfo(void)
     log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
-void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) 
+void uploadAccessLog_card(long openTime,char lockStatus,char openResult,    char *cardNo,int cardType,int cardIssueType) 
 {
     SHOWME
     char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
@@ -309,33 +292,32 @@ void upuploadAccessLog_card(long openTime,char lockStatus,char openResult,    ch
 }
 
 
-void upuploadAccessLog_indoor(long openTime) 
+void uploadAccessLog_indoor(long openTime) 
 {       
     SHOWME
-    char clientTopic[50];    memset(clientTopic,0,50); 
-    char *send = cj_create_uploadAccessLog_Indoor(openTime,5,0);
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
+    char *send = cj_create_uploadAccessLog_Indoor(openTime);
     sprintf(clientTopic,"%s%s","/client/uploadAccessLog/",getdeviceCode());      
     mqtt_send_publish(&client, (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);   
     journal.send_queue(LOG_DEL , 0);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
      
 
-void upuploadAccessSensor(long logTime ,int sensorStatus) 
+void uploadAccessSensor(int sensorStatus) 
 {
-  /*
     SHOWME
-    char topicPath[50];    memset(topicPath,0,50); 
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
 
     char *send = cj_create_uploadAccessSensor(sensorStatus) ;
 
-    sprintf(topicPath,"%s%s","/client/uploadAccessSensor/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/client/uploadAccessSensor/",getdeviceCode());
     
+    mqtt_send_publish_form_isr(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
     
-    mqtt_send_publish_form_isr(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
-    
-    log(DEBUG,"topicPath【%s】[%s]\n",topicPath,send);
-*/
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
+
 }
                                                              
 
@@ -343,33 +325,34 @@ void upfilterRequest(void)
 {
     SHOWME
     char *send =NULL;
-    char topicPath[50];    memset(topicPath,0,50); 
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
     
     send = cj_create_filterRequest() ;
 
-    sprintf(topicPath,"%s%s","/star_line/client/filterSync/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/star_line/client/filterSync/",getdeviceCode());
     
-    mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+    mqtt_send_publish(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
     
-    log(INFO,"topicPath【%s】[%s]\n",topicPath,send);
+    log(DEBUG,"clientTopic 【%s】[%s]\n",clientTopic,send);
 }
 
 
 void upkeepAlive(char isr) 
 {
-    SHOWME
-    char topicPath[50];    memset(topicPath,0,50); 
+    
+    char clientTopic[CLIENT_TOPIC_LEN];    memset(clientTopic,0,CLIENT_TOPIC_LEN);
     char *send = cj_create_keepAlive(0);//-------------1 故障     0正常在线  可以做全局标识！！！！！
     
-    sprintf(topicPath,"%s%s","/star_line/client/keepAlive/",getdeviceCode());
+    sprintf(clientTopic,"%s%s","/star_line/client/keepAlive/",getdeviceCode());
     
-    log(INFO,"topicPath【%s】[%s]--[%d 1--中断0--函数]\n",topicPath,send,isr);
+    log(DEBUG,"clientTopic 【%s】[%s]--[%d 1--中断0--函数]\n",clientTopic,send,isr);
     
     if(isr)
-      mqtt_send_publish_form_isr(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+      mqtt_send_publish_form_isr(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
     else
-      mqtt_send_publish(&client,  (uint8_t *)topicPath,  (uint8_t *)send, strlen(send), QOS1, 0);
+      mqtt_send_publish(&client,  (uint8_t *)clientTopic,  (uint8_t *)send, strlen(send), QOS1, 0);
 }
+
 
 
 
@@ -386,11 +369,11 @@ typedef struct _cj_dispatchFilterItem
 static void showdispatchFilterItem(cj_dispatchFilterItem *p)
 {
    
-    log(ERR,"p->taskID      %s\r\n",taskID);
-    log(ERR,"p->cardNo      %s\r\n",p->cardNo);
-    log(ERR,"p->authEndTime %ld\r\n",p->authEndTime);
-    log(ERR,"p->filterType  %d\r\n",p->filterType);
-    log(ERR,"p->timeStamp   %ld\r\n",p->timeStamp);
+    log(INFO,"p->taskID      %s\r\n",taskID);
+    log(INFO,"p->cardNo      %s\r\n",p->cardNo);
+    log(INFO,"p->authEndTime %ld\r\n",p->authEndTime);
+    log(INFO,"p->filterType  %d\r\n",p->filterType);
+    log(INFO,"p->timeStamp   %ld\r\n",p->timeStamp);
 
 }
 /*
@@ -646,7 +629,7 @@ static char downtimeCalibration(char *pJson)
 
   cJSON * pSub_2 = cJSON_GetObjectItem(pSub, "timeStamp");MUST_TRUE(pSub_2);
 
-  log(INFO,"[MQTT-TSL]获得服务器同步时间= %lf\n" ,  pSub_2->valuedouble);//1564725927916.000038 其实/1000 是1564725927
+  log(DEBUG,"[MQTT-TSL]获得服务器同步时间= %lf\n" ,  pSub_2->valuedouble);//1564725927916.000038 其实/1000 是1564725927
  
   stamp = (uint32_t)(pSub_2->valuedouble/1000);   //https://tool.lu/timestamp/ 输入毫秒准话为北京时间
         

@@ -351,7 +351,7 @@ config.write(CFG_SET_RESTORE_FLAG , &restoreBit ,TRUE);
 void ShowIp(serverAddrType *p)
 {
   printf("\r\n********************* ip   %s *******************\r\n",p->ip);
-  printf("********************* port %d *******************\r\n",p->port);
+  printf("********************* port %d  *******************\r\n",p->port);
 }
 
 void show_OTA(void)
@@ -529,6 +529,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         case CFG_SET_RESTORE:
         {/*清空内部文件 在重启 凶猛*/
             sys_cfg_clear();
+            chip_flash_earse( DSYS_DIANMA_ADDR );
             soft_system_resert(__func__);
         }break;
         case CFG_WIFI_INFO:

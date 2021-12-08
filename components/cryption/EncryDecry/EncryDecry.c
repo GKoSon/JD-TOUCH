@@ -264,7 +264,7 @@ void Decryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* Pur
 void Eecryptionr(unsigned char* SourceData,unsigned char *Key,unsigned char* PurposeData)
 {
   int i,j;
-  unsigned char key[8]={0},tem[16]={0},tem2[16]={0};
+  unsigned char key[8]={0};
   unsigned char uckey64[8][8],ucMw[8][8];
 
   for(i=0;i<8;i++) key[i]=Key[7-i];

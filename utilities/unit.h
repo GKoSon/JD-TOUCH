@@ -9,7 +9,7 @@
 #include "bsp_rtc.h"
 #include "err_log.h"
 #include "iwdg.h"
-#include "EncryDecry.h"
+
 
 #ifndef NULL
 #define NULL                (void*)(0)
@@ -190,6 +190,9 @@ extern char topicPath4[GMAX_LEN_TOPIC];
 void StringVer(char *s,uint32_t u) ;
 
 uint32_t InterVer(char *s);
+
+char * ip_port_handle(char *  sor);
+
 
 extern char wrirenfc;
 extern char diyota;

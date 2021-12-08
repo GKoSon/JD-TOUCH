@@ -34,8 +34,6 @@ while (0)
 #define BLE_DEBUG                                                        1
 
 
-void ip_port_handle(uint8_t *  sor);
-
 
 static void show_BleProtData(BleProtData *p)
 {
@@ -279,8 +277,9 @@ uint8_t down_device_info (BleProtData *pag)
       config.write(CFG_SYS_ALARM_TIME ,&A.alarmDelay,0);
       config.write(CFG_SYS_LOCK_MODE ,&A.installPurpose,1);
 
-      ip_port_handle(mqttServer);
-
+      serverAddrType *ip_port = (serverAddrType *)ip_port_handle((char*)mqttServer);
+      config.write(CFG_NET_ADDR ,ip_port,0);
+      ShowIp(ip_port);
       up_return_comm(pag,0);
       return APP_OK;
   }
@@ -317,31 +316,6 @@ void BleDataHandle(BleProtData *pag)
      return;
 }
 
-
-/*  tcp://139.9.66.72:18 */
-void ip_port_handle(uint8_t *  sor)
-{
-    char *p=0;
-    serverAddrType ip_port;
-
-    printf("input[%s]\r\n",sor); 
-    if(p = strstr ((const char*)sor,"//"))
-      p+=2;
-    else
-      p = (char *)sor;
-
-    
-    sscanf((const char*)p,"%[^:]", ip_port.ip);
-    
-    p = strstr ((const char*)p,":");
-    ++p;
-    ip_port.port = atoi(p);
-
-    
-    ShowIp(&ip_port);
-    config.write(CFG_NET_ADDR ,&ip_port,0);
-}
-         
 
 #include "swipeTag.h"
 void ble_door_log(DeviceOpenRequest	*A)

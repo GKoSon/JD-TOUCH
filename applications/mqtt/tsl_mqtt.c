@@ -506,7 +506,8 @@ char downProgramURL(char *pJson)
 {
       SHOWME 
       otaType otaCfg;
-      char *p = NULL;
+      serverAddrType *ip_port;
+      char *p;
       char url[100]={0};
       cJSON * pSub  = NULL;
       uint8_t Md5[16]={0};
@@ -523,7 +524,6 @@ char downProgramURL(char *pJson)
           cJSON_Delete(pRoot);
           goto out;
       }   
-
       
       pSub = cJSON_GetObjectItem(pSubALL, "fileUrl");
       if(NULL == pSub)
@@ -535,18 +535,11 @@ char downProgramURL(char *pJson)
       memcpy(url,pSub->valuestring,strlen(pSub->valuestring));
  
 
-      serverAddrType ip_port;
-      p = strstr ((const char*)url,"//");
-      p+=2;
-      sscanf((const char*)p,"%[^:]", ip_port.ip);
-      p = strstr ((const char*)p,":");
-      p+=1;
-      ip_port.port=atoi(p);
+      ip_port = (serverAddrType *)ip_port_handle(pSub->valuestring);
+      config.write(CFG_OTA_ADDR ,ip_port,0);
+      ShowIp(ip_port);
       
-      ShowIp(&ip_port);
-      config.write(CFG_OTA_ADDR ,&ip_port,0);
-
-
+      p = strstr ((const char*)url,"//");
       p = strstr ((const char*)p,"/");
       config.write(CFG_OTA_URL ,p,0);
 

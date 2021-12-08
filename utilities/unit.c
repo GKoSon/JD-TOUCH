@@ -3,6 +3,7 @@
 #include "config.h"
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
 
 uint32_t    sysDebugFlag = 0xFE;
 
@@ -26,6 +27,33 @@ uint8_t bcd_to_bin(uint8_t bcd)
 }
 
 
+/*  tcp://139.9.66.72:18 */
+char * ip_port_handle(char *  sor)
+{
+    char *p=0;
+    typedef struct
+    {
+        uint8_t ip[20];
+        uint16_t port;
+    }serverAddrType;
+    static serverAddrType ip_port;
+
+    printf("ip_port_handle input[%s]\r\n",sor); 
+    
+    if(p = strstr ((const char*)sor,"//"))   p+=2;
+    else  p = (char *)sor;
+
+    
+    sscanf((const char*)p,"%[^:]", ip_port.ip);
+    
+    p = strstr ((const char*)p,":");
+    ++p;
+    ip_port.port = atoi(p);
+
+    
+    return (char*)&ip_port;
+}
+         
 
 //比较AB相等 1是的 0 不是 AB的差距是不是再rang内部 1是 0不是
 uint8_t Gequal(uint32_t A,uint32_t B,uint8_t range)

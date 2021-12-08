@@ -156,15 +156,12 @@ static void mqtt_task( void const *pvParameters)
                 break;
 
         case MQTT_DEVINFO:
-                    sys_delay(20);  
                     uploadDeviceInfo();     
                     //vTaskSuspend( NULL );/*会把自己挂起 后面没有了  挂起*/
                     mqttRunType = MQTT_ALIEVE;
                 break;
 
- 
         case MQTT_ALIEVE:
-                    sys_delay(20);  
                     upkeepAlive(0);
                     timer.start(mqttKEEPAliveBLUE);
                     mqttRunType = MQTT_FILTER;
@@ -172,8 +169,7 @@ static void mqtt_task( void const *pvParameters)
                     startota();
                 break;  
                 
-       case MQTT_FILTER:
-                    sys_delay(600);  
+       case MQTT_FILTER: 
                     upfilterRequest();
                     mqttRunType = MQTT_OK;                
                 break;                

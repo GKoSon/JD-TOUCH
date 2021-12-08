@@ -271,10 +271,10 @@ void mqtt_set_default( void )
 {
       memset(&cfg.mqtt, 0x00 ,sizeof(MqttLoginInfoType));
 
-      memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
-      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
-      //memcpy(cfg.mqtt.mqttUserName , "device" ,strlen("device"));
+      //memcpy(cfg.mqtt.mqttUserName , "dark" ,strlen("dark"));
       //memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
+      memcpy(cfg.mqtt.mqttUserName , "device" ,strlen("device"));/*一开始使用这个账户  登入MQTT马上被踢出来 MQTT返回5 是因为名字不对mqttUserName装不下 后面是乱码 */
+      memcpy(cfg.mqtt.mqttUserPwd  , "48e8a059e523b9550ac37665ea088cdb" ,strlen("48e8a059e523b9550ac37665ea088cdb"));
       sprintf(cfg.mqtt.mqttClientId,"%032s",(char *)cfg.parm.deviceName);
 }
 
@@ -804,9 +804,6 @@ void sysCfg_init( void )
     show_SH(&SHType);
 
     
-
-    
-    
 /*主题*/  
 
 log(INFO,"topicPath0 %s\r\n",topicPath0);
@@ -824,7 +821,7 @@ log(INFO,"topicPath2 %s\r\n",topicPath2);
 log(INFO,"topicPath3 %s\r\n",topicPath3);
 log(INFO,"topicPath4 %s\r\n",topicPath4);
   
-    
+
     sysCfg_print();
 
 }

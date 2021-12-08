@@ -167,7 +167,7 @@ typedef struct
 typedef struct
 {
     char mqttClientId[32+1];
-    char mqttUserName[4+1];
+    char mqttUserName[6+1];
     char mqttUserPwd[32+1];
 }MqttLoginInfoType;
 

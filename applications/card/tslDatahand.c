@@ -1,5 +1,4 @@
 #include "tslDatahand.h"
-#include "apdu_phone.h"
 #include "open_log.h"
 #include "open_door.h"
 #include "magnet.h"
@@ -11,14 +10,14 @@ extern _SHType SHType;
 
 uint8_t tag_verify_group1(shanghaicardtype *p)
 {
-    uint8_t i,j,level=0;
+    uint8_t i,j;
 
     for(i=0;i<5;i++)
 	{
 		if( p->body[i].crc)
 		{
-			//level = p->body[i].power;
-			//printf("level = p->p->body[%d].power=%d\r\n",i,level);		
+
+			//printf("level = p->p->body[%d].power=%d\r\n",i,p->p->body[%d].power);		
 			
 			for(j=0;j<SHType.gup.cnt;j++)
 			{

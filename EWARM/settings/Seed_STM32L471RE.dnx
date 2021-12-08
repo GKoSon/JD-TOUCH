@@ -133,7 +133,7 @@
         <Bp5>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.671.3" 0 0 1 "" 0 "" 0</Bp5>
         <Bp6>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\tsl_mqtt.c}.443.9" 0 0 1 "" 0 "" 0</Bp6>
         <Bp7>_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Src\freertos.c}.303.7" 0 0 1 "" 0 "" 0</Bp7>
-        <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\mqtt_task.c}.123.1" 0 0 1 "" 0 "" 0</Bp8>
+        <Bp8>_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\applications\mqtt\mqtt_task.c}.126.1" 0 0 1 "" 0 "" 0</Bp8>
         <Count>9</Count>
     </Breakpoints2>
     <Aliases>

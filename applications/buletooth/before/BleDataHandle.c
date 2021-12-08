@@ -121,8 +121,10 @@ uint8_t down_device_card (BleProtData *pag)
 {
   if(pag->id.data==0X11){
     wrirenfc=1;SHOWME
-  }else{
+  }else if(pag->id.data==0X22){
     wrirenfc=0;SHOWME
+  }else if(pag->id.data==0X33){
+    open_door(); ble_door_log(NULL);SHOWME
   }
   up_return_comm(pag,0);
   return APP_OK;

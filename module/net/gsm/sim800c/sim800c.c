@@ -11,7 +11,7 @@
 
 portBASE_TYPE           xHigherPriorityTaskWoken = pdFALSE;
 void                    *gsmPort = NULL;
-static xTaskHandle         gsmTask;
+xTaskHandle             gsmTask;
 gsmRunStatusEnum        gsmRun = GSM_INIT;
 gsmRunEnum              gsmRunStatus = GSM_POWER_ON;
 __IO uint8_t            gsmReceiveMode = DATA_MODE;

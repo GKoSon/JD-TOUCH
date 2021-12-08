@@ -110,7 +110,6 @@
   */
 #define MIN(a,b)        ((((uint32_t)(a)) > ((uint32_t)(b)))  ? (b)  : (a))
 
-
 #define GET_STR_BYTE(x ,i)  (((strToInt(x[i])<<4)&0xf0)|(strToInt(x[i+1])&0x0f)) 
 
 extern uint32_t    sysDebugFlag;
@@ -162,8 +161,6 @@ void log_arry10(uint32_t level ,unsigned char *pst , unsigned char *arry , unsig
 unsigned char aiot_strcmp( unsigned char *pst , unsigned char *str , unsigned char len);
 
 void soft_system_resert( const char *funs );
-
-#define GMIN(a,b)  ((a)<(b))?(a):(b) 
 
 #define SHOWME       log(ERR,"#文件%s##函数%s##行数%d##\r\n",__FILE__,__FUNCTION__,__LINE__);
 #define NEVERSHOW    log(ERR,"\r\n----*********-----*********-----*********------*********------【%d】【%s】\r\n",__LINE__,__func__);

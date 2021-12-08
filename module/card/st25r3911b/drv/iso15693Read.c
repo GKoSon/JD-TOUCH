@@ -93,9 +93,50 @@ uint8_t st25ReadISO15693TagUid(  tagBufferType *card )
             for (i = 0; i < actcnt; i++)
             {
                 /* flags, dsfid, uid */
-                //log_arry(DEBUG,"\nUUID:",iso15693Cards.uid, ISO15693_UID_LENGTH);
+               // log(DEBUG,"【ISO15693】flags: %d   dsfid: %d\r\n", iso15693Cards.flags,iso15693Cards.dsfid);
                 memcpy(card->UID , iso15693Cards.uid , ISO15693_UID_LENGTH);
                 card->UIDLength = ISO15693_UID_LENGTH;
+                
+                
+#if 0                
+/**/                
+iso15693PiccSystemInformation_t sysInfo;
+uint16_t sysInfoLen=0;
+iso15693GetPiccSystemInformation(&iso15693Cards,&sysInfo,&sysInfoLen);
+
+log(DEBUG,"【ISO15693】flags: %d \
+infoFlags: %d \
+dsfid:%d \
+afi:%d \
+memNumBlocks: %d \
+memBlockSize: %d \
+icReference:  %d ", sysInfo.flags,sysInfo.infoFlags,sysInfo.dsfid,sysInfo.afi,sysInfo.memNumBlocks,sysInfo.memBlockSize,sysInfo.icReference);\
+log_arry(DEBUG,"uid:" , sysInfo.uid , ISO15693_UID_LENGTH);
+/*上面是63  3 我们可能是2K的卡*/    
+
+
+
+/**/          
+
+iso15693PiccMemoryBlock_t memBlock;
+memBlock.blocknr=0;//必须这里指定 读那个块
+iso15693ReadSingleBlock(&iso15693Cards,&memBlock);  
+log(DEBUG,"【ISO15693】flags: %d \
+errorCode: %d \
+securityStatus: %d \
+blocknr: %d \
+actualSize: %d ", memBlock.flags,memBlock.errorCode,memBlock.securityStatus,memBlock.blocknr,memBlock.actualSize);\
+log_arry(DEBUG,"data:" , memBlock.data , memBlock.actualSize);
+
+memBlock.blocknr=1;//必须这里指定 读那个块
+iso15693ReadSingleBlock(&iso15693Cards,&memBlock); 
+log(DEBUG,"【ISO15693】flags: %d \
+errorCode: %d \
+securityStatus: %d \
+blocknr: %d \
+actualSize: %d ", memBlock.flags,memBlock.errorCode,memBlock.securityStatus,memBlock.blocknr,memBlock.actualSize);\
+log_arry(DEBUG,"data:" , memBlock.data , memBlock.actualSize);
+#endif
                 return TRACK_NFCTYPE5;
             }
 

@@ -14,7 +14,7 @@
  *  会造成读取越界
  */
 
-#define    DEVICE_NAME            "TI00" //蓝牙协议规范.doc
+#define    DEVICE_NAME                 "TI00" //蓝牙协议规范.doc
 
 
 //0----门口机   1----围墙机

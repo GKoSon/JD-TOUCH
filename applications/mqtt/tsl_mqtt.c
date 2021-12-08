@@ -499,7 +499,6 @@ type OtaDown struct {
 
 
 {"taskID":"11e3e0a27cc311eb91bc784f437b55ee","data":{"fileUrl":"http://139.9.66.72:17100/starline/headzip.bin","md5str":"2d5b4efd001049a67f7cd5e1e5da4c66","size":142430,"version":"1.0.0"}} 
-
 */
 
 char downProgramURL(char *pJson)
@@ -531,7 +530,7 @@ char downProgramURL(char *pJson)
           cJSON_Delete(pRoot);
           goto out;
       }
-      printf("¡¾%s¡¿",pSub->valuestring);
+      printf("¡¾%s¡¿",pSub->valuestring);//¡¾http://139.9.66.72:17100/starline/application.zip¡¿
       memcpy(url,pSub->valuestring,strlen(pSub->valuestring));
  
 
@@ -540,6 +539,7 @@ char downProgramURL(char *pJson)
       ShowIp(ip_port);
       
       p = strstr ((const char*)url,"//");
+      p+=2;
       p = strstr ((const char*)p,"/");
       config.write(CFG_OTA_URL ,p,0);
 

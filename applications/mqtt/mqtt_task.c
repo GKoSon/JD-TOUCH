@@ -23,8 +23,9 @@
 #include "tsl_mqtt.h"
 #include "sys_led.h"
 #include "sysCntSave.h"
+#include "config.h"
 
-xTaskHandle                mqttTask;
+static xTaskHandle        mqttTask;
 uint8_t                    mqttRunType = MQTT_CONNECT_TCP;
 mqttClientType             client;
 Network                    network;
@@ -112,8 +113,10 @@ static void mqtt_task( void const *pvParameters)
         case MQTT_CONNECT_TCP:
                   if(0==strlen(getdeviceCode()))
                   {
-                    //log(WARN , "[MQTT-STA]…–Œ¥∑÷≈‰…Ë±∏±‡¬Î »•ÀØæı\n");
-                    mqttRunType = MQTT_INIT;
+                    log(WARN , "[MQTT-STA] NO deviceCode go to sleep wait for reset\n");
+                    sys_delay(100);
+                    vTaskSuspend( gsmTask );
+                    vTaskSuspend( mqttTask );
                     break;
                   }
 

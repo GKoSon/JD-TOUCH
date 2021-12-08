@@ -49,8 +49,7 @@ extern QueueHandle_t        xMqttSendQueue;
 extern QueueHandle_t        xMqttRecvQueue;
 
 
-extern xTaskHandle                mqttTask;
-
+extern xTaskHandle         gsmTask;
 extern void task_keep_alive( uint32_t taskBit);
 extern void set_clear_flash( uint32_t bits);
 void MX_NVIC_SetIRQ( uint8_t status );

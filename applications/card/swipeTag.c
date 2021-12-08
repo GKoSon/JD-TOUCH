@@ -202,7 +202,7 @@ uint8_t tag_find_class( tagBufferType *tag)
     return TAG_SUCESS;
 }
 
-void SHANGHAISHOW(shanghaicardtype *p)
+static void SHOW_card(shanghaicardtype *p)
 {
     char i,j;
     printf("p->head.class = %02X[00--A901 02--A902  03--rainbow]\r\n",p->head.class);
@@ -306,12 +306,12 @@ uint8_t tag_read_15693_data( tagBufferType *tag )
     uint8_t tag_buffer[128];
     shanghaicardtype *p=NULL;
     memset(tag_buffer , 0x00 , 128);
+log(0,"[CARD]wrirenfc===========================%d\n",wrirenfc);    
 if (wrirenfc==2)
 {
 card_info_read(tag_buffer);
-log_arry(DEBUG,"tag_buffer" ,tag_buffer , 98 );
+log_arry(0,"tag_buffer-GET" ,tag_buffer , 98 );
 Eecryptionr(tag_buffer,tag->UID,tag_buffer);
-/*怎么写？现在只有读的接口 看底层 有一个 iso15693WriteSingleBlock*/
 st25WriteISO15693Data(tag_buffer,98);
 wrirenfc=0;
 log(ERR,"[CARD]B卡片数据已经写好 流程结束\n");
@@ -323,7 +323,7 @@ return TAG_NULL;
 
       memcpy(tag->buffer , tag_buffer , 98);
       
-      log_arry(0,"tag->buffer" ,tag->buffer , 98 );
+      log_arry(1,"tag->buffer" ,tag->buffer , 98 );
 
       Decryptionr(tag->buffer,tag->UID,tag->buffer);
 
@@ -331,13 +331,13 @@ return TAG_NULL;
 
       p = (shanghaicardtype *)tag->buffer;
 
-      SHANGHAISHOW(p); 
+      SHOW_card(p); 
  //test      
 if(wrirenfc==1)
 {
 card_info_write(tag->buffer);
-
 log(ERR,"[CARD]A卡片数据已经保存 请刷B卡\n");
+log_arry(0,"tag_buffer-SET" ,tag->buffer , 98 );
 wrirenfc=2;
 return TAG_NULL;
 }
@@ -393,7 +393,7 @@ uint8_t tag_read_fk_card( tagBufferType *tag )
 
       p = (shanghaicardtype *)tag->buffer;
 
-      SHANGHAISHOW(p);        
+      SHOW_card(p);        
 
 
       if(checkclasserr(p))

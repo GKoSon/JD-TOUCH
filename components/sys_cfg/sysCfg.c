@@ -383,7 +383,7 @@ void show_SH(_SHType *p)
     printf("*********************gup.md5:%d\n",p->gup.md5);
     printf("*********************gup.cnt:%d\n",p->gup.cnt);
     printf("*********************gup.code\n");
-    num = GMIN(GUPMAX,p->gup.cnt);
+    num = MIN(GUPMAX,p->gup.cnt);
     for(char i=0;i<num;i++)
     for(char j=0;j<11;j++)
     {
@@ -518,7 +518,7 @@ uint8_t cfg_write ( uint8_t mode , void *parma , uint8_t earseFlag)
         case CFG_OTA_URL:
         {
              memset(&cfg.server.otaurl,0,64);
-             memcpy(&cfg.server.otaurl , parma , GMIN(64,strlen((char*)parma)));
+             memcpy(&cfg.server.otaurl , parma , MIN(64,strlen((char*)parma)));
              log(DEBUG,"CFG_OTA_URL[%s]\r\n",cfg.server.otaurl);
         }break;
         case CFG_OTA_CONFIG:

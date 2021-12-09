@@ -31,7 +31,7 @@
 #define        NET_IP                  "139.9.66.72"
 #define        MQTT_PORT                1883
 #define        DSYS_DIANMA_ADDR         0x0807E000
-#define        TEST_CARD_ADDR           0x0807F000
+
 
 
 #define     BLE_MODULE_NAME_SIZE    (strlen(BLE_MODULE_NAME)+1)

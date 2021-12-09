@@ -162,14 +162,6 @@ void ble_receive_data_process( uint8_t ucData)
         };   
         case DATA_TRANS:
         {   
-//test
-#if 0
-if(BleModuleAppData.Msg.Data[0]==0x11){
-wrirenfc=1;NEVERSHOW
-} else if(BleModuleAppData.Msg.Data[0]==0x22)
-{wrirenfc=0;NEVERSHOW}
-#endif
-
 #if 0
 all_printf(&BleModuleAppData.Msg,sizeof(BleModuleAppData)-23);
 printf("\r\n");

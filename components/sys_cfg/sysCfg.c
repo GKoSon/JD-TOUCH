@@ -34,40 +34,6 @@ void hal_read_chipId(unsigned char *p)
 
 }
 
-uint8_t card_info_read(uint8_t *data)
-{
-    return (chip_flash_read( TEST_CARD_ADDR , (uint8_t *)data , 128 ));
-}
-
-void card_info_write(uint8_t *data)
-{
-    uint8_t cnt = 100,ack=0;
-    if(chip_flash_get_lock()== TRUE )
-    {       
-      while(1)
-      {
-         MX_NVIC_SetIRQ(DISABLE);
-         ack = chip_flash_earse(TEST_CARD_ADDR);
-         ack = chip_flash_write( TEST_CARD_ADDR , data , 128 ) ;
-         MX_NVIC_SetIRQ(ENABLE); 
-          if(ack == TRUE)
-          break;
-          sys_delay(50);
-          if(--cnt==0)
-          break;
-      
-      }
-      if(cnt==0)
-          log(ERR,"[SYS]TEST_CARD_ADDR Ê§°Ü r\n");
-      else
-          log(ERR,"[SYS]TEST_CARD_ADDR ³É¹¦\r\n");
-
-      chip_flash_release_lock(); 
-    } 
-    else
-    log(ERR,"[SYS]TEST_CARD_ADDR ERR\n"); 
-}
-
 uint8_t sys_cfg_read(SystemConfigType *data)
 {
     return (chip_flash_read( DSYS_CFG_ADDR , (uint8_t *)data , sizeof(SystemConfigType) ));

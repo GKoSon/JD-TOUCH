@@ -296,27 +296,11 @@ uint8_t checkclasserr(shanghaicardtype *p)
         return 1;
 }
 
-extern uint8_t card_info_read(uint8_t *data);
-extern void card_info_write(uint8_t *data);
-
-extern uint8_t st25WriteISO15693Data(uint8_t* data,uint8_t Length );
-
 uint8_t tag_read_15693_data( tagBufferType *tag ) 
 {
     uint8_t tag_buffer[128];
     shanghaicardtype *p=NULL;
     memset(tag_buffer , 0x00 , 128);
-log(0,"[CARD]wrirenfc===========================%d\n",wrirenfc);    
-if (wrirenfc==2)
-{
-card_info_read(tag_buffer);
-log_arry(0,"tag_buffer-GET" ,tag_buffer , 98 );
-Eecryptionr(tag_buffer,tag->UID,tag_buffer);
-st25WriteISO15693Data(tag_buffer,98);
-wrirenfc=0;
-log(ERR,"[CARD]B卡片数据已经写好 流程结束\n");
-return TAG_NULL;
-}
 
     if( tagComp->iso15693_read_data(0 , (98+13),tag_buffer) == FALSE)
     {   
@@ -332,15 +316,6 @@ return TAG_NULL;
       p = (shanghaicardtype *)tag->buffer;
 
       SHOW_card(p); 
- //test      
-if(wrirenfc==1)
-{
-card_info_write(tag->buffer);
-log(ERR,"[CARD]A卡片数据已经保存 请刷B卡\n");
-log_arry(0,"tag_buffer-SET" ,tag->buffer , 98 );
-wrirenfc=2;
-return TAG_NULL;
-}
 
       if(checkclasserr(p))
       {

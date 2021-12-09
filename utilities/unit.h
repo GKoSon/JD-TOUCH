@@ -191,7 +191,7 @@ uint32_t InterVer(char *s);
 char * ip_port_handle(char *  sor);
 
 
-extern char wrirenfc;
+
 extern char diyota;
 
 #endif

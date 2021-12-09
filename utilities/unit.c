@@ -7,7 +7,7 @@
 
 uint32_t    sysDebugFlag = 0xFE;
 
-char wrirenfc =0;
+
 char diyota =0;
 /*Ê±¼ä*/
 /*¿ØÖÆ*/

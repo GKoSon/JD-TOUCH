@@ -14,3 +14,16 @@
 *.linf
 *.pbw
 *.dep
+
+Obj/
+*.bak
+*.log
+*.dep
+*.bat
+*.ps1
+*.xcl
+*.wsdt
+*.crun
+*.dbgdt
+*.dnx
+*DS_Store

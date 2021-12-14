@@ -414,12 +414,6 @@
                     <state>$PROJ_DIR$\..\components\rs485</state>
                     <state>$PROJ_DIR$\..\module\buletooth\BM77</state>
                     <state>$PROJ_DIR$\..\module\net\wifi\esp12s</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\drv</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\lib\DHCP</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\lib\dns</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\lib\w5500</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\lib\socket</state>
-                    <state>$PROJ_DIR$\..\module\net\eth\w5500\lib</state>
                     <state>$PROJ_DIR$\..\bsp\chipFlash</state>
                     <state>$PROJ_DIR$\..\bsp\pwm</state>
                     <state>$PROJ_DIR$\..\module\card\st25r3911b\inc</state>
@@ -431,15 +425,15 @@
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\mqtt\MQTTPacket\src</state>
                     <state>$PROJ_DIR$\..\applications\mqtt</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\mbedtls-2.6.0\include\mbedtls</state>
-                    <state>$PROJ_DIR$\..\components\cryption\hmac_sha1</state>
-                    <state>$PROJ_DIR$\..\components\cryption\digest</state>
                     <state>$PROJ_DIR$\..\applications\mqtt\model</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\STM32_Cryptographic_Library\inc</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\STM32_Cryptographic_Library\inc\RSA</state>
                     <state>$PROJ_DIR$\..\components\sys_led</state>
                     <state>$PROJ_DIR$\..\components\sysCntSave</state>
+                    <state>$PROJ_DIR$\..\applications\net</state>
                     <state>$PROJ_DIR$\..\Middlewares\Third_Party\cjson</state>
-                    <state>D:\TSBrowserDownloads\JD-TOUCH\components\GMD5</state>
+                    <state>$PROJ_DIR$\..\applications\buletooth\model</state>
+                    <state>$PROJ_DIR$\..\Middlewares\Third_Party\nanopb</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>

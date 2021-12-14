@@ -358,7 +358,7 @@ void main_task(void const * argument)
 /* USER CODE BEGIN Application */
 void set_clear_flash( uint32_t bits)
 {
-    clearFlashFlag = bits;
+    clearFlashFlag |= bits;
 }
 
 /* USER CODE BEGIN Application */

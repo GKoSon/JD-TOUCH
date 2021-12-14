@@ -689,11 +689,11 @@ uint32_t cfg_read ( uint8_t mode , void **parma )
         {
             data = cfg.sysRestoreFlag;
         }break;
+        
         case CFG_CLEAR_RESTORE_FLAG:
         {
             data = cfg.sysRestoreFlag;
         }break;
-
         
         case CFG_SYS_SHANGHAI:
         {

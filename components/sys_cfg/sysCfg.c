@@ -16,7 +16,6 @@
 #include "tagComponent.h"
 #include "buletooth.h"
 #include "md5.h"
-#include "sha1.h"
 #include "mqtt_client.h"
 extern SystemConfigType   cfg;
 extern _SHType SHType;

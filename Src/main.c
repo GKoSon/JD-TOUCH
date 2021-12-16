@@ -116,36 +116,36 @@ void ExchangeBytes(void)
 
 void test_crc8(void)
 {
-  uint8_t A=0XAB,B=0XAB;
+	uint8_t A=0XAB,B=0XAB;
 
-  printf("A^B=%02X\r\n",A^B);
+	printf("A^B=%02X\r\n",A^B);
 
-  char AA[21]={"110101001001003102001"};
-  char BB[21]={"110101001001003102001"};
-  uint8_t AAACRC=mycrc8((uint8_t*)&AA,21);
-  uint8_t BBBCRC=mycrc8((uint8_t*)&BB,21);
-  printf("AAACRC=%c\r\n",AAACRC);
-  printf("BBBCRC=%c\r\n",BBBCRC);
-  printf("AAACRC^BBBCRC=%d\r\n",AAACRC^BBBCRC);
+	char AA[21]={"110101001001003102001"};
+	char BB[21]={"110101001001003102001"};
+	uint8_t AAACRC=mycrc8((uint8_t*)&AA,21);
+	uint8_t BBBCRC=mycrc8((uint8_t*)&BB,21);
+	printf("AAACRC=%c\r\n",AAACRC);
+	printf("BBBCRC=%c\r\n",BBBCRC);
+	printf("AAACRC^BBBCRC=%d\r\n",AAACRC^BBBCRC);
 }
 
 
 void test_my(void)
 {
-char A[6]={"123456"};
-memcpy_down(A,A,strlen(A));
-log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
+	char A[6]={"123456"};
+	memcpy_down(A,A,strlen(A));
+	log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
 
-char B[3]={0xAB,0XCD,0XEF};
-memcpy_up(A,B,3);
-printf("[%s]\r\n",A);
+	char B[3]={0xAB,0XCD,0XEF};
+	memcpy_up(A,B,3);
+	printf("[%s]\r\n",A);
 
 
-int C=654321;//-->0X65 0X43 0X21
-sprintf(A,"%d",C);
-printf("[%.6s]\r\n",A);
-memcpy_down(A,A,strlen(A));
-log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
+	int C=654321;//-->0X65 0X43 0X21
+	sprintf(A,"%d",C);
+	printf("[%.6s]\r\n",A);
+	memcpy_down(A,A,strlen(A));
+	log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
 }
 
 
@@ -195,9 +195,9 @@ log_arry(DEBUG,"A" ,(uint8_t *)A , 6);
 
     /* USER CODE BEGIN 2 */
     serial_console_init();
-    ExchangeBytes();
-    test_crc8();
-    test_my();
+    //ExchangeBytes();
+    //test_crc8();
+    //test_my();
     /* USER CODE END 2 */
 #if TESTOTA
 while(1)
@@ -409,7 +409,7 @@ void vApplicationStackOverflowHook(TaskHandle_t pxTask, char *pcTaskName)
     //(void)pxTask;
 
 
-    log_err("任务堆栈溢出 ， TASK = %s \n", pcTaskName);
+    log_err("任务堆栈溢出 TASK = %s \n", pcTaskName);
     /* Run time stack overflow checking is performed if
     configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2.  This hook
     function is called if a stack overflow is detected. */

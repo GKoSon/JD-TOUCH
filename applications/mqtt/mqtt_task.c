@@ -29,7 +29,6 @@ Network                    network;
 uint8_t                    mqttAliveTimerPort = 0xFF,mqttKEEPAliveBLUE=0XFF;
 extern void startota(void);
 extern char *getdeviceCode();
-
 extern void uploadDeviceInfo(void) ;
 extern void upfilterRequest(void)  ;
 extern void upkeepAlive(char isr) ;
@@ -116,7 +115,6 @@ static void mqtt_task( void const *pvParameters)
                     vTaskSuspend( mqttTask );
                     break;
                   }
-
                   timer.stop(mqttKEEPAliveBLUE);                    
                   serverAddrType *addr;         
                   config.read(CFG_NET_ADDR , (void **)&addr);
@@ -169,7 +167,7 @@ static void mqtt_task( void const *pvParameters)
                     startota();
                 break;  
                 
-       case MQTT_FILTER: 
+        case MQTT_FILTER: 
                     upfilterRequest();
                     mqttRunType = MQTT_OK;                
                 break;                
@@ -207,4 +205,3 @@ void create_mqtt_task( void )
     mqttTask = osThreadCreate(osThread(net), NULL);
     configASSERT(mqttTask);
 }
-

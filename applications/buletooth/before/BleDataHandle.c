@@ -198,7 +198,7 @@ message DeviceSetDeviceNameRequest {
 */
 uint8_t down_device_info (BleProtData *pag)
 {
-    uint8_t   name[16]={0};
+    uint8_t   name[16]={"NO_HANDLE"};
     uint8_t   code[22]={0};
     uint8_t   mqttServer[35]={0};
     uint8_t   ntpServer[20]={0};
@@ -211,7 +211,7 @@ uint8_t down_device_info (BleProtData *pag)
     DeviceSetDeviceNameRequest A = DeviceSetDeviceNameRequest_init_zero; 
       
       
-    pb_decode_bytes(&A.name , name);
+    //pb_decode_bytes(&A.name , name);
     pb_decode_bytes(&A.code , code);
     pb_decode_bytes(&A.mqttServer , mqttServer);
     pb_decode_bytes(&A.ntpServer , ntpServer);

@@ -784,6 +784,104 @@ out:
     return err;
 }
 
+static void all_printf(void *p,int len)
+{
+  uint8_t *d = (uint8_t *)p;
+  for(int i=0;i<len;i++)
+    printf("%02X-",d[i]);
+  printf("\r\n");
+}
+
+
+
+                             /*
+
+
+
+TX:
+02-B1-02-00-12-34-56-78-
+
+RX:
+00-78-F0-
+
+actlength=3
+
+*/
+
+ReturnCode iso15693WritePwd(iso15693ProximityCard_t *card)
+{
+    ReturnCode err;
+    uint16_t actlength;
+    uint8_t txBuf[8 ];
+    static uint8_t Password_id=0X00;
+    
+    //uint32_t pwd = 0X12345678;
+    uint32_t pwd = 0X78563412;
+    
+    txBuf[0] = iso15693DefaultSendFlags;//0x02;  /* Req fags */
+    txBuf[1] = 0xB1;  /* CMD      */
+    txBuf[2] = 0X02; 
+   // ST_MEMCPY(&txBuf[3], card->uid, 8);
+    txBuf[3 ] = Password_id; 
+    ST_MEMCPY(&txBuf[4 ], &pwd, 4);
+//if(++Password_id==0X04)Password_id=0X00;
+//all_printf(txBuf, sizeof(txBuf));
+    err = iso15693TxRxNBytes( txBuf, sizeof(txBuf), iso15693Buffer, ISO15693_BUFFER_SIZE, &actlength, 50 );
+    EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
+all_printf(iso15693Buffer, actlength);
+printf("2-------actlength=%d\r\n\r\n\r\n",actlength);
+    if (actlength >= 2)
+    {
+
+
+    }
+    
+    
+
+out:
+    return err;
+}
+ReturnCode iso15693GetRng(iso15693ProximityCard_t *card)
+{
+    ReturnCode err;
+    uint16_t actlength;
+    uint8_t txBuf[3 ]={0};
+
+    
+    txBuf[0] = 0x00;  /* Req fags */
+    txBuf[1] = 0xB4;  /* CMD      */
+    txBuf[2] = 0X02; 
+    //ST_MEMCPY(&txBuf[3], card->uid, 8);
+
+all_printf(txBuf, sizeof(txBuf));
+    err = iso15693TxRxNBytes( txBuf, sizeof(txBuf), iso15693Buffer, ISO15693_BUFFER_SIZE, &actlength, 1000 );
+    EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
+all_printf(iso15693Buffer, actlength);
+printf("5---------actlength=%d\r\n",actlength)  ;
+out:
+    return err;
+}
+
+ReturnCode iso15693GetUid(void)
+{
+    ReturnCode err;
+    uint16_t actlength;
+    uint8_t txBuf[3]={0};
+
+    
+    txBuf[0] = 0x26;  /* Req fags */
+    txBuf[1] = 0x01;  /* CMD      */
+    txBuf[2] = 0X00; 
+
+
+all_printf(txBuf, sizeof(txBuf));
+    err = iso15693TxRxNBytes( txBuf, sizeof(txBuf), iso15693Buffer, ISO15693_BUFFER_SIZE, &actlength, 500 );
+    EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
+all_printf(iso15693Buffer, actlength);
+printf("actlength=%d\r\n",actlength)  ;
+out:
+    return err;
+}
 
 ReturnCode iso15693FastReadMultipleBlocks(const iso15693ProximityCard_t* card, uint8_t startblock, uint8_t numBlocks,
                                         uint8_t* res_flags, uint8_t* data, uint16_t dataLen, uint16_t *actLen )
@@ -799,7 +897,7 @@ ReturnCode iso15693FastReadMultipleBlocks(const iso15693ProximityCard_t* card, u
     txBuf[3] = startblock;                          /* block number     */
     txBuf[4] = (numBlocks - 1);                     /* number of blocks */
 
-    err = iso15693TxRxNBytes( txBuf, sizeof(txBuf), iso15693Buffer, ISO15693_BUFFER_SIZE, &actlength, 50 );
+    err = iso15693TxRxNBytes( txBuf, sizeof(txBuf), iso15693Buffer, ISO15693_BUFFER_SIZE, &actlength, 500 );
     EVAL_ERR_NE_GOTO(ERR_NONE, err, out);
 
     if (actlength >= 2)

@@ -454,5 +454,11 @@ extern ReturnCode iso15693TxRxNBytes(
                 uint16_t rxLen,
                 uint16_t* actlength,
                 uint16_t response_wait_ms);
+                
+                
+extern ReturnCode iso15693WritePwd(iso15693ProximityCard_t *card);
+
+extern ReturnCode iso15693GetRng(iso15693ProximityCard_t *card)    ;           
+                
 #endif /* ISO_15693_3_H */
 

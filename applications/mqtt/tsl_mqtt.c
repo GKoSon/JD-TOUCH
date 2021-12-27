@@ -784,3 +784,29 @@ int tsl_mqtt_recv_message(mqttClientType* c , mqttRecvMsgType *p)
     
     return MQTT_RECV_SUCCESS;
 }
+
+char*  CreatJsCustNo( void )
+{}
+int create_js(void)
+{
+
+    cJSON *root;
+    char *out;
+    int list[4] = {5,6,7,8};
+ 
+    root = cJSON_CreateObject(); // 创建根
+    cJSON_AddItemToObject(root, "lists", cJSON_CreateIntArray(list, 4));
+ 
+    // 打印并释放
+    out = cJSON_Print(root); cJSON_Delete(root); printf("%s\n",out); free(out);
+ 
+    // 控制台输出
+#if 0
+    {
+        "lists": [5, 6, 7, 8]
+    }
+#endif
+
+}
+
+

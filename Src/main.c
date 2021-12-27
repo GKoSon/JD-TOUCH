@@ -152,7 +152,8 @@ void test_my(void)
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+extern char*  CreatJsCustNo( void );
+extern int create_js(void);
 /* USER CODE END 0 */
  int main(void)
 {
@@ -192,7 +193,7 @@ void test_my(void)
     MX_TIM4_Init();
     /* Initialize interrupts */
     if(!TESTOTA)MX_NVIC_Init();
-
+create_js();
     /* USER CODE BEGIN 2 */
     serial_console_init();
     //ExchangeBytes();
@@ -202,7 +203,7 @@ void test_my(void)
 #if TESTOTA
 while(1)
 {
-printf("I AM FREE CODE \r\n");
+//printf("I AM FREE CODE \r\n");
 sys_delay(300);
 }
 #endif

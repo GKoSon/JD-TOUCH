@@ -804,13 +804,7 @@ int main(int argc,char **argv)
 	Show_Head();
 	printf("******GKOSON FINISHED*******\r\n");
 	//getchar();
-	char i;
-	for(i=0;i<all_bin_num;i++)
-    {
-		remove(every_zip_name[i]);
-		remove(every_bin_name[i]);
-	}
-  remove(OUTPUT_ZIP_NAME);
+
   
 	return 1;
 }

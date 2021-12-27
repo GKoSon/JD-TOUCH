@@ -86,6 +86,7 @@ void mqtt_keep_alive( void )
     mqtt_send_keep_alive();
 }
 
+extern char*  CreatJsCustNo( void );
 static void mqtt_task( void const *pvParameters)
 {
     int rc;
@@ -107,6 +108,7 @@ static void mqtt_task( void const *pvParameters)
                   mqttRunType = MQTT_CONNECT_TCP;
                 break;
         case MQTT_CONNECT_TCP:
+   
                   if(0==strlen(getdeviceCode()))
                   {
                     log(WARN , "[MQTT-STA] NO deviceCode go to sleep wait for reset\n");

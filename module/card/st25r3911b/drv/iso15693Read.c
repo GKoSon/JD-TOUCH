@@ -80,6 +80,11 @@ uint8_t st25ReadISO15693TagUid(  tagBufferType *card )
     if (ERR_NONE == err)
     {
         memset(&iso15693Cards , 0x00 , sizeof(iso15693ProximityCard_t) );
+        
+        
+        log(DEBUG,"【ISO15693】iso15693SelectPicc: %d \r\n",iso15693SelectPicc(&iso15693Cards));
+        iso15693GetRng(&iso15693Cards);
+        
         err = iso15693Inventory(
                     ISO15693_NUM_SLOTS_1,
                     0,
@@ -96,10 +101,20 @@ uint8_t st25ReadISO15693TagUid(  tagBufferType *card )
                // log(DEBUG,"【ISO15693】flags: %d   dsfid: %d\r\n", iso15693Cards.flags,iso15693Cards.dsfid);
                 memcpy(card->UID , iso15693Cards.uid , ISO15693_UID_LENGTH);
                 card->UIDLength = ISO15693_UID_LENGTH;
+                log_arry(DEBUG,"1--uid:" , iso15693Cards.uid ,ISO15693_UID_LENGTH);
+                /*
+                iso15693Cards.uid[0]=card->UID[7];
+                iso15693Cards.uid[1]=card->UID[6];
+                iso15693Cards.uid[2]=card->UID[5];
+                iso15693Cards.uid[3]=card->UID[4];
+                iso15693Cards.uid[4]=card->UID[3];
+                iso15693Cards.uid[5]=card->UID[2];
+                iso15693Cards.uid[6]=card->UID[1];
+                iso15693Cards.uid[7]=card->UID[0];
+*/
                 
-                
-#if 0                
-/**/                
+#if 1                
+/*           
 iso15693PiccSystemInformation_t sysInfo;
 uint16_t sysInfoLen=0;
 iso15693GetPiccSystemInformation(&iso15693Cards,&sysInfo,&sysInfoLen);
@@ -112,11 +127,11 @@ memNumBlocks: %d \
 memBlockSize: %d \
 icReference:  %d ", sysInfo.flags,sysInfo.infoFlags,sysInfo.dsfid,sysInfo.afi,sysInfo.memNumBlocks,sysInfo.memBlockSize,sysInfo.icReference);\
 log_arry(DEBUG,"uid:" , sysInfo.uid , ISO15693_UID_LENGTH);
-/*上面是63  3 我们可能是2K的卡*/    
+//上面是63  3 我们可能是2K的卡
 
+ */
 
-
-/**/          
+/*        
 
 iso15693PiccMemoryBlock_t memBlock;
 memBlock.blocknr=0;//必须这里指定 读那个块
@@ -136,6 +151,22 @@ securityStatus: %d \
 blocknr: %d \
 actualSize: %d ", memBlock.flags,memBlock.errorCode,memBlock.securityStatus,memBlock.blocknr,memBlock.actualSize);\
 log_arry(DEBUG,"data:" , memBlock.data , memBlock.actualSize);
+
+*/     
+
+
+
+
+//log(DEBUG,"【ISO15693】iso15693SelectPicc: %d \r\n",iso15693SelectPicc(&iso15693Cards));
+ 
+
+
+
+
+
+iso15693GetRng(&iso15693Cards);
+iso15693WritePwd(&iso15693Cards);
+return TRACK_NONE;
 #endif
                 return TRACK_NFCTYPE5;
             }

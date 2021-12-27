@@ -1181,7 +1181,7 @@ ReturnCode rfalTransceiveBlockingRx( void )
 ReturnCode rfalTransceiveBlockingTxRx( uint8_t* txBuf, uint16_t txBufLen, uint8_t* rxBuf, uint16_t rxBufLen, uint16_t* actLen, uint32_t flags, uint32_t fwt )
 {
     ReturnCode ret;
-    
+    for(char i=0;i<txBufLen;i++)printf("<%02X>",txBuf[i]);printf("\r\n");
     EXIT_ON_ERR( ret, rfalTransceiveBlockingTx( txBuf, txBufLen, rxBuf, rxBufLen, actLen, flags, fwt ) );
     ret = rfalTransceiveBlockingRx();
     
